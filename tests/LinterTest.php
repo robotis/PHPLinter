@@ -24,7 +24,7 @@ class LinterTest extends PHPUnit_Framework_TestCase {
 	public function test_self_indiv() {
 		foreach(array(
 			'/../Linter.php',
-			'/../phplinter.php',
+			'/../phplinter',
 			'/../Tokenizer.php',
 			'/../Set.php',
 			'/../Path.php',

@@ -1,0 +1,200 @@
+#!/usr/bin/php
+<?php
+/**
+----------------------------------------------------------------------+
+*  @desc			Lint for PHP
+*  @file 			phplinter.php
+*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @copyright     
+*    phplinter is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*
+----------------------------------------------------------------------+
+*/
+define('DEBUG',			true);
+
+require 'Linter.php';
+require 'Path.php';
+require 'Report.php';
+/**
+----------------------------------------------------------------------+
+* @desc 	Help function
+----------------------------------------------------------------------+
+*/
+function help() {
+	echo "PHPLinter. Lint and score PHP files.\n";
+	echo "Usage phplinter -[ICWRESHvVi[PATTERN]] [file|directory]\n";
+	echo "\t-I: Dont report information.\n";
+	echo "\t-C: Dont report conventions.\n";
+	echo "\t-W: Dont report warnings.\n";
+	echo "\t-R: Dont report refactor warnings.\n";
+	echo "\t-E: Dont report errors.\n";
+	echo "\t-D: Dont report deprecated warnings.\n";
+	echo "\t-F: Try to locate unused functions/methods (Experimental).\n";
+	echo "\t-t: Number of invocations threshold (default 0).\n";
+	echo "\t-S: Score only.\n";
+	echo "\t-H: HTML report.\n";
+	echo "\t-v: Verbose mode\n";
+	echo "\t-V: Debug mode. Again for extra debug info.\n";
+	echo "\t-i: ignore PATTERN. (Ignore files in directory mode)\n";
+	echo "<jtm@robot.is>\n";
+	exit;
+}
+
+$OPTIONS = 0;
+$threshold = 0;
+$output_dir = NULL;
+for($i = 1;$i < $argc; $i++) {
+	if($argv[$i][0] == '-') {
+		for($j=1;$j<strlen($argv[$i]);$j++) {
+			switch($argv[$i][$j]) {
+				case 'I':
+					$OPTIONS |= OPT_NO_INFORMATION;
+					break;
+				case 'D':
+					$OPTIONS |= OPT_NO_DEPRECATED;
+					break;
+				case 'C':
+					$OPTIONS |= OPT_NO_CONVENTION;
+					break;
+				case 'W':
+					$OPTIONS |= OPT_NO_WARNING;
+					break;
+				case 'R':
+					$OPTIONS |= OPT_NO_REFACTOR;
+					break;
+				case 'E':
+					$OPTIONS |= OPT_NO_ERROR;
+					break;
+				case 'v':
+					$OPTIONS |= OPT_VERBOSE;
+					break;
+				case 'V':
+					if($OPTIONS & OPT_DEBUG)
+						$OPTIONS |= OPT_DEBUG_EXTRA;
+					$OPTIONS |= OPT_DEBUG;
+					break;
+				case 'S':
+					$OPTIONS |= OPT_SCORE_ONLY;
+					break;
+				case 'H':
+					$OPTIONS |= OPT_HTML_REPORT;
+					break;
+				case 'F':
+					$OPTIONS |= OPT_FIND_FUNC;
+					break;
+				case 'i':
+					$ignore = "/{$argv[++$i]}/";
+					continue 3;
+				case 't':
+					$threshold = intval($argv[++$i]);
+					continue 3;
+				case 'O':
+					$output_dir = $argv[++$i];
+					continue 3;
+				case 'h':
+					help();
+					break;
+				default:
+					echo "Unrecognized option `{$argv[$i][$j]}`\n\n";
+					help();
+			}
+		}
+	} else {
+		$file = $argv[$i];
+	}
+}
+if(!isset($file)) {
+	die("Missing file or directory (see -h or --help)\n");
+}
+if(!file_exists($file)) {
+	die("File not found...\n");
+}
+
+ini_set('memory_limit', "512M");
+set_time_limit (600);
+$reporter = new Report($output_dir);
+if(is_dir($file)) {
+	if($file[0] == '/')
+		die("Fullpath mode not excepted..\n");
+	$OPTIONS |= OPT_SCORE_ONLY;
+	$files = (isset($ignore))
+		? Path::find($file, '/^.*?\.php$/', $ignore)
+		: Path::find($file, '/^.*?\.php$/');
+
+	$penalty = 0;
+	$numfiles = count($files);
+	$names = array();
+	foreach($files as $_) {
+		if($OPTIONS & OPT_FIND_FUNC) {
+			// Unused functions
+			if($OPTIONS & OPT_VERBOSE)
+				echo "Harvesting file: $_\n";
+			$linter = new PHPLinter($_, $OPTIONS);
+			$linter->lint();
+			$names = $linter->harvest($names);
+		} else {
+			if($OPTIONS & OPT_VERBOSE)
+				echo "Linting file: $_\n";
+			$linter = new PHPLinter($_, $OPTIONS);
+			$hrep = (preg_match('/^\.\/?/', $_)) 
+				? $_ : "./$_";
+			if($OPTIONS & OPT_HTML_REPORT)
+				$reports[$hrep] = $linter->lint();
+			else $linter->lint();
+			$penalty += $linter->penalty();
+			if($OPTIONS & OPT_HTML_REPORT)
+				$penaltys[$hrep] = $linter->penalty();
+			if($OPTIONS & OPT_VERBOSE)
+				$reporter->score($linter->penalty());
+		}
+	}
+	if($OPTIONS & OPT_FIND_FUNC) {
+		foreach($names as $name=>$cnt)
+			if($cnt <= $threshold || $OPTIONS & OPT_DEBUG)
+				echo "$name :: $cnt\n";
+	} else {
+		$reporter->average($penalty, $numfiles);
+		if($OPTIONS & OPT_HTML_REPORT) {
+			$reporter->toHtml($reports, $penaltys);
+		}
+	}
+} else {
+	$linter = new PHPLinter($file, $OPTIONS);
+	if($OPTIONS & OPT_FIND_FUNC) {
+		$linter->lint();
+		foreach($linter->harvest() as $name=>$cnt)
+			if($cnt <= $threshold || $OPTIONS & OPT_DEBUG)
+				echo "$name :: $cnt\n";
+	} else {
+		$report = $linter->lint();
+		if(!($OPTIONS & OPT_SCORE_ONLY)) {
+			$reporter->toCli($report);
+		}
+		$reporter->score($linter->penalty());
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

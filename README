@@ -4,3 +4,69 @@ A simple fast lint and score for PHP files.
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 
 <jtm@hi.is>
+
+    * I: Information
+    * C: Conventions
+    * D: Depricated
+    * W: Warnings
+    * R: Refactor
+    * E: Errors 
+
+(I)nformation
+
+    * I1: FIXME/TODO
+    * I1: Eval used
+
+(C)onventions
+
+    * C1: Line to long. Default (85)
+    * C2: Class name does not match. Default( /^[A-Z][\w_]{2,}$/ )
+    * C3: Function name does not match. Default( /^[a-z][\w_]{2,}$/ )
+    * C4: Method name does not match. Default( /^[a-z][\w_]{2,}$/ )
+    * C5: Interface name does not match. Default( /^[A-Z][\w_]{2,}$/ )
+    * C1: Visibility missing. (public/protected/private) 
+
+(D)epricated
+
+    * D1: Token depricated. Default (global)
+    * D2: String depricated. Default(eregi, eregi_replace, ereg, ereg_replace, split, spliti) 
+
+(W)arning
+
+    * W1: PHP4 style constuctor
+    * W2: PHP4 style variable
+    * W3: Unused argument
+    * W4: Unused variable
+    * W5: Unused method (-F switch)
+    * W6: Unused function (-F switch)
+    * W7: Unused class (-F switch)
+    * W8: Eval used
+    * W9: Public variable
+    * W10: Empty class
+    * W11: Empty function
+    * W12: Empty method
+    * W13: Empty interface
+    * W14: Unreachable code
+    * W16: Whitespace after closing tag 
+
+(R)efactor
+
+    * R1: Method to long. Default(300)
+    * R2: Function to long. Default(300)
+    * R3: Class to long. Default(2500)
+    * R4: Too many branches. Default(12)
+    * R5: Too many local variables. Default(24)
+    * R6: Too many arguments. Default(6)
+    * R7: Too many ancestors. Default(6)
+    * R8: HTML mixed into code
+    * R9: HTML output after final close tag 
+
+(E)rrors
+
+    * E1: Unused
+    * E2: File not documented
+    * E3: Class not documented
+    * E4: Method not documented
+    * E5: Function not documented
+    * E6: Interface not documented
+    * E7: Class variable not documented 

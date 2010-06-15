@@ -18,7 +18,7 @@ class TEST{
 	* @desc 	empty method
 	----------------------------------------------------------------------+
 	*/
-	function test_method(){}
+	public function test_method(){}
 }
 /**
 ----------------------------------------------------------------------+
@@ -37,5 +37,5 @@ interface Test_interface {
 	* @desc 	empty interface method
 	----------------------------------------------------------------------+
 	*/
-	function test_inter();
+	public function test_inter();
 }

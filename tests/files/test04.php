@@ -10,7 +10,7 @@ class _Obad_name {
 	* @desc 	test method
 	----------------------------------------------------------------------+
 	*/
-	function BadMethodName() {
+	public function BadMethodName() {
 		$var = 'This is a very long line.................................................................................................';
 	}
 }
@@ -33,5 +33,5 @@ interface _badInterfaceName {
 	* @desc 	test method
 	----------------------------------------------------------------------+
 	*/
-	function okMethodName();
+	public function okMethodName();
 }

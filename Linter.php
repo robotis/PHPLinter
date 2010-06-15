@@ -216,6 +216,10 @@ class PHPLinter {
 		$locals 	= array();
 		for($i=0;$i<$tcnt;$i++) {
 			switch($this->tokens[$et[$i]][0]) {
+				case T_PUBLIC:
+				case T_PRIVATE:
+				case T_PROTECTED:
+					break;
 				case T_VAR:
 					$this->report($element, 'WAR_OLD_STYLE_VARIABLE');
 					break;
@@ -262,8 +266,14 @@ class PHPLinter {
 		$args		= false;
 		$locals 	= array();
 		$branches 	= 0;
+		$visibility = null;
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($this->tokens[$et[$i]][0]) {
+				case T_PUBLIC:
+				case T_PRIVATE:
+				case T_PROTECTED:
+					$visibility = true;
+					break;
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
 						$args = $this->parse_args($i, $et);
@@ -283,6 +293,8 @@ class PHPLinter {
 					break;
 			}
 		}
+		if(empty($visibility) && $element['TYPE'] == T_METHOD)
+			$this->report($element, 'CON_NO_VISIBILITY');
 		$locals = array_unique($locals);
 		$compares = array(
 			'REF_ARGUMENTS' => count($args),

@@ -14,7 +14,7 @@ class Test {
 	* @desc 	test method
 	----------------------------------------------------------------------+
 	*/
-	function test_method($used, $unused) {
+	public function test_method($used, $unused) {
 		$$this->used = $used;
 	}
 }

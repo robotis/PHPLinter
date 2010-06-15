@@ -71,11 +71,13 @@ class PHPLinter {
 		$lnum = 1;
 		$comment = false;
 		$vars 	= array();
+		$fp = explode('/', $this->file);
+		$pretty_file_name = $fp[count($fp)-1];
 		foreach(file($this->file) as $_) {
 			$len = strlen($_);
 			if($len > $this->conf['CON_LINE_LENGTH']['compare']) {
 				$elem = array(
-					'PARENT' => $this->file,
+					'PARENT' => $pretty_file_name,
 					'START_LINE' => $lnum
 				);
 				$this->report($elem, 'CON_LINE_LENGTH', $len);

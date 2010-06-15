@@ -117,11 +117,6 @@ class Report {
 			$out .= '<td colspan="2" align="center" class="'.$class.'">';
 			$out .= sprintf('Score: %.2f', $score);
 			$out .= '</td>';
-			$out .= '<td class="filename">';
-			$out .= $file;
-			$out .= '</td></tr>';
-			$out .= $content;
-			$out .= '</table></div>';
 			$parts = explode('/', $file);
 			$rfile = array_pop($parts);
 			$depth = count($parts);
@@ -129,6 +124,12 @@ class Report {
 				? implode('/', $parts)
 				: '';
 			$path = substr(realpath($path), strlen($this->root));
+			$out .= '<td class="filename">';
+			$out .= "$path/$rfile";
+			$out .= '</td></tr>';
+			$out .= $content;
+			$out .= '</table></div>';
+			
 			$dir = $this->output_dir . $path;
 			if(!file_exists($dir) 
 				&& !mkdir($dir, 0775, true)) {

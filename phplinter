@@ -131,6 +131,9 @@ for($i = 1;$i < $argc; $i++) {
 if(!isset($file)) {
 	die("Missing file or directory (see -h or --help)\n");
 }
+if(isset($output_dir) && !file_exists(dirname($output_dir))) {
+	die("Output directory unsane.\n");
+}
 if(!file_exists($file)) {
 	die("File not found...\n");
 }
@@ -145,8 +148,6 @@ if(!empty($settings_file)) {
 	$conf = @include($settings_file);
 }
 if(is_dir($file)) {
-	if($file[0] == '/')
-		die("Fullpath mode not excepted..\n");
 	$OPTIONS |= OPT_SCORE_ONLY;
 	$files = (isset($ignore))
 		? Path::find($file, "/^.*?\.$extensions$/", $ignore)

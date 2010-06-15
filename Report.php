@@ -99,6 +99,7 @@ class Report {
 		}
 		$this->output_dir = realpath($this->output_dir);
 		foreach($report as $file => $rep) {
+//			echo "Creating report for file `$file`\n";
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 			$content = '';
 			
@@ -133,16 +134,16 @@ class Report {
 				&& !mkdir($dir, 0775, true)) {
 				die("Unable to create `$dir`...\n");
 			}
+			
+			$pp = explode('/', substr(realpath(implode('/', $parts)), strlen($this->root)));
 			$ofile = $dir . '/' . strtr($rfile, './', '__').'.html';
 			if($this->options & OPT_VERBOSE) 
 				echo "Wrote to file `$ofile`\n";
-			Path::write_file($ofile, $this->html($out, $depth));
-
+			Path::write_file($ofile, $this->html($out, count($pp)));
 			$url['file'] = $file;
 			$url['url'] = strtr($rfile, './', '__').'.html';
-			$this->parts($parts, $url, $urls);
+			$this->parts($pp, $url, $urls);
 		}
-		//var_dump($urls);
 		$this->output_indexes($urls, $penaltys);
 	}
 	/**
@@ -193,18 +194,22 @@ class Report {
 		$out .= '</tr>';
 		$out .= $content;
 		$out .= '</table></div>';
-		$path = empty($path)
+
+		$path = ($path == '/')
 			? $this->output_dir
-			: substr(realpath($path), strlen($this->root));
+			: $path;
 		$dir = ($path == $this->output_dir) 
 			? $path
 			: $this->output_dir . $path;
+		$dir = (!empty($dir) && $dir[strlen($dir)-1] == '/')
+			? $dir : $dir . '/';
 		if(!empty($path)) {
-			$file = $dir . '/index.html';
+			$file = $dir . 'index.html';
 			Path::write_file($file, $this->html($out, $depth));
 			if($this->options & OPT_VERBOSE) 
 				echo "Wrote to file `$file`\n";
 		}
+		$this->dirs[] = $dir;
 		return array($total, $num);
 	}
 	/**
@@ -233,7 +238,7 @@ class Report {
 	* @desc 	Fills in the correct directorys
 	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$parts	Array
-	* @param	$url	String
+	* @param	$url	Array
 	* @param	$urls	Reference (Array)
 	----------------------------------------------------------------------+
 	*/

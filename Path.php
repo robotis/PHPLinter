@@ -72,11 +72,10 @@ class Path {
 	----------------------------------------------------------------------+
 	*/
 	public static function del_recursive($root) {
-		if(!file_exists($root)) 
+		$root = realpath($root);
+		if(empty($root) || !file_exists($root)) 
 			return false;
-		if(preg_match('/\.|\.\./', $root))
-			return false;
-		$files = glob( $root . '*', GLOB_MARK ); 
+		$files = glob( $root . '/*', GLOB_MARK ); 
 		foreach( $files as $file ){
 	        if(is_dir( $file )) {
 	            self::del_recursive( $file );

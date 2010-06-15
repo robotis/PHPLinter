@@ -137,7 +137,7 @@ if(!file_exists($file)) {
 
 ini_set('memory_limit', "512M");
 set_time_limit (600);
-$reporter = new Report($output_dir);
+$reporter = new Report($output_dir, $OPTIONS);
 $conf = null;
 if(!empty($settings_file)) {
 	if(!file_exists($settings_file))
@@ -186,7 +186,7 @@ if(is_dir($file)) {
 	} else {
 		$reporter->average($penalty, $numfiles);
 		if($OPTIONS & OPT_HTML_REPORT) {
-			$reporter->toHtml($reports, $penaltys);
+			$reporter->toHtml($file, $reports, $penaltys);
 		}
 	}
 } else {

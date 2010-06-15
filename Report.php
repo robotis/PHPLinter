@@ -23,18 +23,20 @@
 */
 class Report {
 	protected $output_dir;
+	protected $options;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create report
 	* @param	$output_dir	String (Path)
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($output_dir=null) {
+	public function __construct($output_dir=null, $OPTIONS=null) {
 		if(empty($output_dir)) {
 			$this->output_dir = dirname(__FILE__) . '/' . 'html_report/';
 		} else {
 			$this->output_dir = $output_dir;
 		}
+		$this->options = $OPTIONS;
 	} 
 	/**
 	----------------------------------------------------------------------+
@@ -82,14 +84,20 @@ class Report {
 	* @param	$penaltys	Array
 	----------------------------------------------------------------------+
 	*/
-	public function toHtml($report, $penaltys) {
+	public function toHtml($root, $report, $penaltys) {
+		$this->root = realpath($root);
 		if(file_exists($this->output_dir)) {
+			if($this->options & OPT_VERBOSE) 
+				echo "Deleting `$this->output_dir`\n";
 			Path::del_recursive($this->output_dir);
 		}
+		if($this->options & OPT_VERBOSE) 
+			echo "Creating `$this->output_dir`\n";
 		if(!file_exists($this->output_dir) 
 			&& !mkdir($this->output_dir, 0775)) {
 			die("Unable to create `$this->output_dir`...\n");
 		}
+		$this->output_dir = realpath($this->output_dir);
 		foreach($report as $file => $rep) {
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 			$content = '';
@@ -119,13 +127,16 @@ class Report {
 			$path = $depth > 1
 				? implode('/', $parts)
 				: '';
-			if(!file_exists($this->output_dir . '/' . $path) 
-				&& !mkdir($this->output_dir . '/' . $path, 0775, true)) {
-				die("Unable to create `$path`...\n");
+			$path = substr(realpath($path), strlen($this->root));
+			$dir = $this->output_dir . $path;
+			if(!file_exists($dir) 
+				&& !mkdir($dir, 0775, true)) {
+				die("Unable to create `$dir`...\n");
 			}
-			Path::write_file($this->output_dir . '/' . $path . '/' . 
-				strtr($rfile, './', '__').'.html', 
-			$this->html($out, $depth));
+			$ofile = $dir . '/' . strtr($rfile, './', '__').'.html';
+			if($this->options & OPT_VERBOSE) 
+				echo "Wrote to file `$ofile`\n";
+			Path::write_file($ofile, $this->html($out, $depth));
 
 			$url['file'] = $file;
 			$url['url'] = strtr($rfile, './', '__').'.html';
@@ -146,7 +157,6 @@ class Report {
 	----------------------------------------------------------------------+
 	*/
 	protected function output_indexes($urls, $penaltys, $path='', $depth=0) {
-		$dir = $this->output_dir . $path;
 		$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 		$content = '';
 		$total = 0; $num = 0;
@@ -183,8 +193,18 @@ class Report {
 		$out .= '</tr>';
 		$out .= $content;
 		$out .= '</table></div>';
-		if(!empty($path))
-			Path::write_file($dir . 'index.html', $this->html($out, $depth));
+		$path = empty($path)
+			? $this->output_dir
+			: substr(realpath($path), strlen($this->root));
+		$dir = ($path == $this->output_dir) 
+			? $path
+			: $this->output_dir . $path;
+		if(!empty($path)) {
+			$file = $dir . '/index.html';
+			Path::write_file($file, $this->html($out, $depth));
+			if($this->options & OPT_VERBOSE) 
+				echo "Wrote to file `$file`\n";
+		}
 		return array($total, $num);
 	}
 	/**

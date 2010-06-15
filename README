@@ -5,6 +5,8 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 
 <jtm@hi.is>
 
+Ruleset (some rules are not active)
+
     * I: Information
     * C: Conventions
     * D: Depricated

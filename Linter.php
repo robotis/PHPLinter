@@ -240,20 +240,19 @@ class PHPLinter {
 		
 		$name = $element['NAME'];
 		
+		if(!empty($this->data[$name]['METHODS']) && 
+			in_array($name, $this->data[$name]['METHODS']))
+			$this->report($element, 'WAR_OLD_STYLE_CONSTRUCT');
+		
 		if(!empty($this->data[$name]['THIS'])) {
 			if(is_array($this->data[$name]['METHODS'])) {
 				$this->data[$name]['METHODS'] = array_diff($this->data[$name]['THIS'], 
 														   $this->data[$name]['METHODS']);
 			}
 			$vars = array_diff($locals, $this->data[$name]['THIS']);
-		}
-		
-		if(!empty($this->data[$name]['METHODS']) && 
-			in_array($name, $this->data[$name]['METHODS']))
-			$this->report($element, 'WAR_OLD_STYLE_CONSTRUCT');
-			
-		foreach($vars as $_) {
-			$this->report($element, 'WAR_UNUSED_VAR', $_);	
+			foreach($vars as $_) {
+				$this->report($element, 'WAR_UNUSED_VAR', $_);	
+			}
 		}
 	}
 	/**
@@ -268,13 +267,16 @@ class PHPLinter {
 		$args		= false;
 		$locals 	= array();
 		$branches 	= 0;
-		$visibility = null;
+		$visibility = true;
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($this->tokens[$et[$i]][0]) {
 				case T_PUBLIC:
 				case T_PRIVATE:
 				case T_PROTECTED:
 					$visibility = true;
+					break;
+				case T_ABSTRACT:
+					$abstract = true;
 					break;
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
@@ -314,7 +316,7 @@ class PHPLinter {
 			if($_ > $this->conf[$k]['compare'])
 				$this->report($element, $k, $_);
 
-		if(!empty($args))
+		if(!empty($args) && !isset($abstract))
 			foreach($args as $_)
 				if(!in_array($_, $locals))
 					$this->report($element, 'WAR_UNUSED_ARG', $_);	

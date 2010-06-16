@@ -132,6 +132,10 @@ return array(
 	'WAR_WS_AFTER_CLOSE' => array(
 		'message' => 'Whitespace after final close tag',
 		'flag' => 'W16',
+	),
+	'WAR_WS_COMMENTED_CODE' => array(
+		'message' => 'Code commented out',
+		'flag' => 'W17',
 	),	
 	/*
 	 * Depricated warnings

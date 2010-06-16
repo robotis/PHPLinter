@@ -114,14 +114,16 @@ class PHPLinter {
 						$r = 'ERR_NO_DOCHEAD_INTERFACE';
 						break;
 					case T_FILE:
-						$this->elements[$i]['START_LINE'] = 1;
 						$r = 'ERR_NO_DOCHEAD_FILE';
 						break;
 				}
-				// special case for class files
-				if(!($i > 0 && $scope == T_CLASS 
-					&& $this->elements[$i-1]['TYPE'] == T_FILE))
-					$this->report($this->elements[$i], $r);
+				// special case
+				if($scope == T_FILE) {
+					if(isset($this->elements[$i+1]) 
+						&& !in_array($this->elements[$i+1]['TYPE'], 
+									array(T_DOC_COMMENT)))
+						$this->report($this->elements[$i], $r);
+				} else $this->report($this->elements[$i], $r);
 			}
 			$this->parse($this->elements[$i]);
 		}
@@ -292,6 +294,10 @@ class PHPLinter {
 				case T_VARIABLE:
 					$locals[] = $this->tokens[$et[$i]][1];
 					break;
+				case T_SEMICOLON;
+					if(isset($abstract))
+						break 2;
+					break;
 				default:
 					$this->common_tokens($element, $et[$i]);
 					break;
@@ -323,10 +329,9 @@ class PHPLinter {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Parse file
 	* @author 	Jóhann T. Maríusson <jtm@hi.is>
-	* @param	FIXME
-	* @return	FIXME
+	* @param	$element	Array
 	----------------------------------------------------------------------+
 	*/
 	protected function parse_file($element) {
@@ -406,6 +411,7 @@ class PHPLinter {
 			'PARENT' => $this->file,
 			'NAME' => $this->file,
 			'TOKENS' => array(),
+			'START_LINE' => 1,
 		);
 		for($i = 0;$i < $this->tcount;$i++) {
 			switch($this->tokens[$i][0]) {
@@ -416,7 +422,14 @@ class PHPLinter {
 				case T_FUNCTION:
 				case T_INTERFACE:
 					$next = $this->tokens[$this->find($i, T_STRING)][1];
-					$i = $this->measure($i+1, $next, $this->tokens[$i][0], 0, $this->file);
+					$info = array(
+						'in_type' => $this->tokens[$i][0],
+						'in_name' => $this->tokens[$this->find($i, T_STRING)][1],
+						'depth' => 0,
+						'owner' => $this->file,
+						'abstract' => false
+					);
+					$i = $this->measure($i+1, $info);
 					break;
 				case T_STRING:
 					$this->parse_string($i, $this->file);
@@ -430,9 +443,9 @@ class PHPLinter {
 				default:
 					if(!isset($element['START'])) {
 						$element['START'] = $i;
-						$element['START_LINE'] = isset($this->tokens[$i+1])
-							? $this->tokens[$i+1][2]
-							: $this->tokens[$i][2];
+//						$element['START_LINE'] = isset($this->tokens[$i+1])
+//							? $this->tokens[$i+1][2]
+//							: $this->tokens[$i][2];
 					}
 					$element['TOKENS'][] = $i;
 					break;
@@ -482,21 +495,26 @@ class PHPLinter {
 	* @return	int
 	----------------------------------------------------------------------+
 	*/
-	protected function measure($pos, $in_name, $in_type, $depth, $owner=null) {
+	protected function measure($pos, $info) { 
 		$start = $this->last_newline($pos);
 		$element = array(
 			'START' => $start,
 			'START_LINE' => $this->tokens[$start][2] + 1,
-			'TYPE' => $in_type,
-			'PARENT' => $owner,
-			'NAME' => $in_name,
+			'TYPE' => $info['in_type'],
+			'PARENT' => $info['owner'],
+			'NAME' => $info['in_name'],
 			'EMPTY' => true,
 		);
-		$this->debug("In element `$in_name` of type ".
-				Tokenizer::token_name($in_type)
-				. " at {$element['START_LINE']}; Owned by `$owner`", ++$depth);
+		$this->debug(sprintf('In element `%s` of type %s at %d; Owned by `%s`'
+				,$info['in_name']
+				,Tokenizer::token_name($info['in_type'])
+				,$element['START_LINE']
+				,$info['owner']
+				),++$info['depth']);
+				
 		$body = false;
-		$this->names[] = $in_name;
+		$abstract = false;
+		$this->names[] = $info['in_name'];
 		// Save tokens from last newline
 		foreach(range($start, $pos-1) as $_)
 			$element['TOKENS'][] = $_;
@@ -508,41 +526,58 @@ class PHPLinter {
 			}
 			switch($this->tokens[$i][0]) {
 				case T_CURLY_OPEN:
-					$this->debug("Scope opened", $depth);
+					$this->debug("Scope opened", $info['depth']);
 					$clvl++;
 					$body = true;
 					break;
 				case T_CURLY_CLOSE:
-					$this->debug("Scope closed", $depth);
+					$this->debug("Scope closed", $info['depth']);
 					if(--$clvl == 0) {
 						$i++;
 						break 2;
 					}
 					break;
 				case T_DOC_COMMENT:
-					$i = $this->measure_comment($i, $depth);
+					$i = $this->measure_comment($i, $info['depth']);
+					break;
+				case T_ABSTRACT:
+					$abstract = true;
+					break;
+				case T_SEMICOLON:
+					if($info['abstract'] === true 
+						&& $info['in_type'] == T_METHOD) {
+						break 2;
+					}
 					break;
 				case T_CLASS:
 				case T_FUNCTION:
 				case T_INTERFACE:
 					$next = $this->tokens[$this->find($i, T_STRING)][1];
-					$type = (in_array($in_type, array(T_CLASS, T_INTERFACE))
+					$type = (in_array($info['in_type'], array(T_CLASS, T_INTERFACE))
 						&& $this->tokens[$i][0] == T_FUNCTION)
 						? T_METHOD 
 						: $this->tokens[$i][0];
 					if($type == T_METHOD) {
-						$owner = $in_name;
+						$owner = $info['in_name'];
 						$this->add_data($owner, $next, T_METHOD);
-					}
-					// Recurse
-					$i = $this->measure($i+1, $next, $type, $depth, $owner);
+					} else $owner = $info['owner'];
+					// Recurs
+					$inn = array(
+						'in_type' => $type,
+						'in_name' => $next,
+						'depth' => $info['depth'],
+						'owner' => $owner,
+						'abstract' => ($info['in_type'] == T_INTERFACE) 
+							? true : $abstract,
+					);
+					$i = $this->measure($i+1, $inn);
 					break;
 				case T_VARIABLE:
 					/* $this never found anywhere but methods */
 					if($this->tokens[$i][1] == '$this') {
 						$j = $this->find($i, T_STRING, 3);
 						if($j !== false) {
-							$this->add_data($owner, $this->tokens[$j][1], T_VARIABLE);
+							$this->add_data($info['owner'], $this->tokens[$j][1], T_VARIABLE);
 							$i = $j;
 						}
 					} else {
@@ -552,6 +587,7 @@ class PHPLinter {
 				case T_EXTENDS:
 					$next = $this->tokens[$this->find($i, T_STRING)][1];
 					$this->called[] = $next;
+					break;
 				default:
 					$element['TOKENS'][] = $i;
 					break;
@@ -562,23 +598,16 @@ class PHPLinter {
 			? --$i : $i;
 		// Abstracts and interfaces
 		if($element['EMPTY'] && !$body) {
-			 $element['EMPTY'] = false;
-			 $element['END_LINE'] = $element['START_LINE'];
-			 $ret = $this->find($element['START'], T_NEWLINE);
-			 if($ret === false) {
-			 	$ret = $this->find($element['START'], T_CURLY_CLOSE);
-			 	if($ret === false)
-			 		// giveup FIXME we need a meaningfull way to handle these cases
-			 		$ret = --$i;
-			 }
-		} else {
-			$element['END_LINE'] = $this->tokens[$i][2];
-			$ret = --$i;
+			$element['EMPTY'] = false;
 		}
+		$element['END_LINE'] = $this->tokens[$i][2];
+		$ret = --$i;
 		$this->elements[] = $element;
-		$this->debug("Exiting element `$in_name` of type ".
-				Tokenizer::token_name($in_type)
-				. " at {$element['END_LINE']}", $depth);
+		$this->debug(sprintf('Exiting element `%s` of type %s at %d'
+				,$info['in_name']
+				,Tokenizer::token_name($info['in_type'])
+				,$element['END_LINE']
+				), $info['depth']);
 		return $ret;
 	}
 	/**

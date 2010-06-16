@@ -226,7 +226,7 @@ class PHPLinter {
 					$this->report($element, 'WAR_OLD_STYLE_VARIABLE');
 					break;
 				case T_VARIABLE:
-					$locals[] = $this->tokens[$et[$i]][1];
+					$locals[] = substr($this->tokens[$et[$i]][1], 1);
 					break;
 				default:
 					$this->common_tokens($element, $et[$i]);
@@ -239,21 +239,21 @@ class PHPLinter {
 			$this->report($element, 'REF_CLASS_LENGTH', $len);	
 		
 		$name = $element['NAME'];
-
-		if(!empty($this->data[$name]['THIS']) &&
-			is_array($this->data[$name]['METHODS'])) {
-			$vars = array_diff($this->data[$name]['THIS'], $this->data[$name]['METHODS']);
-			foreach($vars as &$_) $_ = '$'.$_; unset($_);
-		} else $vars = array();
+		
+		if(!empty($this->data[$name]['THIS'])) {
+			if(is_array($this->data[$name]['METHODS'])) {
+				$this->data[$name]['METHODS'] = array_diff($this->data[$name]['THIS'], 
+														   $this->data[$name]['METHODS']);
+			}
+			$vars = array_diff($locals, $this->data[$name]['THIS']);
+		}
 		
 		if(!empty($this->data[$name]['METHODS']) && 
 			in_array($name, $this->data[$name]['METHODS']))
-			$this->report($element, 'WAR_OLD_STYLE_CONSTRUCT');	
+			$this->report($element, 'WAR_OLD_STYLE_CONSTRUCT');
 			
-		foreach($locals as $_) {
-			if(!in_array($_, $vars)) {
-				$this->report($element, 'WAR_UNUSED_VAR', $_);	
-			}
+		foreach($vars as $_) {
+			$this->report($element, 'WAR_UNUSED_VAR', $_);	
 		}
 	}
 	/**

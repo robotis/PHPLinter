@@ -192,7 +192,11 @@ return array(
 	'REF_HTML_AFTER_CLOSE' => array(
 		'message' => 'HTML output after final close tag',
 		'flag' => 'R9',
-	),	
+	),
+	'REF_UNN_INHERIT' => array(
+		'message' => 'Unnecessary inheritance',
+		'flag' => 'R10',
+	),		
 	/*
 	 *	Errors 
 	 */

@@ -705,7 +705,9 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	protected function report($element, $what, $extra=null) {
-		$report = $this->conf[$what];		
+		$report = $this->conf[$what];
+		if(isset($report['used']) && $report['used'] === false)
+			return;		
 		if(!empty($report) && $this->report_on($report['flag'])) {
 			$where = isset($element['PARENT']) 
 				? $element['PARENT'] : 'COMMENT';

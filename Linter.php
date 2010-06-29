@@ -1,7 +1,7 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-* @desc			OdinLinter
+* @desc			PHPLinter
 ----------------------------------------------------------------------+
 * @file 		Linter.php
 * @author 		Jóhann T. Maríusson <jtm@hi.is>
@@ -163,7 +163,7 @@ class PHPLinter {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Parse element.
-	* @param	$element	Array
+	* @param	Array
 	----------------------------------------------------------------------+
 	*/
 	protected function parse($element) {
@@ -659,6 +659,10 @@ class PHPLinter {
 			}
 			if(preg_match('/(HACK)/i', $this->tokens[$i][1], $m)) {
 				$this->report($element, 'WAR_HACK_MARKED');
+			}
+			if(preg_match($this->conf['CON_WS_COMMENTED_CODE']['compare'], 
+			              $this->tokens[$i][1], $m)) {
+				$this->report($element, 'CON_WS_COMMENTED_CODE');
 			}
 			if(!in_array($this->tokens[$i][0], array(
 				T_DOC_COMMENT, T_NEWLINE, T_WHITESPACE

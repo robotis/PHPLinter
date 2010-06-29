@@ -66,6 +66,11 @@ return array(
 		'message' => 'No declared visibility',
 		'flag' => 'C6',
 	),
+	'CON_WS_COMMENTED_CODE' => array(
+		'message' => 'Possible code commented out',
+		'flag' => 'C7',
+		'compare' => '/.*\$.*;/',
+	),	
 	/*
 	 *	Warnings 
 	 */
@@ -133,10 +138,6 @@ return array(
 		'message' => 'Whitespace after final close tag',
 		'flag' => 'W16',
 	),
-	'WAR_WS_COMMENTED_CODE' => array(
-		'message' => 'Code commented out',
-		'flag' => 'W17',
-	),	
 	/*
 	 * Depricated warnings
 	 */

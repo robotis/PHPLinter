@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Path functions.
 *  @file 			Path.php
-*  @author 			J骽ann T. Mar韚sson <jtm@hi.is>
+*  @author 			J贸hann T. Mar铆usson <jtm@hi.is>
 *  @since 		    May 17, 2010
 *  @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class Path {
 	----------------------------------------------------------------------+
 	* @desc 	Find all files under $directory that match $match and not
 	* 			$ignore, and call $func with the filename as arg.
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$directory	String	root_path
 	* @param	$func		String	user function
 	* @param	$match		String	REGEX
@@ -44,7 +44,7 @@ class Path {
 	----------------------------------------------------------------------+
 	* @desc 	Find all files under $directory that match $match and not
 	* 			$ignore.
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$directory	String
 	* @param	$match		String	REGEX
 	* @param	$ignore		String	REGEX
@@ -67,7 +67,7 @@ class Path {
 	----------------------------------------------------------------------+
 	* @desc 	Delete directory with all contents, OR all files that match
 	* 			$root
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$root	String
 	----------------------------------------------------------------------+
 	*/
@@ -91,7 +91,7 @@ class Path {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Write to file.
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$file		String
 	* @param	$content	String
 	* @param	$mode		String	[r,r+,w,w+,a,a+,x,x+][bt]

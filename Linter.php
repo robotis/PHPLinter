@@ -4,7 +4,7 @@
 * @desc			PHPLinter
 ----------------------------------------------------------------------+
 * @file 		Linter.php
-* @author 		Jóhann T. Maríusson <jtm@hi.is>
+* @author 		JÃ³hann T. MarÃ­usson <jtm@hi.is>
 * @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -123,7 +123,9 @@ class PHPLinter {
 						&& !in_array($this->elements[$i+1]['TYPE'], 
 									array(T_DOC_COMMENT)))
 						$this->report($this->elements[$i], $r);
-				} else $this->report($this->elements[$i], $r);
+				} else {
+					$this->report($this->elements[$i], $r);
+				}
 			}
 			$this->parse($this->elements[$i]);
 		}
@@ -330,7 +332,7 @@ class PHPLinter {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Parse file
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
+	* @author 	JÃ³hann T. MarÃ­usson <jtm@hi.is>
 	* @param	$element	Array
 	----------------------------------------------------------------------+
 	*/
@@ -613,7 +615,7 @@ class PHPLinter {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Output debug info
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
+	* @author 	JÃ³hann T. MarÃ­usson <jtm@hi.is>
 	* @param	$out	String
 	* @param	$depth	int
 	----------------------------------------------------------------------+

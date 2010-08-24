@@ -4,7 +4,7 @@
 *  @desc			PHPLinter unittest
 *  @copyright 		Copyright 2010
 *  @file 			LinterTest.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			JÃ³hann T. MarÃ­usson <jtm@hi.is>
 *  @since 		    Jun 11, 2010
 *  @package 		PHPLinter
 ----------------------------------------------------------------------+

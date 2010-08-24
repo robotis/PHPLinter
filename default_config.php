@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Default config array
 *  @file 			default_config.php
-*  @author 			J�hann T. Mar�usson <jtm@hi.is>
+*  @author 			JÃ³hann T. MarÃ­usson <jtm@hi.is>
 *  @since 		    Jun 14, 2010
 *  @package 		phplinter
 *  @copyright     
@@ -201,7 +201,11 @@ return array(
 	'REF_UNN_INHERIT' => array(
 		'message' => 'Unnecessary inheritance',
 		'flag' => 'R10',
-	),		
+	),	
+	'REF_NESTED_SWITCH' => array(
+		'message' => 'Nested switch',
+		'flag' => 'R11',
+	),	
 	/*
 	 *	Errors 
 	 */

@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Report generator
 *  @file 			Report.php
-*  @author 			J骽ann T. Mar韚sson <jtm@hi.is>
+*  @author 			J贸hann T. Mar铆usson <jtm@hi.is>
 *  @package 		phplinter
 *  @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
@@ -41,7 +41,7 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Derive final score for one file
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$penalty	Float
 	----------------------------------------------------------------------+
 	*/
@@ -54,7 +54,7 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Derive final score for one file
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$penalty	Float
 	----------------------------------------------------------------------+
 	*/
@@ -66,7 +66,7 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	CLI report
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$report		Array
 	----------------------------------------------------------------------+
 	*/
@@ -79,7 +79,7 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	HTML Report
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$report		Array
 	* @param	$penaltys	Array
 	----------------------------------------------------------------------+
@@ -98,6 +98,7 @@ class Report {
 			die("Unable to create `$this->output_dir`...\n");
 		}
 		$this->output_dir = realpath($this->output_dir);
+
 		foreach($report as $file => $rep) {
 //			echo "Creating report for file `$file`\n";
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
@@ -143,14 +144,16 @@ class Report {
 			Path::write_file($ofile, $this->html($out, count($pp)));
 			$url['file'] = $file;
 			$url['url'] = strtr($rfile, './', '__').'.html';
+			$url['sort'] = strtolower($url['url']);
 			$this->parts($pp, $url, $urls);
 		}
+
 		$this->output_indexes($urls, $penaltys);
 	}
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create index files for report
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$urls		Array
 	* @param	$penaltys	Array
 	* @param	$path		String
@@ -160,8 +163,10 @@ class Report {
 	*/
 	protected function output_indexes($urls, $penaltys, $path='', $depth=0) {
 		$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
+		$out .= '<tr><td colspan=2 align="center">'.date("d / M / Y").'</td></tr>';
 		$content = '';
 		$total = 0; $num = 0;
+
 		foreach($urls as $k => $_) {
 			$content .= '<tr>';
 			if(isset($_['file'])) {
@@ -172,7 +177,9 @@ class Report {
 				$content .= '<td class="'.$class.'">'.sprintf('%.2f', $score).'</td>';
 				$limit = $score == 10 ? 'perfect' : 'limit';
 				$content .= '<td class="'.$limit.'">'.sprintf('%.2f', SCORE_FULL).'</td>';
-				$content .= '<td><a href="'.$_['url'].'">'.trim($_['file'], './').'</a></td>';
+				$content .= '<td><a href="'.$_['url'].'">'.substr(realpath($_['file']), 
+																  strlen($this->root))
+							. '</a></td>';
 			} else {
 				list($ototal, $onum) = $this->output_indexes($urls[$k], $penaltys, 
 															 $path . $k.'/', $depth+1);
@@ -216,7 +223,7 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	CSS Class for score
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$score	float
 	* @return	String
 	----------------------------------------------------------------------+
@@ -237,7 +244,7 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Fills in the correct directorys
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$parts	Array
 	* @param	$url	Array
 	* @param	$urls	Reference (Array)
@@ -246,16 +253,21 @@ class Report {
 	protected function parts($parts, $url, &$urls) {
 		if(empty($parts)) return;
 		$part = array_shift($parts);
-		if(!isset($urls[$part]))
+		
+		if(!isset($urls[$part])) {
 			$urls[$part] = array();
-		if(empty($parts))
+		}
+		
+		if(empty($parts)) {
 			$urls[$part][] = $url;
-		else $this->parts($parts, $url, $urls[$part]);
+			$arr = Set::column($urls[$part], 'sort');
+			@array_multisort($arr, SORT_ASC, $urls[$part]);
+		} else $this->parts($parts, $url, $urls[$part]);
 	}
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create HTML report
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$content	HTML
 	* @param	$depth		int
 	* @return	HTML

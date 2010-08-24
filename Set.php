@@ -4,7 +4,7 @@
 *  @desc			Set. Array functions
 ----------------------------------------------------------------------+
 *  @file 			Set.php
-*  @author 			J骽ann T. Mar韚sson <jtm@hi.is>
+*  @author 			J贸hann T. Mar铆usson <jtm@hi.is>
 *  @package 		Set
 *  @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Is neddle in array column
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array		Array
 	* @param	$needle		Mixed
 	* @param	$key		Mixed
@@ -40,7 +40,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	True if array is associative.
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array		Array
 	* @return	Bool
 	----------------------------------------------------------------------+
@@ -52,7 +52,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Extract Key => value array from $array
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array		Array
 	* @param	$key		String
 	* @param	$value		String
@@ -70,7 +70,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Key indexed array
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array		Array
 	* @param	$key		String
 	* @return 	Array
@@ -87,7 +87,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Validate that all $keys exist in $array
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array	Array
 	* @param	$keys	Mixed
 	* @return 	Bool
@@ -108,7 +108,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Extract column from Array
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array	Array
 	* @param	$key	Mixed
 	* @return 	Array
@@ -126,7 +126,7 @@ class Set {
 	----------------------------------------------------------------------+
 	* @desc		Merge many into one. Takes any number of arguments, of any 
 	* 			type, and merges them into one array.
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	Mixed
 	* @return 	Array
 	----------------------------------------------------------------------+
@@ -143,7 +143,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc		Find the FIRST key(index) of $value in $array
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array	Array
 	* @param	$value	Mixed
 	* @return 	Mixed
@@ -159,7 +159,7 @@ class Set {
 	/**
 	----------------------------------------------------------------------+
 	* @desc		Clean all "empty" values from array
-	* @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+	* @author 	J贸hann T. Mar铆usson <jtm@hi.is>
 	* @param	$array	Array
 	* @return 	Array
 	----------------------------------------------------------------------+
@@ -176,7 +176,7 @@ class Set {
     ----------------------------------------------------------------------+
     * @desc 	Compute the numeric difference between the same column in 
     * 			two arrays.
-    * @author 	J骽ann T. Mar韚sson <jtm@hi.is>
+    * @author 	J贸hann T. Mar铆usson <jtm@hi.is>
     * @param	$array		Array
     * @param	$array1		Array
     * @param	$on			Mixed
@@ -224,7 +224,7 @@ class Set {
      * @param   $array1 Array
      *
      * @return  $array Array
-     * @author Helgi M鰈ler
+     * @author Helgi M枚ller
      **/
     public static function softMerge($array0, $array1) {
         if (is_null($array1)) return $array0;

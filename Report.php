@@ -278,14 +278,16 @@ class Report {
 			else $dirs[$k] = $_;
 		}
 		if(!empty($dirs)) {
-			foreach(array_keys($dirs) as $_) {
-				$arr[] = strtolower($_);
+			if(!function_exists("isort")) {
+				function isort($a,$b) {
+					return strtolower($a)>strtolower($b);
+				}
 			}
-			array_multisort($dirs, SORT_DESC, $arr);
+			uksort($dirs, "isort");
 		}
 		if(!empty($files)) {
 			$arr = Set::column($files, 'sort');
-			array_multisort($files, SORT_DESC, $arr);
+			array_multisort($files, SORT_ASC, $arr);
 		}
 		$urls = array_merge($dirs, $files);
 		foreach($urls as $k => $_) {

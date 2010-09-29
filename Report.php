@@ -264,10 +264,9 @@ class Report {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
-	* @param	FIXME
-	* @return	FIXME
+	* @desc 	Sort the result array
+	* @param	Array
+	* @return	Array
 	----------------------------------------------------------------------+
 	*/
 	protected function sort($urls) {
@@ -278,11 +277,15 @@ class Report {
 				$files[] = $_;
 			else $dirs[$k] = $_;
 		}
-		if(!empty($dirs))
-			ksort($dirs, SORT_STRING);
+		if(!empty($dirs)) {
+			foreach(array_keys($dirs) as $_) {
+				$arr[] = strtolower($_);
+			}
+			array_multisort($dirs, SORT_DESC, $arr);
+		}
 		if(!empty($files)) {
 			$arr = Set::column($files, 'sort');
-			array_multisort($files, SORT_DESC, SORT_STRING, $arr);
+			array_multisort($files, SORT_DESC, $arr);
 		}
 		$urls = array_merge($dirs, $files);
 		foreach($urls as $k => $_) {

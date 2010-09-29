@@ -146,6 +146,7 @@ class Report {
 			$url['sort'] = strtolower($url['url']);
 			$this->parts($pp, $url, $urls);
 		}
+		$urls = $this->sort($urls);
 		$this->output_indexes($urls, $penaltys);
 	}
 	/**
@@ -180,7 +181,6 @@ class Report {
 																  strlen($this->root . $path))
 							. '</a></td>';
 			} else {
-				ksort($urls[$k]);
 				list($ototal, $onum) = $this->output_indexes($urls[$k], $penaltys, 
 															 $path . $k.'/', $depth+1);
 				$avarage = ($ototal / $onum);
@@ -260,9 +260,37 @@ class Report {
 		
 		if(empty($parts)) {
 			$urls[$part][] = $url;
-			$arr = Set::column($urls[$part], 'sort');
-			@array_multisort($arr, SORT_ASC, $urls[$part]);
 		} else $this->parts($parts, $url, $urls[$part]);
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	FIXME
+	* @author 	Jóhann T. Maríusson <jtm@hi.is>
+	* @param	FIXME
+	* @return	FIXME
+	----------------------------------------------------------------------+
+	*/
+	protected function sort($urls) {
+		$files = array();
+		$dirs = array();
+		foreach($urls as $k => $_) {
+			if(isset($_['sort']))
+				$files[] = $_;
+			else $dirs[$k] = $_;
+		}
+		if(!empty($dirs))
+			ksort($dirs, SORT_STRING);
+		if(!empty($files)) {
+			$arr = Set::column($files, 'sort');
+			array_multisort($files, SORT_DESC, SORT_STRING, $arr);
+		}
+		$urls = array_merge($dirs, $files);
+		foreach($urls as $k => $_) {
+			if(!is_numeric($k)) {
+				$urls[$k] = $this->sort($urls[$k]);
+			}
+		}
+		return $urls;
 	}
 	/**
 	----------------------------------------------------------------------+

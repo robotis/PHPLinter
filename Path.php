@@ -83,9 +83,9 @@ class Path {
 	            unlink( $file );
 	        }
 	    }
-	    if(is_dir($root)) {
-	    	rmdir( $root ); 
-	    }
+//	    if(is_dir($root)) {
+//	    	rmdir( $root ); 
+//	    }
 	    return true;
 	}
 	/**

@@ -100,7 +100,6 @@ class Report {
 		$this->output_dir = realpath($this->output_dir);
 
 		foreach($report as $file => $rep) {
-//			echo "Creating report for file `$file`\n";
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 			$content = '';
 			
@@ -163,7 +162,8 @@ class Report {
 	*/
 	protected function output_indexes($urls, $penaltys, $path='', $depth=0) {
 		$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
-		$out .= '<tr><td colspan=2 align="center">'.date("d / M / Y").'</td></tr>';
+		$out .= '<tr><td align="center">'.date("d / M / Y").'</td>';
+		$out .= '<td colspan="2" align="center">'.$this->root.'</td></tr>';
 		$content = '';
 		$total = 0; $num = 0;
 

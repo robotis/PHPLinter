@@ -146,7 +146,6 @@ class Report {
 			$url['sort'] = strtolower($url['url']);
 			$this->parts($pp, $url, $urls);
 		}
-
 		$this->output_indexes($urls, $penaltys);
 	}
 	/**
@@ -178,9 +177,10 @@ class Report {
 				$limit = $score == 10 ? 'perfect' : 'limit';
 				$content .= '<td class="'.$limit.'">'.sprintf('%.2f', SCORE_FULL).'</td>';
 				$content .= '<td><a href="'.$_['url'].'">'.substr(realpath($_['file']), 
-																  strlen($this->root))
+																  strlen($this->root . $path))
 							. '</a></td>';
 			} else {
+				ksort($urls[$k]);
 				list($ototal, $onum) = $this->output_indexes($urls[$k], $penaltys, 
 															 $path . $k.'/', $depth+1);
 				$avarage = ($ototal / $onum);

@@ -4,7 +4,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Lint for PHP
 *  @file 			phplinter.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			JÃ³hann T. MarÃ­usson <jtm@hi.is>
 *  @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ function help() {
 	echo "\t-v: Verbose mode\n";
 	echo "\t-V: Debug mode. Again for extra debug info.\n";
 	echo "\t-e: Add extensions to valid list delimited by '|' (default 'php')\n";
-	echo "\t-o: Output directory\n";
+	echo "\t-o: Output directory (with -H)\n";
 	echo "\t-H: HTML report.\n";
 	echo "\t-i: ignore PATTERN. (Ignore files in directory mode)\n";
 	echo "<jtm@robot.is>\n";

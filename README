@@ -3,6 +3,22 @@ A simple fast lint and score for PHP files.
 
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 
+	-I: Dont report information.
+	-C: Dont report conventions.
+	-W: Dont report warnings.
+	-R: Dont report refactor warnings.
+	-E: Dont report errors.
+	-D: Dont report deprecated warnings.
+	-F: Try to locate unused functions/methods (Experimental).
+	-t: Number of invocations threshold (default 0).
+	-S: Score only.
+	-v: Verbose mode
+	-V: Debug mode. Again for extra debug info.
+	-e: Add extensions to valid list delimited by '|' (default 'php')
+	-o: Output directory (with -H)
+	-H: HTML report.
+	-i: ignore PATTERN. (Ignore files in directory mode)
+
 <jtm@hi.is>
 
 Ruleset (some rules are not active)

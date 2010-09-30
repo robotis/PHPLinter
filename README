@@ -26,7 +26,8 @@ Ruleset (some rules are not active)
     * C3: Function name does not match. Default( /^[a-z][\w_]{2,}$/ )
     * C4: Method name does not match. Default( /^[a-z][\w_]{2,}$/ )
     * C5: Interface name does not match. Default( /^[A-Z][\w_]{2,}$/ )
-    * C1: Visibility missing. (public/protected/private) 
+    * C6: Visibility missing. (public/protected/private) 
+    * C7: Possible code commented out
 
 (D)epricated
 

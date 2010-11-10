@@ -869,6 +869,11 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	private function report_on($flag) {
+		if($this->options & OPT_ONLY_SECURITY) {
+			if($flag[0] == 'S' || in_array($flag, array('I2','I3')))
+				return true;
+			return false;
+		}
 		switch($flag[0]) {
 			case 'C':
 				return (!($this->options & OPT_NO_CONVENTION));
@@ -882,7 +887,7 @@ class PHPLinter {
 				return (!($this->options & OPT_NO_INFORMATION));
 			case 'D':
 				return (!($this->options & OPT_NO_DEPRICATED));
-			case 'X':
+			case 'S':
 				return (!($this->options & OPT_NO_SECURITY));
 		}
 	}

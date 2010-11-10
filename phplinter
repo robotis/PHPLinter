@@ -41,6 +41,7 @@ function help() {
 	echo "\t-E: Dont report errors.\n";
 	echo "\t-D: Dont report deprecated warnings.\n";
 	echo "\t-X: Dont report security warnings.\n";
+	echo "\t-O: Security report only.\n";
 	echo "\t-F: Try to locate unused functions/methods (Experimental).\n";
 	echo "\t-t: Number of invocations threshold (default 0).\n";
 	echo "\t-S: Score only.\n";
@@ -80,6 +81,12 @@ for($i = 1;$i < $argc; $i++) {
 					break;
 				case 'E':
 					$OPTIONS |= OPT_NO_ERROR;
+					break;
+				case 'X':
+					$OPTIONS |= OPT_NO_SECURITY;
+					break;
+				case 'O':
+					$OPTIONS |= OPT_ONLY_SECURITY;
 					break;
 				case 'v':
 					$OPTIONS |= OPT_VERBOSE;

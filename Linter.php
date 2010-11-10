@@ -166,7 +166,7 @@ class PHPLinter {
 			case T_INCLUDE:
 			case T_INCLUDE_ONCE:
 				$n = $pos;
-				while($this->tokens[++$n][0] != T_NEWLINE) {
+				while(isset($this->tokens[++$n]) && $this->tokens[$n][0] != T_NEWLINE) {
 					if(in_array($this->tokens[$n][1], array('$_REQUEST','$_POST','$_GET'))) {
 						$this->report($element, 'SEC_ERROR_INCLUDE', $this->tokens[$pos][1]);
 					}

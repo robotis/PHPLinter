@@ -29,12 +29,14 @@ Ruleset (some rules are not active)
     * D: Depricated
     * W: Warnings
     * R: Refactor
+    * S: Security
     * E: Errors 
 
 (I)nformation
 
     * I1: FIXME/TODO
-    * I1: Eval used
+    * I2: Possible unsecure function
+    * I3: Possible information disclosure
 
 (C)onventions
 
@@ -90,3 +92,9 @@ Ruleset (some rules are not active)
     * E5: Function not documented
     * E6: Interface not documented
     * E7: Class variable not documented 
+    
+(S)ecurity
+
+	* S1: GET/POST/REQUEST used directly in unsecure function
+	* S2: Unsecure use of include/require
+	* S3: Unsecure callback in function call

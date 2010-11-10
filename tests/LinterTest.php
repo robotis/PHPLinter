@@ -123,4 +123,18 @@ class LinterTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals($report[2]['flag'], 'R8');
 		$this->assertEquals($report[3]['flag'], 'R9');
 	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Test09.php. Security
+	----------------------------------------------------------------------+
+	*/
+	public function test_security() {
+		$ll = new PHPLinter(dirname(__FILE__) . '/files/test09.php');
+		$report = $ll->lint();
+		$this->assertEquals(4, count($report));
+		$this->assertEquals($report[0]['flag'], 'R8');
+		$this->assertEquals($report[1]['flag'], 'R8');
+		$this->assertEquals($report[2]['flag'], 'R8');
+		$this->assertEquals($report[3]['flag'], 'R9');
+	}
 }

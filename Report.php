@@ -279,6 +279,14 @@ class Report {
 		}
 		if(!empty($dirs)) {
 			if(!function_exists("isort")) {
+				/**
+				----------------------------------------------------------------------+
+				* @desc 	Sort function
+				* @param	string
+				* @param	string
+				* @return	bool
+				----------------------------------------------------------------------+
+				*/
 				function isort($a,$b) {
 					return strtolower($a)>strtolower($b);
 				}

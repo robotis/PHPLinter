@@ -60,6 +60,14 @@ class PHPLinter {
 		$this->elements = array();
 		$this->called = array();
 		$this->names = array();
+		
+		if($this->report_on('S')) {
+			$this->sec_1 = require('sec/command_exection.php');
+			$this->sec_2 = require('sec/filesystem.php');
+			$this->sec_3 = require('sec/low_risk.php');
+			$this->sec_4 = require('sec/information_disclosure.php');
+			$this->sec_5 = require('sec/accept_callbacks.php');
+		}
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -132,7 +140,7 @@ class PHPLinter {
 		$this->debug("END ELEMENTS FOUND...", 0, OPT_DEBUG_EXTRA);
 		$arr = Set::column($this->report, 'line');
 		array_multisort($arr, SORT_ASC, $this->report);
-		
+
 		return $this->report;
 	}
 	/**
@@ -153,6 +161,17 @@ class PHPLinter {
 			case T_STRING:
 				$this->parse_string($pos, $element['NAME']);
 				break;
+			case T_REQUIRE:
+			case T_REQUIRE_ONCE:
+			case T_INCLUDE:
+			case T_INCLUDE_ONCE:
+				$n = $pos;
+				while($this->tokens[++$n][0] != T_NEWLINE) {
+					if(in_array($this->tokens[$n][1], array('$_REQUEST','$_POST','$_GET'))) {
+						$this->report($element, 'SEC_ERROR_INCLUDE', $this->tokens[$pos][1]);
+					}
+				}
+				break;	
 			default:
 				$t = $this->tokens[$pos][0];
 				if(in_array($t, array_keys($this->conf['DPR_DEPRICATED_TOKEN']['compare']))) {
@@ -300,6 +319,16 @@ class PHPLinter {
 					if(isset($abstract))
 						break 2;
 					break;
+				case T_BACKTICK:
+					$pos = $et[$i];
+					while(true) {
+						$t = $this->tokens[$et[++$i]];
+						if($t[0] == T_BACKTICK) break;
+						if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
+							$this->report($element, 'SEC_ERROR_REQUEST', $this->tokens[$pos][1]);
+						}
+					}
+					break;
 				default:
 					$this->common_tokens($element, $et[$i]);
 					break;
@@ -351,6 +380,16 @@ class PHPLinter {
 								$this->report($element, 'WAR_WS_AFTER_CLOSE');
 					} else {
 						$this->common_tokens($element, $et[$i]);
+					}
+					break;
+				case T_BACKTICK:
+					$pos = $et[$i];
+					while(true) {
+						$t = $this->tokens[$et[++$i]];
+						if($t[0] == T_BACKTICK) break;
+						if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
+							$this->report($element, 'SEC_ERROR_REQUEST', $this->tokens[$pos][1]);
+						}
 					}
 					break;
 				default:
@@ -470,11 +509,16 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	protected function parse_string($i, $parent) {
-		//echo "Found: " . $this->tokens[$i][1];
+//		echo "Found: " . $this->tokens[$i][1]. "\n";
 		$nt = $this->next($i);
 		if($nt == T_PARENTHESIS_OPEN || 
 			$nt == T_DOUBLE_COLON) {
 			$this->called[] = $this->tokens[$i][1];
+			$e = array(
+				'PARENT' => $parent,
+				'START_LINE' => $this->tokens[$i][2]
+			);
+			$this->security($i, $e);
 			//echo " Saved\n";
 		} //else echo " Ignored\n";
 		if(in_array($this->tokens[$i][1], 
@@ -628,6 +672,61 @@ class PHPLinter {
 	}
 	/**
 	----------------------------------------------------------------------+
+	* @desc 	Search for security infractions
+	* @param	FIXME
+	* @return	FIXME
+	----------------------------------------------------------------------+
+	*/
+	protected function security($token, $element) {
+		if($this->report_on('S')) {
+			foreach(array(
+					array('sec_1', 'SEC_WARNING', true),
+					array('sec_2', 'SEC_WARNING', true),
+					array('sec_3', 'SEC_WARNING', false),
+					array('sec_4', 'SEC_WARNING_DISCLOSURE', false)
+				) as $_) {
+				if(in_array($this->tokens[$token][1], $this->$_[0])) {
+					$this->report($element, $_[1], $this->tokens[$token][1]);
+					$i = $token;
+					if($_[2]) {
+						while($this->tokens[++$i][0] != T_PARENTHESIS_CLOSE) {
+							if(in_array($this->tokens[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+								$this->report($element, 'SEC_ERROR_REQUEST', $this->tokens[$token][1]);
+							}
+						}
+					}
+				}
+			}
+			/* Callbacks */
+			if(in_array($this->tokens[$token][1], array_keys($this->sec_5))) {
+				$this->report($element, 'SEC_WARNING', $this->tokens[$token][1]);
+				foreach($this->sec_5[$this->tokens[$token][1]] as $_) {
+					$pos = 0;
+					$i = $token;
+					while($this->tokens[++$i][0] != T_PARENTHESIS_CLOSE) {
+						if(in_array($this->tokens[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+							/* In callback position */
+							if($pos == $_) {
+								$this->report($element, 'SEC_ERROR_CALLBACK', $this->tokens[$token][1]);
+							}
+						}
+						$pos++;
+					}
+					/* Last position */
+					if(in_array($this->tokens[$i-1][1], array('$_REQUEST','$_POST','$_GET')) 
+						&& $_ == -1) {
+						$this->report($element, 'SEC_ERROR_CALLBACK', $this->tokens[$token][1]);
+					}
+				}
+			}
+			/* Special */
+			elseif($this->tokens[$token][1] == 'preg_replace') {
+				// check for '//e' flag
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
 	* @desc 	Is the token meaningfull, used to determine if an element
 	* 			is empty.
 	* @param	$token	int
@@ -760,7 +859,9 @@ class PHPLinter {
 			$this->report[] = $report;
 			
 			$flag = $report['flag'][0];
-			eval('$this->score -= '.$flag.'_PENALTY;');
+			if(isset($report['penalty']))
+				$this->score -= $report['penalty'];
+			else eval('$this->score -= '.$flag.'_PENALTY;');
 		}
 	}
 	/**
@@ -784,6 +885,8 @@ class PHPLinter {
 				return (!($this->options & OPT_NO_INFORMATION));
 			case 'D':
 				return (!($this->options & OPT_NO_DEPRICATED));
+			case 'S':
+				return (!($this->options & OPT_NO_SECURITY));
 		}
 	}
 	/**

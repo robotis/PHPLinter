@@ -35,6 +35,7 @@ define('OPT_HTML_REPORT',				0x00100);
 define('OPT_FIND_FUNC',					0x00200);
 define('OPT_NO_DEPRICATED',				0x00400);
 define('OPT_DEBUG_EXTRA',				0x00800);
+define('OPT_NO_SECURITY',				0x01000);
 
 // SCORE
 define('SCORE_FULL',					10.0);
@@ -44,3 +45,4 @@ define('W_PENALTY',						0.3);
 define('D_PENALTY',						0.3);
 define('R_PENALTY',						0.8);
 define('E_PENALTY',						1.0);
+define('S_PENALTY',						1.0);

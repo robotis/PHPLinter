@@ -40,6 +40,7 @@ define('T_NOT',						1014);
 define('T_METHOD', 					1015);
 define('T_SELF', 					1016);
 define('T_PARENT', 					1017);
+define('T_BACKTICK', 				1018);
 
 class Tokenizer {
 	/**
@@ -137,6 +138,7 @@ class Tokenizer {
 			case '?': return T_THEN;
 			case '=': return T_EQUALS;
 			case '!': return T_NOT;
+			case '`': return T_BACKTICK;
 			default:  return T_IGNORE;
 		}
 	} 

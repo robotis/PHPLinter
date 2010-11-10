@@ -40,6 +40,7 @@ function help() {
 	echo "\t-R: Dont report refactor warnings.\n";
 	echo "\t-E: Dont report errors.\n";
 	echo "\t-D: Dont report deprecated warnings.\n";
+	echo "\t-X: Dont report security warnings.\n";
 	echo "\t-F: Try to locate unused functions/methods (Experimental).\n";
 	echo "\t-t: Number of invocations threshold (default 0).\n";
 	echo "\t-S: Score only.\n";

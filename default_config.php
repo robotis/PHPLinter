@@ -30,9 +30,13 @@ return array(
 		'message_extra' => '%s',
 		'flag' => 'I1',
 	),
-	'INF_EVAL_USED' => array(
-		'message' => '`eval` used',
+	'INF_UNSECURE' => array(
+		'message_extra' => 'Possible unsecure function: `%s`',
 		'flag' => 'I2',
+	),
+	'INF_WARNING_DISCLOSURE' => array(
+		'message_extra' => 'Possible information disclosure in: `%s`',
+		'flag' => 'I3',
 	),
 	/*
 	 *	Conventions 
@@ -240,29 +244,19 @@ return array(
 	/*
 	 * Security 
 	 */
-	'SEC_WARNING' => array(
-		'message_extra' => 'Possible unsecure function: `%s`',
-		'flag' => 'S1',
-		'penalty' => 0.0,
-	),
-	'SEC_WARNING_DISCLOSURE' => array(
-		'message_extra' => 'Possible information disclosure in: `%s`',
-		'flag' => 'S1',
-		'penalty' => 0.0,
-	),
 	'SEC_ERROR_REQUEST' => array(
 		'message_extra' => 'GET/POST/REQUEST used directly in unsecure function: `%s`',
-		'flag' => 'S2',
+		'flag' => 'S1',
 		'penalty' => 10.0,
 	),
 	'SEC_ERROR_INCLUDE' => array(
 		'message_extra' => 'Unsecure use of: `%s`',
-		'flag' => 'S3',
+		'flag' => 'S2',
 		'penalty' => 10.0,
 	),
 	'SEC_ERROR_CALLBACK' => array(
 		'message_extra' => 'Unsecure callback in: `%s`',
-		'flag' => 'S4',
+		'flag' => 'S3',
 		'penalty' => 10.0,
 	),
 );

@@ -155,9 +155,6 @@ class PHPLinter {
 			case T_CLOSE_TAG:
 				$this->report($element, 'REF_HTML_MIXIN');
 				break;
-			case T_EVAL:
-				$this->report($element, 'INF_EVAL_USED');
-				break;
 			case T_STRING:
 				$this->parse_string($pos, $element['NAME']);
 				break;
@@ -680,10 +677,10 @@ class PHPLinter {
 	protected function security($token, $element) {
 		if($this->report_on('S')) {
 			foreach(array(
-					array('sec_1', 'SEC_WARNING', true),
-					array('sec_2', 'SEC_WARNING', true),
-					array('sec_3', 'SEC_WARNING', false),
-					array('sec_4', 'SEC_WARNING_DISCLOSURE', false)
+					array('sec_1', 'INF_UNSECURE', true),
+					array('sec_2', 'INF_UNSECURE', true),
+					array('sec_3', 'INF_UNSECURE', false),
+					array('sec_4', 'INF_WARNING_DISCLOSURE', false)
 				) as $_) {
 				if(in_array($this->tokens[$token][1], $this->$_[0])) {
 					$this->report($element, $_[1], $this->tokens[$token][1]);
@@ -699,7 +696,7 @@ class PHPLinter {
 			}
 			/* Callbacks */
 			if(in_array($this->tokens[$token][1], array_keys($this->sec_5))) {
-				$this->report($element, 'SEC_WARNING', $this->tokens[$token][1]);
+				$this->report($element, 'INF_UNSECURE', $this->tokens[$token][1]);
 				foreach($this->sec_5[$this->tokens[$token][1]] as $_) {
 					$pos = 0;
 					$i = $token;
@@ -885,7 +882,7 @@ class PHPLinter {
 				return (!($this->options & OPT_NO_INFORMATION));
 			case 'D':
 				return (!($this->options & OPT_NO_DEPRICATED));
-			case 'S':
+			case 'X':
 				return (!($this->options & OPT_NO_SECURITY));
 		}
 	}

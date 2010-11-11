@@ -96,8 +96,7 @@ class Report {
 		}
 		if($this->options & OPT_VERBOSE) 
 			echo "Creating `$this->output_dir`\n";
-		if(file_exists($this->output_dir) 
-			|| !mkdir($this->output_dir, 0775)) {
+		if(!mkdir($this->output_dir, 0775)) {
 			die("Unable to create `$this->output_dir`...\n");
 		}
 		$this->output_dir = realpath($this->output_dir);

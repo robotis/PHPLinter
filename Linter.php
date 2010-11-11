@@ -21,7 +21,6 @@
 *
 ----------------------------------------------------------------------+
 */
-require 'default_config.php';
 require 'Tokenizer.php';
 require 'Set.php';
 require_once 'constants.php';
@@ -51,7 +50,7 @@ class PHPLinter {
 		$this->options 	= $opt;
 		$this->score 	= 0;
 		
-		$this->conf = require 'default_config.php';
+		$this->conf = require 'rules.php';
 		if(is_array($conf)) {
 			foreach($conf as $k=>$_)
 			$this->conf[$k] = array_merge($this->conf[$k], $_);
@@ -884,7 +883,7 @@ class PHPLinter {
 			case 'E':
 				return (!($this->options & OPT_NO_ERROR));
 			case 'I':
-				return (!($this->options & OPT_NO_INFORMATION));
+				return ($this->options & OPT_INFORMATION);
 			case 'D':
 				return (!($this->options & OPT_NO_DEPRICATED));
 			case 'S':

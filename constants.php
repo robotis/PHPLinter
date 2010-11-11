@@ -30,7 +30,7 @@ define('OPT_NO_ERROR',					0x00008);
 define('OPT_VERBOSE',					0x00010);
 define('OPT_DEBUG',						0x00020);
 define('OPT_SCORE_ONLY',				0x00040);
-define('OPT_NO_INFORMATION',			0x00080);
+define('OPT_INFORMATION',				0x00080);
 define('OPT_HTML_REPORT',				0x00100);
 define('OPT_FIND_FUNC',					0x00200);
 define('OPT_NO_DEPRICATED',				0x00400);

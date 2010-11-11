@@ -37,6 +37,7 @@ define('OPT_NO_DEPRICATED',				0x00400);
 define('OPT_DEBUG_EXTRA',				0x00800);
 define('OPT_NO_SECURITY',				0x01000);
 define('OPT_ONLY_SECURITY',				0x02000);
+define('OPT_OVERWRITE_REPORT',			0x04000);
 
 // SCORE
 define('SCORE_FULL',					10.0);

@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Default config array
 *  @file 			default_config.php
-*  @author 			JÃ³hann T. MarÃ­usson <jtm@hi.is>
+*  @author 			Jóhann T. Marí­usson <jtm@robot.is>
 *  @since 		    Jun 14, 2010
 *  @package 		phplinter
 *  @copyright     

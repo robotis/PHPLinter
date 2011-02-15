@@ -51,6 +51,7 @@ class PHPLinter {
 		$this->score 	= 0;
 		
 		$this->conf = require 'rules.php';
+		$this->globals = require 'globals.php';
 		if(is_array($conf)) {
 			foreach($conf as $k=>$_)
 			$this->conf[$k] = array_merge($this->conf[$k], $_);
@@ -351,8 +352,21 @@ class PHPLinter {
 				$this->report($element, $k, $_);
 				
 		$this->process_args($locals, $args, $element, $abstract);
-		
+		$this->process_locals($locals, $_locals, $args, $element);
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Count and process locals at function scope
+	* @param	Array
+	* @param	Array
+	* @param	Array
+	* @param	Array
+	----------------------------------------------------------------------+
+	*/
+	protected function process_locals($locals, $_locals, $args, $element) {
 		foreach($locals as $ll) {
+			// Skip superglobals
+			if(in_array($ll, $this->globals)) continue;
 			$cnt = count(array_filter($_locals, create_function('$s', "return \$s == '$ll';")));
 			if($cnt == 1 && !in_array($ll, $args)) {
 				$this->report($element, 'WAR_UNUSED_VAR', $ll);

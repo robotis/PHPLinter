@@ -284,9 +284,10 @@ class PHPLinter {
 		$tcnt 		= count($element['TOKENS']);
 		$et 		= $element['TOKENS'];
 		$args		= false;
-		$locals 	= array();
+		$_locals 	= array();
 		$branches 	= 0;
 		$visibility = true;
+		$abstract   = false;
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($this->tokens[$et[$i]][0]) {
 				case T_PUBLIC:
@@ -309,7 +310,7 @@ class PHPLinter {
 					$branches++;
 					break;
 				case T_VARIABLE:
-					$locals[] = $this->tokens[$et[$i]][1];
+					$_locals[] = $this->tokens[$et[$i]][1];
 					break;
 				case T_SEMICOLON;
 					if(isset($abstract))
@@ -332,7 +333,7 @@ class PHPLinter {
 		}
 		if(empty($visibility) && $element['TYPE'] == T_METHOD)
 			$this->report($element, 'CON_NO_VISIBILITY');
-		$locals = array_unique($locals);
+		$locals = array_unique($_locals);
 		$compares = array(
 			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
@@ -348,11 +349,31 @@ class PHPLinter {
 		foreach($compares as $k => $_)
 			if($_ > $this->conf[$k]['compare'])
 				$this->report($element, $k, $_);
-
-		if(!empty($args) && !isset($abstract))
+				
+		$this->process_args($locals, $args, $element, $abstract);
+		
+		foreach($locals as $ll) {
+			$cnt = count(array_filter($_locals, create_function('$s', "return \$s == '$ll';")));
+			if($cnt == 1 && !in_array($ll, $args)) {
+				$this->report($element, 'WAR_UNUSED_VAR', $ll);
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Process argument list to function
+	* @param	Array
+	* @param	Array
+	* @param	bool
+	* @param	Array
+	----------------------------------------------------------------------+
+	*/
+	protected function process_args($locals, $args, $element, $abstract) {
+		if(!empty($args) && $abstract) {
 			foreach($args as $_)
 				if(!in_array($_, $locals))
 					$this->report($element, 'WAR_UNUSED_ARG', $_);	
+		}
 	}
 	/**
 	----------------------------------------------------------------------+

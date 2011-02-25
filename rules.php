@@ -1,7 +1,7 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Default config array
+*  @desc			Default config array.
 *  @file 			default_config.php
 *  @author 			Jóhann T. Marí­usson <jtm@robot.is>
 *  @since 		    Jun 14, 2010
@@ -37,6 +37,10 @@ return array(
 	'INF_WARNING_DISCLOSURE' => array(
 		'message_extra' => 'Possible information disclosure in: `%s`',
 		'flag' => 'I3',
+	),
+	'INF_COMPARE' => array(
+		'message_extra' => 'Loose comparison operator used',
+		'flag' => 'I4',
 	),
 	/*
 	 *	Conventions 
@@ -75,6 +79,10 @@ return array(
 		'flag' => 'C7',
 		'compare' => '/.*\$.*;/',
 	),	
+	'CON_COMPARE' => array(
+		'message_extra' => 'Loose comparison operator used',
+		'flag' => 'C8',
+	),
 	/*
 	 *	Warnings 
 	 */

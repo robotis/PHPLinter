@@ -169,6 +169,10 @@ class PHPLinter {
 					}
 				}
 				break;	
+			case T_IS_EQUAL:
+			case T_IS_NOT_EQUAL:
+				$this->report($element, 'INF_COMPARE');
+				break;
 			default:
 				$t = $this->tokens[$pos][0];
 				if(in_array($t, array_keys($this->conf['DPR_DEPRICATED_TOKEN']['compare']))) {

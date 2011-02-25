@@ -171,6 +171,7 @@ class PHPLinter {
 				break;	
 			case T_IS_EQUAL:
 			case T_IS_NOT_EQUAL:
+				$element['START_LINE'] = $this->tokens[$pos][2];
 				$this->report($element, 'INF_COMPARE');
 				break;
 			default:

@@ -38,6 +38,7 @@ Ruleset (some rules are not active)
     * I1: FIXME/TODO
     * I2: Possible unsecure function
     * I3: Possible information disclosure
+    * I4: Loose comparison operator used
 
 (C)onventions
 

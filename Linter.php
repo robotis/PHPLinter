@@ -41,7 +41,7 @@ class PHPLinter {
 	* @param	$conf	Array
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($file, $opt=0, $conf=null) {
+	public function __construct($file, $opt=0, $conf=null, $use_rules=null) {
 		$odin = new Tokenizer($file);
 		$this->file 	= $file;
 		$this->tokens 	= $odin->tokenize();
@@ -49,6 +49,9 @@ class PHPLinter {
 		$this->report 	= array();
 		$this->options 	= $opt;
 		$this->score 	= 0;
+		$this->use_rules = empty($use_rules)
+			? null
+			: explode('|', $use_rules);
 		
 		$this->conf = require 'rules.php';
 		$this->globals = require 'globals.php';
@@ -292,7 +295,7 @@ class PHPLinter {
 		$args		= false;
 		$_locals 	= array();
 		$branches 	= 0;
-		$visibility = true;
+		$visibility = false;
 		$abstract   = false;
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($this->tokens[$et[$i]][0]) {
@@ -878,6 +881,9 @@ class PHPLinter {
 	*/
 	protected function report($element, $what, $extra=null) {
 		$report = $this->conf[$what];
+		if(!empty($this->use_rules) && !in_array($report['flag'], $this->use_rules)) {
+			return;
+		}
 		if(isset($report['used']) && $report['used'] === false)
 			return;		
 		if(!empty($report) && $this->report_on($report['flag'])) {

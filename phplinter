@@ -45,6 +45,7 @@ function help() {
 	echo "\t-F: Try to locate unused functions/methods (Experimental).\n";
 	echo "\t-t: Number of invocations threshold (default 0).\n";
 	echo "\t-S: Score only.\n";
+	echo "\t-r: Use following rules (| delimited).\n";
 	echo "\t-v: Verbose mode\n";
 	echo "\t-V: Debug mode. Again for extra debug info.\n";
 	echo "\t-e: Add extensions to valid list delimited by '|' (default 'php')\n";
@@ -61,6 +62,7 @@ $threshold = 0;
 $output_dir = NULL;
 $extensions = 'php';
 $settings_file = null;
+$use_rules = null;
 for($i = 1;$i < $argc; $i++) {
 	if($argv[$i][0] == '-') {
 		for($j=1;$j<strlen($argv[$i]);$j++) {
@@ -109,6 +111,9 @@ for($i = 1;$i < $argc; $i++) {
 				case 'w':
 					$OPTIONS |= OPT_OVERWRITE_REPORT;
 					break;
+				case 'r':
+					$use_rules = $argv[++$i];
+					continue 3;
 				case 'i':
 					$ignore = "/{$argv[++$i]}/";
 					continue 3;
@@ -173,13 +178,13 @@ if(is_dir($file)) {
 			// Unused functions
 			if($OPTIONS & OPT_VERBOSE)
 				echo "Harvesting file: $_\n";
-			$linter = new PHPLinter($_, $OPTIONS, $conf);
+			$linter = new PHPLinter($_, $OPTIONS, $conf, $use_rules);
 			$linter->lint();
 			$names = $linter->harvest($names);
 		} else {
 			if($OPTIONS & OPT_VERBOSE)
 				echo "Linting file: $_\n";
-			$linter = new PHPLinter($_, $OPTIONS, $conf);
+			$linter = new PHPLinter($_, $OPTIONS, $conf, $use_rules);
 			$hrep = (preg_match('/^\.\/?/', $_)) 
 				? $_ : "./$_";
 			if($OPTIONS & OPT_HTML_REPORT)
@@ -203,7 +208,7 @@ if(is_dir($file)) {
 		}
 	}
 } else {
-	$linter = new PHPLinter($file, $OPTIONS, $conf);
+	$linter = new PHPLinter($file, $OPTIONS, $conf, $use_rules);
 	if($OPTIONS & OPT_FIND_FUNC) {
 		$linter->lint();
 		foreach($linter->harvest() as $name=>$cnt)

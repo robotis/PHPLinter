@@ -65,15 +65,53 @@ class Report {
 	}
 	/**
 	----------------------------------------------------------------------+
+	* @desc 	Color format for bash shell.
+	* 			colors = black/red/green/brown
+	* 					 blue/purple/cyan/white
+	* 			attrs = 1-8
+	* @param	String
+	* @param	String
+	* @param	Mixed		color OR array(attr, color)
+	* @param	Bool
+	* @param	Int
+	* @return 	String
+	----------------------------------------------------------------------+
+	*/
+	public function color($msg, $color="black", $nl=false, $width=70) {
+		$attr = 0;
+		if(is_array($color)) {
+			$attr = intval($color[0]);
+			$color = $color[1];
+		}
+		$tpl = "\033[%d;%dm%s\033[0m";
+		if($nl) $tpl .= "\n";
+		$codes = array(
+			'black' => 30, 'red' => 31, 'green' => 32,
+			'brown' => 33, 'blue' => 34, 'purple' => 35,
+			'cyan' => 36, 'white' => 37,
+		);
+		if(!isset($codes[$color])) $color = 'black';
+		return sprintf($tpl, $attr, $codes[$color], $msg);
+	} 
+	/**
+	----------------------------------------------------------------------+
 	* @desc 	CLI report
 	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$report		Array
 	----------------------------------------------------------------------+
 	*/
-	public function toCli($report) {
+	public function toCli($report, $format="| {F} | {M} | `{W}` Line: {L}\n") {
+		$fcolors = array(
+			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' =>array(1,'brown'),
+			'I' => 'green', 'R' => 'purple', 'S' => 'cyan'
+		);
 		foreach($report as $_) {
-			echo "| {$_['flag']} | {$_['message']}\t| ";
-			echo "`{$_['where']}` Line: {$_['line']}\n";
+			$out = str_replace('{F}', $this->color(str_pad($_['flag'], 3), 
+							   $fcolors[$_['flag'][0]]), $format);
+			$out = str_replace('{M}', str_pad($_['message'], 50), $out);
+			$out = str_replace('{W}', $_['where'], $out);
+			$out = str_replace('{L}', $_['line'], $out);
+			echo $out;
 		}
 	}
 	/**

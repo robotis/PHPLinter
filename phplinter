@@ -34,6 +34,7 @@ require 'Report.php';
 function help() {
 	echo "PHPLinter. Lint and score PHP files.\n";
 	echo "Usage phplinter -[ICWRESHvVi[PATTERN]] [file|directory]\n";
+	echo "\t-U: Use conf-file FILE.\n";
 	echo "\t-I: Report extra information (default off).\n";
 	echo "\t-C: Dont report conventions.\n";
 	echo "\t-W: Dont report warnings.\n";
@@ -123,7 +124,7 @@ for($i = 1;$i < $argc; $i++) {
 				case 'o':
 					$output_dir = $argv[++$i];
 					continue 3;
-				case 's':
+				case 'U':
 					$settings_file = $argv[++$i];
 					continue 3;
 				case 'e':
@@ -160,9 +161,14 @@ set_time_limit (600);
 $reporter = new Report($output_dir, $OPTIONS);
 $conf = null;
 if(!empty($settings_file)) {
-	if(!file_exists($settings_file))
-		die("Settings file not found `$settings_file`\n");
-	$conf = @include($settings_file);
+	require('Parseconf.php');
+	$pconf = new Parseconf($settings_file);
+	if($pconf->parse() === false) {
+		die($pconf->error());
+	}
+	$OPTIONS |= $pconf->options();
+	$conf = $pconf->conf();
+	$use_rules = $pconf->rules();
 }
 if(is_dir($file)) {
 	$OPTIONS |= OPT_SCORE_ONLY;

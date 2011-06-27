@@ -22,8 +22,6 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-H: HTML report.
 	-i: ignore PATTERN. (Ignore files in directory mode)
 
-<jtm@hi.is>
-
 Ruleset (some rules are not active)
 
     * I: Information

@@ -14,6 +14,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-F: Try to locate unused functions/methods (Experimental).
 	-t: Number of invocations threshold (default 0).
 	-S: Score only.
+	-r: Use following rules (| delimited).
 	-v: Verbose mode
 	-V: Debug mode. Again for extra debug info.
 	-e: Add extensions to valid list delimited by '|' (default 'php')

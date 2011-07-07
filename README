@@ -1,4 +1,5 @@
-PHPLinter. 
+PHPLinter. Static code analyser.
+
 A simple fast lint and score for PHP files.
 
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.

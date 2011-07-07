@@ -1,0 +1,46 @@
+# What rules to report/ignore. Rule flags in a comma separated list
+# See the README for list
+# example: W2,R1,C6
+#
+#REPORT_RULES=
+#IGNORE_RULES=
+
+#
+# Types to report/ignore. Rule flags in a comma separated list
+# Types: I,C,W,R,E,D,S
+#
+#REPORT_TYPES=
+#IGNORE_TYPES=
+
+#
+# Score
+#
+#BASE_SCORE=10
+#PENALTY_I=200
+#PENALTY_C=0.01
+#PENALTY_W=0.3
+#PENALTY_R=0.8
+#PENALTY_D=0.3
+#PENALTY_E=1
+#PENALTY_S=1
+
+#
+#
+# Format string for cli report
+#
+#REPORT_FORMAT=
+
+#
+# Use colors.
+#
+#USE_COLORS=TRUE
+
+#
+# HTML report options
+#
+#HTML_REPORT=
+#HTML_IGNORE_PATTERN=
+#HTML_OUTPUT_DIR=
+#HTML_OVERWRITE_DIR=
+#
+#

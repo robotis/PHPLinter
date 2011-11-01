@@ -7,15 +7,18 @@
 ----------------------------------------------------------------------+
 */
 class Test {
-	private $used;
-	private $unusedvar;
+	/* */
+	private 
+	$used_property;
+	private $unused_property;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	test method
 	----------------------------------------------------------------------+
 	*/
-	public function test_method($used, $unused) {
-		$$this->used = $used;
+	public function test_method($used_argument, $unused_argument) {
+		$this->used_property = $used_argument;
+		$unused_local = null;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -29,6 +32,6 @@ class Test {
 * @desc 	test function
 ----------------------------------------------------------------------+
 */
-function test_function($unused) {
+function test_function($unused_argument) {
 	;// empty
 }

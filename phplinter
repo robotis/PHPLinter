@@ -21,11 +21,10 @@
 *
 ----------------------------------------------------------------------+
 */
+namespace PHPLinter;
 define('DEBUG',			true);
-
-require 'Linter.php';
-require 'Path.php';
-require 'Report.php';
+require dirname(__FILE__) . '/Lib/autoloader.php';
+require dirname(__FILE__) . '/Lib/constants.php';
 /**
 ----------------------------------------------------------------------+
 * @desc 	Help function
@@ -66,7 +65,7 @@ $settings_file = null;
 $use_rules = null;
 for($i = 1;$i < $argc; $i++) {
 	if($argv[$i][0] == '-') {
-		for($j=1;$j<strlen($argv[$i]);$j++) {
+		for($j=1;$j<mb_strlen($argv[$i]);$j++) {
 			switch($argv[$i][$j]) {
 				case 'I':
 					$OPTIONS |= OPT_INFORMATION;
@@ -129,7 +128,7 @@ for($i = 1;$i < $argc; $i++) {
 					continue 3;
 				case 'e':
 					$ext = trim($argv[++$i]);
-					if(preg_match('/[a-z0-9\|]+/i', $ext))
+					if(preg_match('/[a-z0-9\|]+/iu', $ext))
 						$extensions .= '|'.$ext;
 					elseif(!empty($ext)) 
 						die("Extensions must include only letters and numbers\n");

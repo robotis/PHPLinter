@@ -42,6 +42,10 @@ return array(
 		'message_extra' => 'Loose comparison operator used',
 		'flag' => 'I4',
 	),
+	'INF_COMPARE' => array(
+		'message_extra' => 'Loose comparison operator used',
+		'flag' => 'I5',
+	),
 	/*
 	 *	Conventions 
 	 */
@@ -77,11 +81,15 @@ return array(
 	'CON_WS_COMMENTED_CODE' => array(
 		'message' => 'Possible code commented out',
 		'flag' => 'C7',
-		'compare' => '/.*\$.*;/',
+		'compare' => '/\$.*;/u',
 	),	
-	'CON_COMPARE' => array(
-		'message_extra' => 'Loose comparison operator used',
+	'CON_MISPLACED_PROPERTY' => array(
+		'message_extra' => 'Property after method declaration in class',
 		'flag' => 'C8',
+	),
+	'CON_EMPTY_COMMENT' => array(
+		'message' => 'Empty comment',
+		'flag' => 'C9',
 	),
 	/*
 	 *	Warnings 
@@ -102,53 +110,57 @@ return array(
 		'message_extra' => 'Unused variable `%s`',
 		'flag' => 'W4',
 	),
+	'WAR_UNUSED_PROPERTY' => array(
+		'message_extra' => 'Unused property `%s`',
+		'flag' => 'W5',
+	),
 	'WAR_UNUSED_METHOD' => array(
 		'message_extra' => 'Unused method `%s`',
-		'flag' => 'W5',
+		'flag' => 'W6',
 	),
 	'WAR_UNUSED_FUNCTION' => array(
 		'message_extra' => 'Unused function `%s`',
-		'flag' => 'W6',
+		'flag' => 'W7',
 	),
 	'WAR_UNUSED_CLASS' => array(
 		'message_extra' => 'Unused class `%s`',
-		'flag' => 'W7',
+		'flag' => 'W8',
 	),
 	'WAR_EVAL_USED' => array(
 		'message' => '`eval` used',
-		'flag' => 'W8',
+		'flag' => 'W9',
 	),
 	'WAR_PUBLIC_VAR' => array(
 		'message' => 'public variable',
-		'flag' => 'W9',
+		'flag' => 'W10',
 	),
 	'WAR_EMPTY_CLASS' => array(
 		'message' => 'Empty class',
-		'flag' => 'W10',
+		'flag' => 'W11',
 	),
 	'WAR_EMPTY_METHOD' => array(
 		'message' => 'Empty method',
-		'flag' => 'W11',
+		'flag' => 'W12',
 	),
 	'WAR_EMPTY_FUNCTION' => array(
 		'message' => 'Empty function',
-		'flag' => 'W12',
+		'flag' => 'W13',
 	),
 	'WAR_EMPTY_INTERFACE' => array(
-		'message' => 'Empty function',
-		'flag' => 'W13',
+		'message' => 'Empty interface',
+		'flag' => 'W14',
 	),
 	'WAR_UNREACHABLE_CODE' => array(
 		'message' => 'Unreachable code',
-		'flag' => 'W14',
+		'flag' => 'W15',
 	),
 	'WAR_HACK_MARKED' => array(
 		'message' => 'Hack found',
-		'flag' => 'W15',
+		'flag' => 'W16',
 	),
 	'WAR_WS_AFTER_CLOSE' => array(
 		'message' => 'Whitespace after final close tag',
-		'flag' => 'W16',
+		'flag' => 'W17',
 	),
 	/*
 	 * Depricated warnings
@@ -245,8 +257,8 @@ return array(
 		'message' => 'Interface not documented',
 		'flag' => 'E6',
 	),
-	'ERR_NO_DOCHEAD_CLASSVAR' => array(
-		'message' => 'Class variable not documented',
+	'ERR_NO_DOCHEAD_PROPERTY' => array(
+		'message_extra' => 'Property not documented `%s`',
 		'flag' => 'E7',
 	),
 	/*

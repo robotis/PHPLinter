@@ -10,9 +10,13 @@ class _Obad_name {
 	* @desc 	test method
 	----------------------------------------------------------------------+
 	*/
-	public function BadMethodName() {
-		$var = 'This is a very long line.................................................................................................';
+	function BadMethodName() {
+		$this->misplaced_property = 'This is a very long line.................................................................................................';
 	}
+	/*
+	 * Misplaced property
+	 * */
+	private $misplaced_property;
 }
 /**
 ----------------------------------------------------------------------+

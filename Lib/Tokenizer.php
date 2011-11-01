@@ -21,26 +21,7 @@
 *
 ----------------------------------------------------------------------+
 */
-define('T_IGNORE',					0);
-define('T_NEWLINE',					1000);
-define('T_CURLY_CLOSE', 			1001);
-define('T_SQUARE_OPEN', 			1002);
-define('T_SQUARE_CLOSE', 			1003);
-define('T_PARENTHESIS_OPEN', 		1004);
-define('T_PARENTHESIS_CLOSE', 		1005);
-define('T_COLON',					1006);
-define('T_SEMICOLON',				1007);
-define('T_EQUALS',					1008);
-define('T_STR_CONCAT',				1009);
-define('T_TRUE',					1010);
-define('T_FALSE',					1011);
-define('T_NULL',					1012);
-define('T_THEN',					1013);
-define('T_NOT',						1014);
-define('T_METHOD', 					1015);
-define('T_SELF', 					1016);
-define('T_PARENT', 					1017);
-define('T_BACKTICK', 				1018);
+namespace PHPLinter;
 
 class Tokenizer {
 	/**
@@ -57,10 +38,11 @@ class Tokenizer {
 	* @return	token array
 	----------------------------------------------------------------------+
 	*/
-	public function tokenize() {
+	public function tokenize($skip_whitespace=true) {
 		$eol = "\n";
 		$all = token_get_all(file_get_contents($this->file));
 		$lnum = 1;
+		$out = array();
 		foreach($all as $token) {
 			// Make all tokens arrays
 			if(!is_array($token)) {
@@ -115,7 +97,12 @@ class Tokenizer {
 			// Save token
 			$out[] = $token;
 		}
-		return isset($out) ? $out : null;
+		if($skip_whitespace) {
+			foreach($out as $_) {
+				if($_[0] !== T_WHITESPACE) $ret[] = $_;
+			}
+		}
+		return empty($ret) ? $out : $ret;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -186,6 +173,7 @@ class Tokenizer {
 			case T_NULL:				return 'T_NULL';
 			case T_SELF:				return 'T_SELF';
 			case T_PARENT:				return 'T_PARENT';
+			case T_RECURSE:				return 'T_RECURSE';
 			default:
 				return token_name($token);
 		}

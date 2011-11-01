@@ -39,3 +39,13 @@ interface Test_interface {
 	*/
 	public function test_inter();
 }
+/**
+----------------------------------------------------------------------+
+* @desc 	empty interface
+----------------------------------------------------------------------+
+*/
+interface Test_interface2 {
+	//
+	//
+	//
+}

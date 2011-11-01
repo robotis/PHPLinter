@@ -22,6 +22,7 @@
 *
 ----------------------------------------------------------------------+
 */
+namespace PHPLinter;
 // OPTIONS
 define('OPT_NO_CONVENTION',				0x00001);
 define('OPT_NO_WARNING',				0x00002);
@@ -49,3 +50,25 @@ define('D_PENALTY',						0.3);
 define('R_PENALTY',						0.8);
 define('E_PENALTY',						1.0);
 define('S_PENALTY',						1.0);
+
+define('T_IGNORE',					0);
+define('T_NEWLINE',					1000);
+define('T_CURLY_CLOSE', 			1001);
+define('T_SQUARE_OPEN', 			1002);
+define('T_SQUARE_CLOSE', 			1003);
+define('T_PARENTHESIS_OPEN', 		1004);
+define('T_PARENTHESIS_CLOSE', 		1005);
+define('T_COLON',					1006);
+define('T_SEMICOLON',				1007);
+define('T_EQUALS',					1008);
+define('T_STR_CONCAT',				1009);
+define('T_TRUE',					1010);
+define('T_FALSE',					1011);
+define('T_NULL',					1012);
+define('T_THEN',					1013);
+define('T_NOT',						1014);
+define('T_METHOD', 					1015);
+define('T_SELF', 					1016);
+define('T_PARENT', 					1017);
+define('T_BACKTICK', 				1018);
+define('T_RECURSE', 				1019);

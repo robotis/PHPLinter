@@ -21,6 +21,7 @@
 *
 ----------------------------------------------------------------------+
 */
+namespace PHPLinter;
 class Report {
 	protected $output_dir;
 	protected $options;

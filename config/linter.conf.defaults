@@ -11,29 +11,33 @@
 #
 #REPORT_TYPES=
 #IGNORE_TYPES=
+REPORT_TYPES=I,C,W,R,E,D,S
+#
+# Score/Penaltys for each infraction
+#
+BASE_SCORE=10
+PENALTY_I=200
+PENALTY_C=0.01
+PENALTY_W=0.3
+PENALTY_R=0.8
+PENALTY_D=0.3
+PENALTY_E=1
+PENALTY_S=1
 
 #
-# Score
 #
-#BASE_SCORE=10
-#PENALTY_I=200
-#PENALTY_C=0.01
-#PENALTY_W=0.3
-#PENALTY_R=0.8
-#PENALTY_D=0.3
-#PENALTY_E=1
-#PENALTY_S=1
-
+# Format string for cli report.
+# {F}: Flag
+# {M}: Message
+# {W}: Where (filename
+# {L}: Line
 #
-#
-# Format string for cli report
-#
-#REPORT_FORMAT=
+REPORT_FORMAT="| {F} | {M} | `{W}` Line: {L}\n"
 
 #
 # Use colors.
 #
-#USE_COLORS=TRUE
+USE_COLORS=TRUE
 
 #
 # HTML report options
@@ -43,4 +47,7 @@
 #HTML_OUTPUT_DIR=
 #HTML_OVERWRITE_DIR=
 #
+
+#
+# Override Rule
 #

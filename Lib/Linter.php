@@ -35,11 +35,17 @@ class Element {}
 ----------------------------------------------------------------------+
 */
 class PHPLinter {
+	/* */
 	protected $options;
+	/* */
 	protected $conf;
+	/* */
 	protected $element;
+	/* */
 	protected $score;
+	/* */
 	protected $names;
+	/* */
 	protected $called;
 	/**
 	----------------------------------------------------------------------+
@@ -50,9 +56,8 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	public function __construct($file, $opt=0, $conf=null) {
-		$odin = new Tokenizer($file);
 		$this->file 	= $file;
-		$this->tokens 	= $odin->tokenize();
+		$this->tokens 	= Tokenizer::tokenize($file);
 		$this->tcount 	= count($this->tokens);
 		$this->report 	= array();
 		$this->options 	= $opt;
@@ -62,7 +67,7 @@ class PHPLinter {
 		$this->globals = require dirname(__FILE__) . '/globals.php';
 		if(is_array($conf)) {
 			foreach($conf as $k=>$_)
-			$this->conf[$k] = array_merge($this->conf[$k], $_);
+				$this->conf[$k] = array_merge($this->conf[$k], $_);
 		}
 	}
 	/**
@@ -130,7 +135,7 @@ class PHPLinter {
 					break;
 				case T_COMMENT:
 					$element->tokens[] = $this->tokens[$i];
-					$element->comments[] = $this->measure_comment($i, $element->depth, $i);
+					$element->comments[] = $this->measure_comment($i, 0, $i);
 					break;
 				case T_CLASS:
 				case T_FUNCTION:
@@ -140,7 +145,6 @@ class PHPLinter {
 					$inelem->name = $this->tokens[$this->find($i, T_STRING)][1];
 					$inelem->depth = 0;
 					$inelem->owner = $this->file;
-					$inelem->abstract = false;
 					$inelem->comments = $comments;
 					$element->tokens[] = array($inelem->type);
 					$element->elements[] = $this->measure($i+1, $inelem, $i);
@@ -186,6 +190,7 @@ class PHPLinter {
 		$element->start_line = $this->tokens[$start][2] + 1;
 		$element->start = $start;
 		$element->empty = true;
+		$element->abstract = false;
 
 		$this->debug(sprintf('In element `%s` of type %s at %d; Owned by `%s`'
 				,$element->name
@@ -203,9 +208,9 @@ class PHPLinter {
 		foreach(range($start, $pos-1) as $_)
 			$element->tokens[] = $this->tokens[$_];
 		// measure
-		for($i = $pos,$clvl = 0;$i < $this->tcount;$i++) {
+		for($i = $pos, $clvl = 0; $i < $this->tcount; $i++) {
 			if($clvl > 0 && $element->empty && 
-				$this->meaningfull($this->tokens[$i][0])) {
+				Tokenizer::meaningfull($this->tokens[$i][0])) {
 				$element->empty = false;
 			}
 			switch($this->tokens[$i][0]) {
@@ -230,7 +235,7 @@ class PHPLinter {
 					$element->comments[] = $this->measure_comment($i, $element->depth, $i);
 					break;
 				case T_ABSTRACT:
-					$abstract = true;
+					$element->abstract = true;
 					break;
 				case T_SEMICOLON:
 					if($element->abstract === true 
@@ -310,20 +315,6 @@ class PHPLinter {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Is the token meaningfull, used to determine if an element
-	* 			is empty.
-	* @param	$token	int
-	* @return 	Bool
-	----------------------------------------------------------------------+
-	*/
-	protected function meaningfull($token) {
-		return (!in_array($token, array(
-			T_WHITESPACE, T_NEWLINE, T_COMMENT, T_DOC_COMMENT,
-			T_CURLY_CLOSE // Closing bracer of element
-		)));
-	}
-	/**
-	----------------------------------------------------------------------+
 	* @desc 	Measure comment
 	* @param	$pos	int
 	* @param	$depth	int
@@ -339,9 +330,7 @@ class PHPLinter {
 		
 		$this->debug("In comment at {$element->start_line}", $depth);
 		for($i = $pos;$i < $this->tcount;$i++) {
-			if(!in_array($this->tokens[$i][0], array(
-				T_COMMENT, T_DOC_COMMENT, T_NEWLINE
-			))) {
+			if(Tokenizer::meaningfull($this->tokens[$i][0])) {
 				$i--;
 				break;
 			}
@@ -356,7 +345,7 @@ class PHPLinter {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Find the next T_STRING token.
+	* @desc 	Find the next token.
 	* @param	$pos	Int 	Start
 	* @return 	Int
 	----------------------------------------------------------------------+
@@ -384,7 +373,7 @@ class PHPLinter {
 		while(true) {
 			if(!isset($this->tokens[$i+1]))
 				return false;
-			if($this->meaningfull($this->tokens[++$i][0]))
+			if(Tokenizer::meaningfull($this->tokens[++$i][0]))
 				return $i;
 		}
 	}
@@ -398,7 +387,7 @@ class PHPLinter {
 	protected function prev($pos) {
 		$i = $pos;
 		while($i >= 0) {
-			if($this->meaningfull($this->tokens[--$i][0]))
+			if(Tokenizer::meaningfull($this->tokens[--$i][0]))
 				return $i;
 		}
 	}

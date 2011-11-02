@@ -79,20 +79,23 @@ class Report {
 	----------------------------------------------------------------------+
 	*/
 	public function color($msg, $color="black", $nl=false, $width=70) {
-		$attr = 0;
-		if(is_array($color)) {
-			$attr = intval($color[0]);
-			$color = $color[1];
+		if($this->options & OPT_USE_COLOR) {
+			$attr = 0;
+			if(is_array($color)) {
+				$attr = intval($color[0]);
+				$color = $color[1];
+			}
+			$tpl = "\033[%d;%dm%s\033[0m";
+			if($nl) $tpl .= "\n";
+			$codes = array(
+				'black' => 30, 'red' => 31, 'green' => 32,
+				'brown' => 33, 'blue' => 34, 'purple' => 35,
+				'cyan' => 36, 'white' => 37,
+			);
+			if(!isset($codes[$color])) $color = 'black';
+			return sprintf($tpl, $attr, $codes[$color], $msg);
 		}
-		$tpl = "\033[%d;%dm%s\033[0m";
-		if($nl) $tpl .= "\n";
-		$codes = array(
-			'black' => 30, 'red' => 31, 'green' => 32,
-			'brown' => 33, 'blue' => 34, 'purple' => 35,
-			'cyan' => 36, 'white' => 37,
-		);
-		if(!isset($codes[$color])) $color = 'black';
-		return sprintf($tpl, $attr, $codes[$color], $msg);
+		return $msg;
 	} 
 	/**
 	----------------------------------------------------------------------+

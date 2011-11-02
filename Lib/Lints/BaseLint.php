@@ -1,9 +1,25 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-* @desc 	FIXME
-* @param	FIXME
-* @return 	FIXME
+*  @desc			Base linter.
+----------------------------------------------------------------------+
+*  @file 			BaseLint.php
+*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @since 		    Oct 29, 2011
+*  @package 		PHPLinter
+*  @copyright     
+*    phplinter is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
 namespace PHPLinter;
@@ -31,6 +47,8 @@ class BaseLint {
 		$this->element = $element;
 		$this->conf = $config;
 		$this->options = $options;
+		$this->switch		= false;
+		$this->branches		= 0;
 		$this->globals = require dirname(__FILE__) . '/../globals.php';
 		if($this->report_on('S')) {
 			$this->sec_1 = require(dirname(__FILE__) . '/../security/command_exection.php');
@@ -114,12 +132,21 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	public function common_tokens($pos) {
-		switch($this->element->tokens[$pos][0]) {
-			case T_CLOSE_TAG:
-				$this->report('REF_HTML_MIXIN', null, $this->element->tokens[$pos][2]);
+		$token = $this->element->tokens[$pos];
+		switch($token[0]) {
+			case T_PUBLIC:
+			case T_PRIVATE:
+			case T_PROTECTED:
+				$this->element->visibility = true;
 				break;
-			case T_STRING:
-				$this->parse_string($pos);
+			case T_ABSTRACT:
+				$this->element->abstract = true;
+				break;
+			case T_STATIC:
+				$this->element->static = true;
+				break;
+			case T_CLOSE_TAG:
+				$this->report('REF_HTML_MIXIN', null, $token[2]);
 				break;
 			case T_REQUIRE:
 			case T_REQUIRE_ONCE:
@@ -128,13 +155,13 @@ class BaseLint {
 				$n = $pos;
 				while(isset($this->element->tokens[++$n]) && $this->element->tokens[$n][0] != T_NEWLINE) {
 					if(in_array($this->element->tokens[$n][1], array('$_REQUEST','$_POST','$_GET'))) {
-						$this->report('SEC_ERROR_INCLUDE', $this->element->tokens[$pos][1]);
+						$this->report('SEC_ERROR_INCLUDE', $token[1], $token[2]);
 					}
 				}
 				break;	
 			case T_IS_EQUAL:
 			case T_IS_NOT_EQUAL:
-				$this->element->start_line = $this->element->tokens[$pos][2];
+				$this->element->start_line = $token[2];
 				$this->report('INF_COMPARE');
 				break;
 			case T_BACKTICK:
@@ -144,12 +171,25 @@ class BaseLint {
 					$t = $this->element->tokens[$i];
 					if($t[0] == T_BACKTICK) break;
 					if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
-						$this->report('SEC_ERROR_REQUEST', $this->element->tokens[$pos][1]);
+						$this->report('SEC_ERROR_REQUEST', $token[1], $token[2]);
 					}
 				}
 				break;
+			case T_IF:
+			case T_ELSE:
+			case T_ELSEIF:
+			case T_THEN:
+				$this->branches++;
+				break;
+			case T_SWITCH:
+				if($this->switch) {
+					$this->report('REF_NESTED_SWITCH', null, $token[2]);
+				}
+				$this->switch = true;
+				$this->branches++;
+				break;
 			default:
-				$t = $this->element->tokens[$pos][0];
+				$t = $token[0];
 				if(in_array($t, array_keys($this->conf['DPR_DEPRICATED_TOKEN']['compare']))) {
 					$this->report('DPR_DEPRICATED_TOKEN',
 						$this->conf['DPR_DEPRICATED_TOKEN']['compare'][$t]);		
@@ -164,19 +204,14 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	protected function parse_string($pos) {
-//		echo "Found: " . $this->tokens[$i][1]. "\n";
 		$token = $this->element->tokens[$pos];
 		$nt = $this->next($pos);
-		if($nt == T_PARENTHESIS_OPEN || 
-			$nt == T_DOUBLE_COLON) {
+		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
 			$this->called[] = $token[1];
 			$this->security($pos);
 		}
-		if(in_array($token[1], 
-			$this->conf['DPR_DEPRICATED_STRING']['compare'])) {
-			$this->element->parent = $this->element->name;
-			$this->element->start_line = $token[2];
-			$this->report('DPR_DEPRICATED_STRING', $token[1]);		
+		if(in_array($token[1], $this->conf['DPR_DEPRICATED_STRING']['compare'])) {
+			$this->report('DPR_DEPRICATED_STRING', $token[1], $token[2]);		
 		}
 	}
 	/**
@@ -198,7 +233,8 @@ class BaseLint {
 	*/
 	protected function security($at) {
 		if($this->report_on('S')) {
-			$token = $this->element->tokens[$at];
+			$et = $this->element->tokens;
+			$token = $et[$at];
 			foreach(array(
 					array('sec_1', 'INF_UNSECURE', true),
 					array('sec_2', 'INF_UNSECURE', true),
@@ -206,12 +242,12 @@ class BaseLint {
 					array('sec_4', 'INF_WARNING_DISCLOSURE', false)
 				) as $_) {
 				if(in_array($token[1], $this->$_[0])) {
-					$this->report($_[1], $token[1]);
+					$this->report($_[1], $token[1], $token[2]);
 					$i = $at;
 					if($_[2]) {
-						while($this->element->tokens[++$i][0] != T_PARENTHESIS_CLOSE) {
-							if(in_array($this->element->tokens[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
-								$this->report('SEC_ERROR_REQUEST', $token[1]);
+						while($et[++$i][0] != T_PARENTHESIS_CLOSE) {
+							if(in_array($et[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+								$this->report('SEC_ERROR_REQUEST', $token[1], $token[2]);
 							}
 						}
 					}
@@ -219,23 +255,23 @@ class BaseLint {
 			}
 			/* Callbacks */
 			if(in_array($token[1], array_keys($this->sec_5))) {
-				$this->report('INF_UNSECURE', $token[1]);
+				$this->report('INF_UNSECURE', $token[1], $token[2]);
 				foreach($this->sec_5[$token[1]] as $_) {
 					$pos = 0;
 					$i = $at;
-					while($this->element->tokens[++$i][0] != T_PARENTHESIS_CLOSE) {
-						if(in_array($this->element->tokens[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+					while($et[++$i][0] != T_PARENTHESIS_CLOSE) {
+						if(in_array($et[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
 							/* In callback position */
 							if($pos == $_) {
-								$this->report('SEC_ERROR_CALLBACK', $token[1]);
+								$this->report('SEC_ERROR_CALLBACK', $token[1], $token[2]);
 							}
 						}
 						$pos++;
 					}
 					/* Last position */
-					if(in_array($this->element->tokens[$i-1][1], array('$_REQUEST','$_POST','$_GET')) 
+					if(in_array($et[$i-1][1], array('$_REQUEST','$_POST','$_GET')) 
 						&& $_ == -1) {
-						$this->report('SEC_ERROR_CALLBACK', $token[1]);
+						$this->report('SEC_ERROR_CALLBACK', $token[1], $token[2]);
 					}
 				}
 			}
@@ -258,7 +294,7 @@ class BaseLint {
 		while(true) {
 			if(!isset($o[$i+1]))
 				return false;
-			if($this->meaningfull($o[++$i][0]))
+			if(Tokenizer::meaningfull($o[++$i][0]))
 				return $o[$i][0];
 		}
 	}
@@ -283,20 +319,6 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Is the token meaningfull, used to determine if an element
-	* 			is empty.
-	* @param	$token	int
-	* @return 	Bool
-	----------------------------------------------------------------------+
-	*/
-	protected function meaningfull($token) {
-		return (!in_array($token, array(
-			T_WHITESPACE, T_NEWLINE, T_COMMENT, T_DOC_COMMENT,
-			T_CURLY_CLOSE // Closing bracer of element
-		)));
-	}
-	/**
-	----------------------------------------------------------------------+
 	* @desc 	FIXME
 	* @param	FIXME
 	* @return 	FIXME
@@ -307,6 +329,7 @@ class BaseLint {
 			foreach($this->element->comments as $element) {
 				$lint = new Lint_comment($element, $this->conf, $this->options);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
+				$this->penalty += $lint->penalty();
 			}
 		}
 		$this->recurse();

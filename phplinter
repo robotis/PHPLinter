@@ -32,7 +32,7 @@ require dirname(__FILE__) . '/Lib/constants.php';
 */
 function help() {
 	echo "PHPLinter. Lint and score PHP files.\n";
-	echo "Usage phplinter -[ICWRESHvVi[PATTERN]] [file|directory]\n";
+	echo "Usage phplinter -[ICWRESHvVTci[PATTERN]] [file|directory]\n";
 	echo "\t-U: Use conf-file FILE.\n";
 	echo "\t-I: Report extra information (default off).\n";
 	echo "\t-C: Dont report conventions.\n";
@@ -48,6 +48,8 @@ function help() {
 	echo "\t-r: Use following rules (| delimited).\n";
 	echo "\t-v: Verbose mode\n";
 	echo "\t-V: Debug mode. Again for extra debug info.\n";
+	echo "\t-T: Time execution. Again for extra time info.\n";
+	echo "\t-c: Turn off color output.\n";
 	echo "\t-e: Add extensions to valid list delimited by '|' (default 'php')\n";
 	echo "\t-o: Output directory (with -H)\n";
 	echo "\t-H: HTML report.\n";
@@ -57,7 +59,7 @@ function help() {
 	exit;
 }
 
-$OPTIONS = 0;
+$OPTIONS = OPT_USE_COLOR;
 $threshold = 0;
 $output_dir = NULL;
 $extensions = 'php';
@@ -99,8 +101,16 @@ for($i = 1;$i < $argc; $i++) {
 						$OPTIONS |= OPT_DEBUG_EXTRA;
 					$OPTIONS |= OPT_DEBUG;
 					break;
+				case 'T':
+					if($OPTIONS & OPT_DEBUG_TIME)
+						$OPTIONS |= OPT_DEBUG_TIME_EXTRA;
+					$OPTIONS |= OPT_DEBUG_TIME;
+					break;
 				case 'S':
 					$OPTIONS |= OPT_SCORE_ONLY;
+					break;
+				case 'c':
+					$OPTIONS &= ~OPT_USE_COLOR;
 					break;
 				case 'H':
 					$OPTIONS |= OPT_HTML_REPORT;
@@ -157,6 +167,11 @@ if(!file_exists($file)) {
 
 ini_set('memory_limit', "512M");
 set_time_limit (600);
+
+if($OPTIONS & OPT_DEBUG_TIME) {
+	$time = microtime(true);
+}
+
 $reporter = new Report($output_dir, $OPTIONS);
 $conf = null;
 if(!empty($settings_file)) {
@@ -228,7 +243,10 @@ if(is_dir($file)) {
 	}
 }
 
-
+if($OPTIONS & OPT_DEBUG_TIME) {
+	$x = microtime(true) - $time;
+	echo "Total time: $x\n";	
+}
 
 
 

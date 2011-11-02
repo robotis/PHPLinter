@@ -1,10 +1,13 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Tokenizer
+*  @desc			Tokenizer. Tokenize file and turn all tokens into 
+*  					token arrays.
+----------------------------------------------------------------------+
 *  @file 			Tokenizer.php
-*  @since 		    Jun 10, 2010
-*  @package 		phplinter
+*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @since 		    Oct 29, 2011
+*  @package 		PHPLinter
 *  @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -18,45 +21,33 @@
 *
 *    You should have received a copy of the GNU General Public License
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-*
 ----------------------------------------------------------------------+
 */
 namespace PHPLinter;
-
 class Tokenizer {
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	Create tokenizer
-	----------------------------------------------------------------------+
-	*/
-	public function __construct($file) {
-		$this->file = $file;
-	}
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Tokenize file.
 	* @return	token array
 	----------------------------------------------------------------------+
 	*/
-	public function tokenize($skip_whitespace=true) {
+	public static function tokenize($file, $skip_whitespace=true) {
 		$eol = "\n";
-		$all = token_get_all(file_get_contents($this->file));
+		$all = token_get_all(file_get_contents($file));
 		$lnum = 1;
 		$out = array();
 		foreach($all as $token) {
 			// Make all tokens arrays
 			if(!is_array($token)) {
 				$token = array(
-					$this->tokenChar($token),
+					self::tokenChar($token),
 					$token,
 					$lnum
 				);
 			} 
 
-			/*
-             * Find newlines and mark
-             * */
-			if(strpos($token[1], $eol) !== false) {
+            // Find newlines and mark
+			if(mb_strpos($token[1], $eol) !== false) {
 				$string = str_split($token[1]);
 				$substr = '';
 				foreach($string as $_) {
@@ -91,7 +82,7 @@ class Tokenizer {
 			}
 			// Make distinction
 			if($token[0] == T_STRING) {
-				$token[0] = $this->tokenString($token[1]);
+				$token[0] = self::tokenString($token[1]);
 			}
 			
 			// Save token
@@ -111,7 +102,7 @@ class Tokenizer {
 	* @return	int
 	----------------------------------------------------------------------+
 	*/
-	public function tokenChar($char) {
+	public static function tokenChar($char) {
 		switch($char) {
 			case '{': return T_CURLY_OPEN;
 			case '}': return T_CURLY_CLOSE;
@@ -136,8 +127,8 @@ class Tokenizer {
 	* @return	int
 	----------------------------------------------------------------------+
 	*/
-	public function tokenString($string) {
-		switch(strtolower($string)) {
+	public static function tokenString($string) {
+		switch(mb_strtolower($string)) {
 	        case 'false': 	return T_FALSE;
 	        case 'true': 	return T_TRUE;
 	        case 'null':	return T_NULL;
@@ -153,7 +144,7 @@ class Tokenizer {
 	* @return	String
 	----------------------------------------------------------------------+
 	*/
-	public function token_name($token) {
+	public static function token_name($token) {
 		switch($token) {
 			case T_IGNORE: 				return 'T_IGNORE';
 			case T_NEWLINE: 			return 'T_NEWLINE';
@@ -173,9 +164,27 @@ class Tokenizer {
 			case T_NULL:				return 'T_NULL';
 			case T_SELF:				return 'T_SELF';
 			case T_PARENT:				return 'T_PARENT';
-			case T_RECURSE:				return 'T_RECURSE';
 			default:
 				return token_name($token);
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Is token meaningfull.
+	* @param	int
+	* @return 	Bool
+	----------------------------------------------------------------------+
+	*/
+	public static function meaningfull($token) {
+		switch($token) {
+			case T_WHITESPACE:
+			case T_NEWLINE:
+			case T_COMMENT: 
+			case T_DOC_COMMENT:
+			case T_IGNORE:
+				return false;
+			default:
+				return true;
 		}
 	}
 } 

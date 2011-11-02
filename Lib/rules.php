@@ -229,7 +229,11 @@ return array(
 	'REF_NESTED_SWITCH' => array(
 		'message' => 'Nested switch',
 		'flag' => 'R11',
-	),	
+	),
+	'REF_STATIC_MIX' => array(
+		'message' => 'Static and nonstatic methods mixed in class',
+		'flag' => 'R12',
+	),
 	/*
 	 *	Errors 
 	 */

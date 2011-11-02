@@ -1,13 +1,25 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			FIXME
+*  @desc			Lint a method.
 ----------------------------------------------------------------------+
-*  @copyright 		Copyright 2011, RHÍ
 *  @file 			Lint_method.php
 *  @author 			Jóhann T. Maríusson <jtm@hi.is>
 *  @since 		    Oct 29, 2011
-*  @package 		FIXME
+*  @package 		PHPLinter
+*  @copyright     
+*    phplinter is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
 namespace PHPLinter;
@@ -53,28 +65,16 @@ class Lint_method extends BaseLint implements ILint {
 		$et 		= $this->element->tokens;
 		$args		= false;
 		$_locals 	= array();
-		$branches 	= 0;
 		
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
-				case T_PUBLIC:
-				case T_PRIVATE:
-				case T_PROTECTED:
-					$this->element->visibility = true;
-					break;
-				case T_ABSTRACT:
-					$this->element->abstract = true;
+				case T_CURLY_CLOSE:
+					if($switch) $switch = false;
 					break;
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
 						$args = $this->parse_args($i);
 					}
-					break;
-				case T_SWITCH:
-				case T_IF:
-				case T_ELSE:
-				case T_ELSEIF:
-					$branches++;
 					break;
 				case T_VARIABLE:
 					if($et[$i][1] == '$this') {
@@ -101,6 +101,9 @@ class Lint_method extends BaseLint implements ILint {
 						}
 					}
 					break;
+				case T_STRING:
+					$this->parse_string($i);
+					break;
 				default:
 					$this->common_tokens($i);
 					break;
@@ -110,7 +113,7 @@ class Lint_method extends BaseLint implements ILint {
 		$compares = array(
 			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
-			'REF_BRANCHES' => $branches,
+			'REF_BRANCHES' => $this->branches,
 			'REF_METHOD_LENGTH' => $this->element->length
 		);
 		

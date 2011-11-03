@@ -26,18 +26,18 @@ namespace PHPLinter;
 class Lint_method extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	analyse element
+	* @return 	Array	Reports
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
 //		echo "Lint_method::lint - {$this->element->name}\n";
 		$this->add_parent_data($this->element->name, T_METHOD);
+		$this->element->abstract = false;
 		
 		$this->process_tokens();
 		
-		if($this->element->empty) 
+		if($this->element->empty && !$this->element->abstract) 
 			$this->report('WAR_EMPTY_METHOD');
 			
 		if(empty($this->element->comments))
@@ -55,9 +55,7 @@ class Lint_method extends BaseLint implements ILint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Process token array
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
@@ -68,9 +66,6 @@ class Lint_method extends BaseLint implements ILint {
 		
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
-				case T_CURLY_CLOSE:
-					if($switch) $switch = false;
-					break;
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
 						$args = $this->parse_args($i);
@@ -100,9 +95,6 @@ class Lint_method extends BaseLint implements ILint {
 							$this->report('SEC_ERROR_REQUEST', $et[$pos][1]);
 						}
 					}
-					break;
-				case T_STRING:
-					$this->parse_string($i);
 					break;
 				default:
 					$this->common_tokens($i);

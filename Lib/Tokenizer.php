@@ -159,6 +159,7 @@ class Tokenizer {
 			case T_EQUALS:				return 'T_EQUALS';
 			case T_THEN:				return 'T_THEN';
 			case T_METHOD:				return 'T_METHOD';
+			case T_ANON_FUNCTION:		return 'T_ANON_FUNCTION';
 			case T_TRUE:				return 'T_TRUE';
 			case T_FALSE:				return 'T_FALSE';
 			case T_NULL:				return 'T_NULL';

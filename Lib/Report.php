@@ -23,7 +23,9 @@
 */
 namespace PHPLinter;
 class Report {
+	/* @var String */
 	protected $output_dir;
+	/* @var int */
 	protected $options;
 	/**
 	----------------------------------------------------------------------+
@@ -78,7 +80,7 @@ class Report {
 	* @return 	String
 	----------------------------------------------------------------------+
 	*/
-	public function color($msg, $color="black", $nl=false, $width=70) {
+	public function color($msg, $color="black", $nl=false) {
 		if($this->options & OPT_USE_COLOR) {
 			$attr = 0;
 			if(is_array($color)) {
@@ -322,20 +324,9 @@ class Report {
 			else $dirs[$k] = $_;
 		}
 		if(!empty($dirs)) {
-			if(!function_exists("isort")) {
-				/**
-				----------------------------------------------------------------------+
-				* @desc 	Sort function
-				* @param	string
-				* @param	string
-				* @return	bool
-				----------------------------------------------------------------------+
-				*/
-				function isort($a,$b) {
-					return strtolower($a)>strtolower($b);
-				}
-			}
-			uksort($dirs, "isort");
+			uksort($dirs, function($a, $b) {
+				return strtolower($a) > strtolower($b);
+			});
 		}
 		if(!empty($files)) {
 			$arr = Set::column($files, 'sort');

@@ -63,9 +63,6 @@ class Lint_file extends BaseLint implements ILint {
 						$this->common_tokens($i);
 					}
 					break;
-				case T_STRING:
-					$this->parse_string($i);
-					break;
 				default:
 					$this->common_tokens($i);
 					break;

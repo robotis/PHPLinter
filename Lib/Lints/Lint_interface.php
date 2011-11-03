@@ -56,13 +56,6 @@ class Lint_interface extends BaseLint implements ILint {
 		$locals 	= array();
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
-				case T_PUBLIC:
-				case T_PRIVATE:
-				case T_PROTECTED:
-					break;
-				case T_STRING:
-					$this->parse_string($i);
-					break;
 				default:
 					$this->common_tokens($i);
 					break;

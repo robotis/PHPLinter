@@ -69,31 +69,8 @@ class Lint_function extends BaseLint implements ILint {
 						$args = $this->parse_args($i);
 					}
 					break;
-				case T_SWITCH:
-				case T_IF:
-				case T_ELSE:
-				case T_ELSEIF:
-					$branches++;
-					break;
 				case T_VARIABLE:
 					$_locals[] = $et[$i][1];
-					break;
-				case T_SEMICOLON;
-//					if(isset($this->element->abstract))
-//						break 2;
-					break;
-				case T_BACKTICK:
-					$pos = $et[$i];
-					while(true) {
-						$t = $et[++$i];
-						if($t[0] == T_BACKTICK) break;
-						if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
-							$this->report('SEC_ERROR_REQUEST', $et[$pos][1]);
-						}
-					}
-					break;
-				case T_STRING:
-					$this->parse_string($i);
 					break;
 				default:
 					$this->common_tokens($i);
@@ -105,7 +82,7 @@ class Lint_function extends BaseLint implements ILint {
 		$compares = array(
 			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
-			'REF_BRANCHES' => $branches,
+			'REF_BRANCHES' => $this->branches,
 			'REF_FUNCTION_LENGTH' => $this->element->length
 		);
 		foreach($compares as $k => $_)

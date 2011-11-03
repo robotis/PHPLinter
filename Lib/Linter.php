@@ -83,8 +83,12 @@ class PHPLinter {
 		$this->report = $lint->lint();
 		$this->score = $lint->penalty();
 		$this->debug("END LINT...\n", 0, OPT_DEBUG_EXTRA);
-		$arr = Set::column($this->report, 'line');
-		array_multisort($arr, SORT_ASC, $this->report);
+		
+		if(!empty($this->report)) {
+			foreach($this->report as $_) $arr[] = $_['line'];
+			array_multisort($arr, SORT_ASC, $this->report);
+		}
+		
 		return $this->report;
 	}
 	/**
@@ -125,6 +129,7 @@ class PHPLinter {
 		$element->name = $this->file;
 		$element->tokens = array();
 		$element->start_line = 1;
+		$element->depth = 0;
 		
 		$comments = array();
 		for($i = 0;$i < $this->tcount;$i++) {
@@ -143,7 +148,7 @@ class PHPLinter {
 					$inelem = new Element();
 					$inelem->type = $this->tokens[$i][0];
 					$inelem->name = $this->tokens[$this->find($i, T_STRING)][1];
-					$inelem->depth = 0;
+					$inelem->depth = 1;
 					$inelem->owner = $this->file;
 					$inelem->comments = $comments;
 					$element->tokens[] = array($inelem->type);
@@ -158,9 +163,6 @@ class PHPLinter {
 					$element->tokens[] = $this->tokens[$i];
 					break;
 			}
-		}
-		if(empty($element->tokens)) {
-			return false;
 		}
 		
 		// In case $i is over the buffer
@@ -190,41 +192,54 @@ class PHPLinter {
 		$element->start_line = $this->tokens[$start][2] + 1;
 		$element->start = $start;
 		$element->empty = true;
-		$element->abstract = false;
 
 		$this->debug(sprintf('In element `%s` of type %s at %d; Owned by `%s`'
 				,$element->name
 				,Tokenizer::token_name($element->type)
 				,$element->start_line
 				,$element->owner
-				),++$element->depth);
+				),$element->depth);
 				
-		$body = false;
-		$abstract = false;
-		$visibility = false;
 		$comments = array();
+		$visibility = false;
 		$this->names[] = $element->name;
 		// Save tokens from last newline
 		foreach(range($start, $pos-1) as $_)
 			$element->tokens[] = $this->tokens[$_];
 		// measure
-		for($i = $pos, $clvl = 0; $i < $this->tcount; $i++) {
-			if($clvl > 0 && $element->empty && 
-				Tokenizer::meaningfull($this->tokens[$i][0])) {
+		for($i = $pos, $nesting = 0; $i < $this->tcount; $i++) {
+			if($nesting > 0 
+				&& $element->empty
+			    && Tokenizer::meaningfull($this->tokens[$i][0]) 
+			    && $this->tokens[$i][0] !== T_CURLY_CLOSE) 
+			{
 				$element->empty = false;
 			}
 			switch($this->tokens[$i][0]) {
-				case T_CURLY_OPEN:
-					$this->debug("Scope opened", $element->depth);
-					$clvl++;
-					$body = true;
+				case T_SEMICOLON:
+					$element->tokens[] = $this->tokens[$i];
+					if($nesting === 0 && $element->empty) {
+						$i++;
+						break 2;
+					} 
 					break;
 				case T_CURLY_CLOSE:
 					$this->debug("Scope closed", $element->depth);
-					if(--$clvl == 0) {
+					$element->tokens[] = $this->tokens[$i];
+					if(--$nesting === 0) {
 						$i++;
 						break 2;
 					}
+					break;
+				case T_CURLY_OPEN:
+					$this->debug("Scope opened", $element->depth);
+					$nesting++;
+					$element->tokens[] = $this->tokens[$i];
+					break;
+				case T_PUBLIC:
+				case T_PRIVATE:
+				case T_PROTECTED:
+					$visibility = true;
 					break;
 				case T_DOC_COMMENT:
 					$element->tokens[] = $this->tokens[$i];
@@ -234,46 +249,35 @@ class PHPLinter {
 					$element->tokens[] = $this->tokens[$i];
 					$element->comments[] = $this->measure_comment($i, $element->depth, $i);
 					break;
-				case T_ABSTRACT:
-					$element->abstract = true;
-					break;
-				case T_SEMICOLON:
-					if($element->abstract === true 
-						&& $element->type == T_METHOD) {
-						break 2;
-					}
-					break;
-				case T_PUBLIC:
-				case T_PRIVATE:
-				case T_PROTECTED:
-					$element->tokens[] = $this->tokens[$i];
-					$visibility = $this->tokens[$i][0];
-					break;
 				case T_CLASS:
 				case T_INTERFACE:
 				case T_FUNCTION:
-					$next = $this->tokens[$this->find($i, T_STRING)][1];
-					$type = (in_array($element->type, array(T_CLASS, T_INTERFACE))
-						&& $this->tokens[$i][0] == T_FUNCTION)
-						? T_METHOD 
-						: $this->tokens[$i][0];
-					if($type == T_METHOD) {
+					$next = $this->find($i, array(T_STRING, T_PARENTHESIS_OPEN));
+					if($next === false || $this->tokens[$next][0] === T_PARENTHESIS_OPEN) {
+						// anonymous functions
+						$name = 'anonymous';
+						$type = T_ANON_FUNCTION;
+					} else {
+						$name = $this->tokens[$next][1];
+						$type = (in_array($element->type, array(T_CLASS, T_INTERFACE))
+							&& $this->tokens[$i][0] == T_FUNCTION)
+							? T_METHOD 
+							: $this->tokens[$i][0];
+					}
+					if($type === T_METHOD || $type === T_ANON_FUNCTION) {
 						$owner = $element->name;
 					} else $owner = $element->owner;
 					// Recurs
 					$inelem = new Element();
 					$inelem->type = $type;
-					$inelem->name = $next;
-					$inelem->depth = $element->depth;
+					$inelem->name = $name;
+					$inelem->depth = $element->depth + 1;
 					$inelem->owner = $owner;
-					$inelem->visibility = $visibility;
-					$inelem->abstract = ($element->type == T_INTERFACE) 
-							? true : $abstract;
 					$inelem->comments = $comments;
+					$inelem->visibility = $visibility;
 					$element->tokens[] = array($type, '*');
 					$element->elements[] = $this->measure($i+1, $inelem, $i);
 					$comments = array();
-					$visibility = false;
 					break;
 				default:
 					$element->tokens[] = $this->tokens[$i];
@@ -284,10 +288,6 @@ class PHPLinter {
 		$element->end = ($i >= $this->tcount)
 			? --$i : $i;
 			
-		// Abstracts and interfaces
-		if($element->empty && !$body) {
-			$element->empty = false;
-		}
 		$element->end_line = $this->tokens[$i][2];
 		$element->length = ($element->end_line - $element->start_line);
 		$element->token_count = count($element->tokens);
@@ -352,11 +352,15 @@ class PHPLinter {
 	*/
 	protected function find($pos, $token, $limit=10) {
 		$i = $pos;
+		if(!is_array($token)) $token = array($token);
 		while(true) {
-			if(!isset($this->tokens[$i+1]))
+			if(!isset($this->tokens[$i+1])) {
 				return false;
-			if($this->tokens[++$i][0] == $token)
+			}
+//			echo Tokenizer::token_name($this->tokens[$i+1][0]) . "\n";
+			if(in_array($this->tokens[++$i][0], $token)) {
 				return $i;
+			}
 			if(!empty($limit) && ($i - $pos) == $limit)
 				return false;
 		}

@@ -54,16 +54,18 @@ class Lint_class extends BaseLint implements ILint {
 			in_array($this->element->name, $this->locals[T_METHOD]))
 			$this->report('WAR_OLD_STYLE_CONSTRUCT');
 			
-		$static = array(0,0);
-		foreach($this->element->elements as $_) {
-			if(isset($_->static) && $_->static) {
-				$static[0]++;
-			} else {
-				$static[1]++;
+		if(!empty($this->element->elements)) {
+			$static = array(0,0);
+			foreach($this->element->elements as $_) {
+				if(isset($_->static) && $_->static) {
+					$static[0]++;
+				} else {
+					$static[1]++;
+				}
 			}
-		}
-		if($static[0] > 0 && $static[1] > 0) {
-			$this->report('REF_STATIC_MIX');
+			if($static[0] > 0 && $static[1] > 0) {
+				$this->report('REF_STATIC_MIX');
+			}
 		}
 		
 		return $this->reports;
@@ -100,9 +102,6 @@ class Lint_class extends BaseLint implements ILint {
 					if($methods > 0)
 						$this->report('CON_MISPLACED_PROPERTY');
 					$locals[] = substr($token[1], 1);
-					break;
-				case T_STRING:
-					$this->parse_string($i);
 					break;
 				case T_METHOD:
 					$comment = false;

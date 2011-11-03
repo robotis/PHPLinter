@@ -22,5 +22,26 @@ class Test {
 			default:
 				break;
 		}
+		if(true) {
+			if(true) {
+				if(true) {
+					if(true) {
+						if(true) {
+							if(true) {
+								if(true) {
+									if(true) {
+										if(true) {
+											if(true) {
+												//
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -73,3 +73,4 @@ define('T_METHOD', 					1015);
 define('T_SELF', 					1016);
 define('T_PARENT', 					1017);
 define('T_BACKTICK', 				1018);
+define('T_ANON_FUNCTION', 			1019);

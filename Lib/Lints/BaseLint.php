@@ -24,47 +24,49 @@
 */
 namespace PHPLinter;
 class BaseLint {
-	/* */
+	/* @var Array */
 	protected $reports;
-	/* */
+	/* @var Array */
 	protected $locals;
-	/* */
+	/* @var Object */
 	protected $element;
-	/* */
+	/* @var Array */
 	protected $conf;
-	/* */
+	/* @var Float */
 	protected $penalty;
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	__construct
+	* @param	Object 	Element Object
+	* @param	Array	Configuration
+	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
 	public function __construct($element, $config, $options) {
-		$this->reports = array();
-		$this->locals = array();
-		$this->element = $element;
-		$this->conf = $config;
-		$this->options = $options;
-		$this->switch		= false;
-		$this->branches		= 0;
-		$this->globals = require dirname(__FILE__) . '/../globals.php';
+		$this->reports 	= array();
+		$this->locals 	= array();
+		$this->element 	= $element;
+		$this->conf 	= $config;
+		$this->options 	= $options;
+		$this->switch	= false;
+		$this->branches	= 0;
+		$this->nesting  = 0;
+		$dir = dirname(__FILE__);
+		$this->globals = require $dir. '/../globals.php';
 		if($this->report_on('S')) {
-			$this->sec_1 = require(dirname(__FILE__) . '/../security/command_exection.php');
-			$this->sec_2 = require(dirname(__FILE__) . '/../security/filesystem.php');
-			$this->sec_3 = require(dirname(__FILE__) . '/../security/low_risk.php');
-			$this->sec_4 = require(dirname(__FILE__) . '/../security/information_disclosure.php');
-			$this->sec_5 = require(dirname(__FILE__) . '/../security/accept_callbacks.php');
+			$this->sec_1 = require($dir . '/../security/command_exection.php');
+			$this->sec_2 = require($dir . '/../security/filesystem.php');
+			$this->sec_3 = require($dir . '/../security/low_risk.php');
+			$this->sec_4 = require($dir . '/../security/information_disclosure.php');
+			$this->sec_5 = require($dir . '/../security/accept_callbacks.php');
 		}
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Write to report
-	* @param	$where	String	
-	* @param	$what	String
-	* @param	$line	Int
-	* @param	$extra	Mixed
+	* @desc 	Write to report.
+	* @param	String	Flag	
+	* @param	Mixed	Extra option
+	* @param	int		Line number
 	----------------------------------------------------------------------+
 	*/
 	protected function report($what, $extra=null, $line=null) {
@@ -96,8 +98,8 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Report ?
-	* @param	$flag	String
+	* @desc 	Report on element ?
+	* @param	String	Flag
 	* @return	Bool
 	----------------------------------------------------------------------+
 	*/
@@ -127,8 +129,7 @@ class BaseLint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Tokens common to all scopes.
-	* @param	$element	Array
-	* @param	$pos		int
+	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
 	public function common_tokens($pos) {
@@ -153,8 +154,10 @@ class BaseLint {
 			case T_INCLUDE:
 			case T_INCLUDE_ONCE:
 				$n = $pos;
-				while(isset($this->element->tokens[++$n]) && $this->element->tokens[$n][0] != T_NEWLINE) {
-					if(in_array($this->element->tokens[$n][1], array('$_REQUEST','$_POST','$_GET'))) {
+				while(isset($this->element->tokens[++$n]) 
+						&& $this->element->tokens[$n][0] != T_NEWLINE) {
+					if(in_array($this->element->tokens[$n][1], 
+							    array('$_REQUEST','$_POST','$_GET'))) {
 						$this->report('SEC_ERROR_INCLUDE', $token[1], $token[2]);
 					}
 				}
@@ -181,12 +184,23 @@ class BaseLint {
 			case T_THEN:
 				$this->branches++;
 				break;
+			case T_CURLY_CLOSE:
+				$this->nesting--;
+				break;
+			case T_CURLY_OPEN:
+				$this->nesting++;
+				if($this->nesting > $this->conf['REF_DEEP_NESTING']['compare'])
+					$this->report('REF_DEEP_NESTING', $this->nesting, $token[2]);
+				break;
 			case T_SWITCH:
 				if($this->switch) {
 					$this->report('REF_NESTED_SWITCH', null, $token[2]);
 				}
 				$this->switch = true;
 				$this->branches++;
+				break;
+			case T_STRING:
+				$this->parse_string($pos);
 				break;
 			default:
 				$t = $token[0];
@@ -200,7 +214,7 @@ class BaseLint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Parse a string token
-	* @param	$i	int
+	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
 	protected function parse_string($pos) {
@@ -216,9 +230,8 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Penalty
+	* @return 	Float
 	----------------------------------------------------------------------+
 	*/
 	public function penalty() {
@@ -227,8 +240,7 @@ class BaseLint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Search for security infractions
-	* @param	FIXME
-	* @return	FIXME
+	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
 	protected function security($at) {
@@ -284,7 +296,7 @@ class BaseLint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Return the next meaningfull token
-	* @param	$pos	int
+	* @param	int	current position
 	* @return	Int
 	----------------------------------------------------------------------+
 	*/
@@ -301,7 +313,9 @@ class BaseLint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Find the next token.
-	* @param	$pos	Int 	Start
+	* @param	int		current position
+	* @param	Array	current token
+	* @param	int		Limit to forward track
 	* @return 	Int
 	----------------------------------------------------------------------+
 	*/
@@ -319,9 +333,8 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyse element
+	* @return 	Array	Reports
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
@@ -337,9 +350,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyse elements owned by current element
 	----------------------------------------------------------------------+
 	*/
 	protected function recurse() {
@@ -348,11 +359,11 @@ class BaseLint {
 				T_CLASS 		=> 'Lint_class',
 				T_DOC_COMMENT	=> 'Lint_comment',
 				T_FUNCTION 		=> 'Lint_function',
+				T_ANON_FUNCTION => 'Lint_anon_function',
 				T_INTERFACE 	=> 'Lint_interface',
 				T_METHOD 		=> 'Lint_method',
 				T_FILE 			=> 'Lint_file',
 			);
-			$reports = array();
 			foreach($this->element->elements as $element) {
 				$class = "PHPLinter\\{$a[$element->type]}";
 				$lint = new $class($element, $this->conf, $this->options);
@@ -365,8 +376,7 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	* @desc 	Count and process locals at function scope
 	* @param	Array
-	* @param	Array
-	* @param	Array
+	* @param	Array	
 	* @param	Array
 	----------------------------------------------------------------------+
 	*/
@@ -374,19 +384,19 @@ class BaseLint {
 		foreach($locals as $ll) {
 			// Skip superglobals
 			if(in_array($ll, $this->globals)) continue;
-			$cnt = count(array_filter($_locals, function($s) use($ll){
+			$cnt = count(array_filter($_locals, function($s) use($ll) {
 					return $s == $ll;
 			}));
 			if($cnt == 1 && !in_array($ll, $args)) {
-				$this->report('WAR_UNUSED_VAR', $ll);
+				if(isset($this->locals[T_VARIABLE]) && !in_array($ll, $this->locals[T_VARIABLE]))
+					$this->report('WAR_UNUSED_VAR', $ll);
 			}
 		}
 	}
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Parse argument-list
-	* @param	$i		int
-	* @param	$et		Array
+	* @param	int	current position
 	* @return	Array
 	----------------------------------------------------------------------+
 	*/
@@ -408,8 +418,6 @@ class BaseLint {
 	* @desc 	Process argument list to function
 	* @param	Array
 	* @param	Array
-	* @param	bool
-	* @param	Array
 	----------------------------------------------------------------------+
 	*/
 	protected function process_args($locals, $args) {
@@ -421,22 +429,25 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Add data to element parent
+	* @param	String	Name
+	* @param	int		Type
 	----------------------------------------------------------------------+
 	*/
 	protected function add_parent_data($name, $type) {
 		if(empty($this->parent)) return;
 		if(!isset($this->parent->locals[$type])) $this->parent->locals[$type] = array();
-		if(!in_array($name, $this->parent->locals[$type]))
+		if(is_array($name)) {
+			$this->parent->locals[$type] = array_merge($name, $this->parent->locals[$type]);
+		}
+		elseif(!in_array($name, $this->parent->locals[$type]))
 			$this->parent->locals[$type][] = $name;
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Bind parent element to current element
+	* @param	Object		BaseLint
+	* @return 	this
 	----------------------------------------------------------------------+
 	*/
 	public function bind(BaseLint & $parent) {

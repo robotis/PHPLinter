@@ -234,6 +234,16 @@ return array(
 		'message' => 'Static and nonstatic methods mixed in class',
 		'flag' => 'R12',
 	),
+	'REF_USE_ARGUMENTS' => array(
+		'message_extras' => 'To many arguments in use clause %d(%d)',
+		'flag' => 'R13',
+		'compare' => 3
+	),	
+	'REF_DEEP_NESTING' => array(
+		'message_extras' => 'Nesting level to deep %d(%d)',
+		'flag' => 'R13',
+		'compare' => 6
+	),
 	/*
 	 *	Errors 
 	 */

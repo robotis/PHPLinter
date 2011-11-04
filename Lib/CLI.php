@@ -207,8 +207,10 @@ class CLI {
 	* @param	String
 	----------------------------------------------------------------------+
 	*/
-	protected function msg($msg) {
+	protected function msg($msg, $flag=OPT_VERBOSE) {
 		if(!($this->options & OPT_QUIET)) {
+			if($flag && !($this->options & $flag))
+				return;
 			echo $msg;
 		}
 	}
@@ -219,14 +221,6 @@ class CLI {
 	*/
 	protected function lint_directory() {
 		$this->options |= OPT_SCORE_ONLY;
-		if($this->options & OPT_HTML_REPORT) {
-			if(isset($this->output_dir) 
-				&& file_exists($this->output_dir) 
-				&& !($this->options & OPT_OVERWRITE_REPORT)) 
-			{
-				$this->error('Output directory not empty, will not overwrite...');
-			}
-		}
 		$files = (isset($this->ignore))
 			? Path::find($this->target, "/^.*?\.$this->extensions$/", $this->ignore)
 			: Path::find($this->target, "/^.*?\.$this->extensions$/");
@@ -235,7 +229,7 @@ class CLI {
 		$this->penalty = 0;
 		$numfiles = count($files);
 		foreach($files as $_) {
-			if($verbose) echo "Linting file: $_\n";
+			$this->msg("Linting file: $_\n");
 			if($this->options & OPT_DEBUG_TIME) 
 				$time = microtime(true);
 			$linter = new PHPLinter($_, $this->options, $this->conf, $this->use_rules);
@@ -249,7 +243,7 @@ class CLI {
 				$penaltys[$href] = $penalty;
 			}
 			$this->penalty += $penalty;
-			if($verbose) $this->reporter->score($penalty);
+			$this->msg($this->reporter->score($penalty));
 			if($this->options & OPT_DEBUG_TIME) {
 				$x = microtime(true) - $time;
 				$stats[] = $x;
@@ -286,7 +280,7 @@ class CLI {
 		if(!($this->options & OPT_SCORE_ONLY)) {
 			$this->reporter->toCli($report);
 		}
-		$this->reporter->score($linter->penalty());
+		$this->msg($this->reporter->score($linter->penalty()), 0);
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -304,6 +298,14 @@ class CLI {
 			$time = microtime(true);
 		
 		if(is_dir($this->target)) {
+			if($this->options & OPT_HTML_REPORT) {
+				if(isset($this->output_dir) 
+					&& file_exists($this->output_dir) 
+					&& !($this->options & OPT_OVERWRITE_REPORT)) 
+				{
+					$this->error('Output directory not empty, will not overwrite...');
+				}
+			}
 			$this->lint_directory();
 		} else {
 			$this->lint_file($this->target);

@@ -51,8 +51,8 @@ class Report {
 	public function score($penalty, $num=null) {
 		$full = (is_numeric($num))
 			? ($num * SCORE_FULL) : SCORE_FULL;
-		echo sprintf("Score: %.2f out of %.2f\n", 
-					($full + $penalty), $full);
+		return sprintf("Score: %.2f out of %.2f\n", 
+					  ($full + $penalty), $full);
 	}
 	/**
 	----------------------------------------------------------------------+

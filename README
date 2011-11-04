@@ -55,7 +55,6 @@ Ruleset (some rules are not active)
     * C7: Possible code commented out
     * C8: Property after method declaration in class
     * C9: Empty comment
-    * C10: WTF found in comment
 
 (D)epricated
 

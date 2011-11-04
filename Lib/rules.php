@@ -46,6 +46,10 @@ return array(
 		'message_extra' => 'Loose comparison operator used',
 		'flag' => 'I5',
 	),
+	'INF_FOUND_WTF' => array(
+		'message' => 'WTF found in comment',
+		'flag' => 'I6',
+	),
 	/*
 	 *	Conventions 
 	 */
@@ -90,10 +94,6 @@ return array(
 	'CON_EMPTY_COMMENT' => array(
 		'message' => 'Empty comment',
 		'flag' => 'C9',
-	),
-	'CON_EMPTY_COMMENT' => array(
-		'message' => 'WTF found in comment',
-		'flag' => 'C10',
 	),
 	/*
 	 *	Warnings 

@@ -8,7 +8,7 @@
 *  @score	9.10
 ----------------------------------------------------------------------+
 */
-class Test {
+abstract class Test {
 	/* @var X */
 	private 
 	$used_property;

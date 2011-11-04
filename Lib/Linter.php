@@ -243,6 +243,7 @@ class PHPLinter {
 				
 		$next_element = new Element();
 		$this->names[] = $element->name;
+		$tokens = $this->tokens;
 		for($i = $pos, $nesting = 0; $i < $this->tcount; $i++) {
 			if($nesting > 0 
 				&& $element->empty
@@ -251,9 +252,9 @@ class PHPLinter {
 			{
 				$element->empty = false;
 			}
-			switch($this->tokens[$i][0]) {
+			switch($tokens[$i][0]) {
 				case T_SEMICOLON:
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					if($nesting === 0 && $element->empty) {
 						$i++;
 						break 2;
@@ -261,7 +262,7 @@ class PHPLinter {
 					break;
 				case T_CURLY_CLOSE:
 					$this->debug("Scope closed", $element->depth);
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					if(--$nesting === 0) {
 						$i++;
 						break 2;
@@ -270,7 +271,7 @@ class PHPLinter {
 				case T_CURLY_OPEN:
 					$this->debug("Scope opened", $element->depth);
 					$nesting++;
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					break;
 				case T_PUBLIC:
 				case T_PRIVATE:
@@ -284,19 +285,19 @@ class PHPLinter {
 					$next_element->static = true;
 					break;
 				case T_COMMENT:
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					$element->comments[] = $this->measure_comment($i, $element->depth, $i);
 					break;
 				case T_DOC_COMMENT:
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					$next_element->comments[] = $this->measure_comment($i, $element->depth, $i);
 					break;
 				case T_CLASS:
 				case T_INTERFACE:
 				case T_FUNCTION:
 					$next = $this->find($i, array(T_STRING, T_PARENTHESIS_OPEN));
-					$type = $this->tokens[$i][0];
-					if($next === false || $this->tokens[$next][0] === T_PARENTHESIS_OPEN) {
+					$type = $tokens[$i][0];
+					if($next === false || $tokens[$next][0] === T_PARENTHESIS_OPEN) {
 						// anonymous functions
 						$name = 'anonymous';
 						$type = T_ANON_FUNCTION;
@@ -320,12 +321,12 @@ class PHPLinter {
 					$next_element->name = $name;
 					$next_element->depth = $element->depth + 1;
 					$next_element->owner = $owner;
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					$element->elements[] = $this->measure($i+1, $next_element, $i);
 					$next_element = new Element();
 					break;
 				default:
-					$element->tokens[] = $this->tokens[$i];
+					$element->tokens[] = $tokens[$i];
 					break;
 			}
 		}
@@ -333,7 +334,7 @@ class PHPLinter {
 		$element->end = ($i >= $this->tcount)
 			? --$i : $i;
 			
-		$element->end_line = $this->tokens[$i][2];
+		$element->end_line = $tokens[$i][2];
 		$element->length = ($element->end_line - $element->start_line);
 		$element->token_count = count($element->tokens);
 		$ret = --$i;

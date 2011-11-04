@@ -26,13 +26,11 @@ namespace PHPLinter;
 class Lint_comment extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyze comment
+	* @return 	Array
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
-//		echo "Lint_comment::lint - {$this->element->name}\n";
 		$tcnt = count($this->element->tokens);
 		$empty = true;
 		for($i = 0;$i < $tcnt;$i++) {

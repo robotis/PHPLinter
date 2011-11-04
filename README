@@ -17,6 +17,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-S: Score only.
 	-r: Use following rules (| delimited).
 	-v: Verbose mode
+	-q: Quiet mode (Surpress output)
 	-V: Debug mode. Again for extra debug info.
 	-T: Time execution. Again for extra time info.
 	-c: Turn off color output.

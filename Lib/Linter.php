@@ -58,6 +58,8 @@ class PHPLinter {
 	protected $names;
 	/* @var Array */
 	protected $called;
+	/* @var Array */
+	protected $tokens;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create new linter instance
@@ -67,18 +69,21 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	public function __construct($file, $opt=0, $conf=null) {
-		$this->file 	= $file;
-		$this->tokens 	= Tokenizer::tokenize($file);
-		$this->tcount 	= count($this->tokens);
-		$this->report 	= array();
 		$this->options 	= $opt;
-		$this->score 	= 0;
-		
-		$this->conf = require dirname(__FILE__) . '/rules.php';
-		$this->globals = require dirname(__FILE__) . '/globals.php';
-		if(is_array($conf)) {
-			foreach($conf as $k=>$_)
-				$this->conf[$k] = array_merge($this->conf[$k], $_);
+		$this->file 	= $file;
+		exec('php -l ' . escapeshellarg($file), $error, $code);
+		if($code === 0) { 
+			$this->tokens 	= Tokenizer::tokenize($file);
+			$this->tcount 	= count($this->tokens);
+			$this->report 	= array();
+			$this->score 	= 0;
+			
+			$this->conf = require dirname(__FILE__) . '/rules.php';
+			$this->globals = require dirname(__FILE__) . '/globals.php';
+			if(is_array($conf)) {
+				foreach($conf as $k=>$_)
+					$this->conf[$k] = array_merge($this->conf[$k], $_);
+			}
 		}
 	}
 	/**
@@ -88,7 +93,14 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
-		if($this->tcount === 0) return array();
+		if(is_null($this->tokens)) {
+			$this->debug("Syntax error in file.. Skipping\n", 0, OPT_VERBOSE);
+			return array();
+		}
+		if($this->tcount === 0) {
+			$this->debug("Empty file.. Skipping\n", 0, OPT_VERBOSE);
+			return array();
+		} 
 		$this->measure_file();
 		$this->debug("\nSTART LINT...", 0, OPT_DEBUG_EXTRA);
 		$lint = new Lint_file($this->element, $this->conf, $this->options);
@@ -162,10 +174,9 @@ class PHPLinter {
 					$next_element->name = $this->tokens[$this->find($i, T_STRING)][1];
 					$next_element->depth = 1;
 					$next_element->owner = $this->file;
-					$element->tokens[] = array($next_element->type);
 					$element->elements[] = $this->measure($i+1, $next_element, $i);
 					$next_element = new Element();
-					$element->tokens[] = array($this->tokens[$i]);
+					$element->tokens[] = $this->tokens[$i];
 					break;
 				default:
 					if(!isset($element->start)) {
@@ -290,7 +301,7 @@ class PHPLinter {
 					$next_element->name = $name;
 					$next_element->depth = $element->depth + 1;
 					$next_element->owner = $owner;
-					$element->tokens[] = array($type, '*');
+					$element->tokens[] = $this->tokens[$i];
 					$element->elements[] = $this->measure($i+1, $next_element, $i);
 					$next_element = new Element();
 					break;

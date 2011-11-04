@@ -40,6 +40,8 @@ class CLI {
 	protected $ignore;
 	/* @var float */
 	protected $penalty;
+	/* @var Array */
+	protected $stats;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	__construct. Defaults to use color.
@@ -48,6 +50,7 @@ class CLI {
 	public function __construct() {
 		$this->options |= OPT_USE_COLOR;
 		$this->extensions = 'php';
+		$this->stats = array();
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -71,6 +74,7 @@ class CLI {
 		echo "\t-S: Score only.\n";
 		echo "\t-r: Use following rules (| delimited).\n";
 		echo "\t-v: Verbose mode\n";
+		echo "\t-q: Quiet mode (Surpress output)\n";
 		echo "\t-V: Debug mode. Again for extra debug info.\n";
 		echo "\t-T: Time execution. Again for extra time info.\n";
 		echo "\t-c: Turn off color output.\n";
@@ -121,6 +125,9 @@ class CLI {
 							break;
 						case 'v':
 							$this->options |= OPT_VERBOSE;
+							break;
+						case 'q':
+							$this->options |= OPT_QUITE;
 							break;
 						case 'V':
 							if($this->options & OPT_DEBUG) {
@@ -196,6 +203,17 @@ class CLI {
 	}
 	/**
 	----------------------------------------------------------------------+
+	* @desc 	Output message
+	* @param	String
+	----------------------------------------------------------------------+
+	*/
+	protected function msg($msg) {
+		if(!($this->options & OPT_QUIET)) {
+			echo $msg;
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
 	* @desc 	Analyse directory
 	----------------------------------------------------------------------+
 	*/
@@ -218,9 +236,12 @@ class CLI {
 		$numfiles = count($files);
 		foreach($files as $_) {
 			if($verbose) echo "Linting file: $_\n";
+			if($this->options & OPT_DEBUG_TIME) 
+				$time = microtime(true);
 			$linter = new PHPLinter($_, $this->options, $this->conf, $this->use_rules);
 			$report = $linter->lint();
 			$penalty = $linter->penalty();
+			$stats = array($_, $linter->score());
 			if($this->options & OPT_HTML_REPORT) {
 				$href = (preg_match('/^\.\/?/', $_)) 
 							? $_ : "./$_";
@@ -229,10 +250,26 @@ class CLI {
 			}
 			$this->penalty += $penalty;
 			if($verbose) $this->reporter->score($penalty);
+			if($this->options & OPT_DEBUG_TIME) {
+				$x = microtime(true) - $time;
+				$stats[] = $x;
+				echo "Time for file: $x seconds\n\n";	
+			}
+			$this->stats[] = $stats;
 		}
 		$this->reporter->average($this->penalty, $numfiles);
 		if($this->options & OPT_HTML_REPORT) {
 			$this->reporter->toHtml($this->target, $reports, $penaltys);
+		}
+		if($this->options & OPT_DEBUG_TIME) {
+			foreach($this->stats as $_) $arr[] = $_[2];
+			$avg = array_sum($arr) / count($arr);
+			echo " - Avarage lint time: $avg seconds\n";	
+		}
+		if($this->options & OPT_VERBOSE) {
+			foreach($this->stats as $_) $arr[] = $_[1];
+			array_multisort($this->stats, SORT_ASC, $arr);
+			echo "Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n\n";
 		}
 	}
 	/**
@@ -270,7 +307,7 @@ class CLI {
 		
 		if($this->options & OPT_DEBUG_TIME) {
 			$x = microtime(true) - $time;
-			echo "Total time: $x\n";	
+			echo "Total time: $x seconds";	
 		}
 	}
 }

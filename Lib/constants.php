@@ -42,6 +42,7 @@ define('OPT_OVERWRITE_REPORT',			0x04000);
 define('OPT_USE_COLOR',					0x08000);
 define('OPT_DEBUG_TIME',				0x10000);
 define('OPT_DEBUG_TIME_EXTRA',			0x20000);
+define('OPT_QUIET',						0x40000);
 
 // SCORE
 define('SCORE_FULL',					10.0);

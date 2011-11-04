@@ -127,7 +127,7 @@ class CLI {
 							$this->options |= OPT_VERBOSE;
 							break;
 						case 'q':
-							$this->options |= OPT_QUITE;
+							$this->options |= OPT_QUIET;
 							break;
 						case 'V':
 							if($this->options & OPT_DEBUG) {
@@ -251,7 +251,7 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
-		$this->reporter->average($this->penalty, $numfiles);
+		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
 		if($this->options & OPT_HTML_REPORT) {
 			$this->reporter->toHtml($this->target, $reports, $penaltys);
 		}
@@ -265,7 +265,7 @@ class CLI {
 			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[1];
 			array_multisort($this->stats, SORT_NUMERIC, $arr);
-			echo "Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n\n";
+			echo "Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n";
 		}
 	}
 	/**
@@ -277,7 +277,7 @@ class CLI {
 	protected function lint_file($file) {
 		$linter = new PHPLinter($file, $this->options, $this->conf, $this->use_rules);
 		$report = $linter->lint();
-		if(!($this->options & OPT_SCORE_ONLY)) {
+		if(!($this->options & OPT_SCORE_ONLY) && !($this->options & OPT_QUIET)) {
 			$this->reporter->toCli($report);
 		}
 		$this->msg($this->reporter->score($linter->penalty()), 0);

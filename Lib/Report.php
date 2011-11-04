@@ -63,7 +63,7 @@ class Report {
 	*/
 	public function average($penalty, $num) {
 		$full = $num * SCORE_FULL;
-		echo sprintf("Average score: %.2f\n", 
+		return sprintf("Average score: %.2f\n", 
 					 (($full + $penalty) / $num));
 	}
 	/**

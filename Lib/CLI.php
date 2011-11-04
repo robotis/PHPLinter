@@ -202,7 +202,10 @@ class CLI {
 	protected function lint_directory() {
 		$this->options |= OPT_SCORE_ONLY;
 		if($this->options & OPT_HTML_REPORT) {
-			if(isset($this->output_dir) && file_exists(dirname($this->output_dir))) {
+			if(isset($this->output_dir) 
+				&& file_exists($this->output_dir) 
+				&& !($this->options & OPT_OVERWRITE_REPORT)) 
+			{
 				$this->error('Output directory not empty, will not overwrite...');
 			}
 		}

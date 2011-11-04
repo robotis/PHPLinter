@@ -130,21 +130,21 @@ class Report {
 	*/
 	public function toHtml($root, $report, $penaltys) {
 		$this->root = realpath($root);
-		if(file_exists($this->output_dir)) {
+		$output_dir = realpath($this->output_dir);
+		if(file_exists($output_dir)) {
 			if(!($this->options & OPT_OVERWRITE_REPORT)) {
-				die("`$this->output_dir` not empty, aborting...\n");
+				die("`$output_dir` not empty, aborting...\n");
 			}
 			if($this->options & OPT_VERBOSE) 
-				echo "Deleting `$this->output_dir`\n";
+				echo "Deleting `$output_dir`\n";
 			Path::del_recursive($this->output_dir);
 		}
 		if($this->options & OPT_VERBOSE) 
-			echo "Creating `$this->output_dir`\n";
-		if(!file_exists($this->output_dir) && !mkdir($this->output_dir, 0775)) {
-			die("Unable to create `$this->output_dir`...\n");
+			echo "Creating `$output_dir`\n";
+		if(!file_exists($output_dir) && !mkdir($output_dir, 0775)) {
+			die("Unable to create `$output_dir`...\n");
 		}
-		$this->output_dir = realpath($this->output_dir);
-
+		$this->output_dir = $output_dir;
 		foreach($report as $file => $rep) {
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 			$content = '';

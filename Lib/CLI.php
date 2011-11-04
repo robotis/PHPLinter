@@ -66,7 +66,7 @@ class CLI {
 		echo "\t-W: Dont report warnings.\n";
 		echo "\t-R: Dont report refactor warnings.\n";
 		echo "\t-E: Dont report errors.\n";
-		echo "\t-D: Dont report deprecated warnings.\n";
+		echo "\t-D: Dont report documentation warnings.\n";
 		echo "\t-X: Dont report security warnings.\n";
 		echo "\t-O: Security report only.\n";
 //		echo "\t-F: Try to locate unused functions/methods (Experimental).\n";

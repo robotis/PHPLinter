@@ -417,10 +417,29 @@ class BaseLint {
 				T_FILE 			=> 'Lint_file',
 			);
 			foreach($this->element->elements as $element) {
+				$this->profile();
 				$class = "PHPLinter\\{$a[$element->type]}";
 				$lint = new $class($element, $this->conf, $this->options);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();
+				$this->profile($class.'::'.$element->name);
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Internal profiling
+	* @param	Bool
+	----------------------------------------------------------------------+
+	*/
+	protected function profile($flushmsg=false) {
+		if(defined('PHPL_PROFILE_ON')) {
+			$now = microtime(true);
+			if($flushmsg) {
+				$time = $this->ptime - $now;
+				echo "$time -> $flushmsg\n";
+			} else {
+				$this->ptime = $now;
 			}
 		}
 	}

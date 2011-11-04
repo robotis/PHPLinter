@@ -262,13 +262,15 @@ class CLI {
 			$this->reporter->toHtml($this->target, $reports, $penaltys);
 		}
 		if($this->options & OPT_DEBUG_TIME) {
+			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[2];
 			$avg = array_sum($arr) / count($arr);
-			echo " - Avarage lint time: $avg seconds\n";	
+			echo "Avarage file lint time: $avg seconds\n";	
 		}
 		if($this->options & OPT_VERBOSE) {
+			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[1];
-			array_multisort($this->stats, SORT_ASC, $arr);
+			array_multisort($this->stats, SORT_NUMERIC, $arr);
 			echo "Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n\n";
 		}
 	}
@@ -295,6 +297,8 @@ class CLI {
 		if(!isset($this->target) || !file_exists($this->target)) {
 			$this->error('Need valid target...');
 		}
+		ini_set('memory_limit', "512M");
+		set_time_limit (0);
 		$this->reporter = new Report($this->output_dir, $this->options);
 		if($this->options & OPT_DEBUG_TIME) 
 			$time = microtime(true);
@@ -307,7 +311,7 @@ class CLI {
 		
 		if($this->options & OPT_DEBUG_TIME) {
 			$x = microtime(true) - $time;
-			echo "Total time: $x seconds";	
+			echo "Total time: $x seconds\n";	
 		}
 	}
 }

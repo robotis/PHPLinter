@@ -88,6 +88,23 @@ class PHPLinter {
 	}
 	/**
 	----------------------------------------------------------------------+
+	* @desc 	Internal profiling
+	* @param	Bool
+	----------------------------------------------------------------------+
+	*/
+	protected function profile($flushmsg=false) {
+		if(defined('PHPL_PROFILE_ON')) {
+			$now = microtime(true);
+			if($flushmsg) {
+				$time = $this->ptime - $now;
+				echo "$time -> $flushmsg\n";
+			} else {
+				$this->ptime = $now;
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
 	* @desc 	Lint current file
 	* @return 	Array
 	----------------------------------------------------------------------+
@@ -143,6 +160,7 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	protected function measure_file() {
+		$this->profile();
 		$this->debug("START MEASURE ...");
 		$this->debug("In $this->file of type: T_FILE");	
 		
@@ -197,6 +215,7 @@ class PHPLinter {
 		
 		$this->debug("Exiting $this->file of type: T_FILE");
 		$this->debug("END MEASURE ...");
+		$this->profile('measure_file::'.$this->file);
 	}
 	/**
 	----------------------------------------------------------------------+

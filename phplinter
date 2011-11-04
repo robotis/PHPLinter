@@ -25,9 +25,6 @@ namespace PHPLinter;
 require dirname(__FILE__) . '/Lib/autoloader.php';
 require dirname(__FILE__) . '/Lib/constants.php';
 
-ini_set('memory_limit', "512M");
-set_time_limit (0);
-
 $cli = new CLI();
 $cli->process_options($argv, $argc);
 $cli->lint();

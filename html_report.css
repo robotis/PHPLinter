@@ -1,0 +1,23 @@
+/*
+
+	Example CSS file for html report
+
+*/
+html {}
+div.wrapper{margin: auto; width:950px;font-size:0.9em;}
+div.wrapper table {width:100%;}
+tr.even{background-color: #AAA;}
+td{ padding: 3px; }
+td.good{background-color: #7F7;}
+td.vgood{background-color: #AFA;}
+td.perfect{background-color: #5F5;}
+td.average{background-color: #55F;}
+td.bad{background-color: ORANGE;}
+td.terrible{background-color: RED;}
+td.fl_E{background-color: RED;}
+td.fl_I{background-color: #5F5;}
+td.fl_R{background-color: ORANGE;}
+td.fl_W{background-color: #55F; color: WHITE;}
+td.fl_C{background-color: YELLOW;}
+td.fl_D{background-color: #CC9;}
+td.fl_S{background-color: #969;}

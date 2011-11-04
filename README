@@ -67,16 +67,12 @@ Ruleset (some rules are not active)
     * W2: PHP4 style variable
     * W3: Unused argument
     * W4: Unused variable
-    * W5: -
-    * W6: -
-    * W7: -
     * W8: Eval used
-    * W9: Public variable
+    * W9: Public property
     * W10: Empty class
     * W11: Empty function
     * W12: Empty method
     * W13: Empty interface
-    * W14: Unreachable code
     * W16: Hack marked
     * W17: Whitespace after closing tag 
 
@@ -91,7 +87,6 @@ Ruleset (some rules are not active)
     * R7: Too many ancestors. Default(6)
     * R8: HTML mixed into code
     * R9: HTML output after final close tag 
-    * R10: Unnecessary inheritance
     * R11: Nested switch
     * R12: Static and nonstatic methods mixed in class
     * R13: To many arguments in use clause
@@ -99,7 +94,6 @@ Ruleset (some rules are not active)
 
 (E)rrors
 
-    * E1: Unused
     * E2: File not documented
     * E3: Class not documented
     * E4: Method not documented

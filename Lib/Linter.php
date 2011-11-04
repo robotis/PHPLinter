@@ -264,6 +264,7 @@ class PHPLinter {
 				case T_INTERFACE:
 				case T_FUNCTION:
 					$next = $this->find($i, array(T_STRING, T_PARENTHESIS_OPEN));
+					$type = $this->tokens[$i][0];
 					if($next === false || $this->tokens[$next][0] === T_PARENTHESIS_OPEN) {
 						// anonymous functions
 						$name = 'anonymous';
@@ -349,7 +350,7 @@ class PHPLinter {
 			}
 			$element->tokens[] = $this->tokens[$i];
 		}
-		
+		if($i === $this->tcount) $i--;
 		$element->end = $i;
 		$element->end_line = $this->tokens[$i][2];
 		$this->debug("Exiting comment at {$element->end_line}", $depth);

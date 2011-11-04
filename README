@@ -35,7 +35,6 @@ Ruleset (some rules are not active)
     * W: Warnings
     * R: Refactor
     * S: Security
-    * E: Errors 
 
 (I)nformation
 
@@ -56,10 +55,14 @@ Ruleset (some rules are not active)
     * C8: Property after method declaration in class
     * C9: Empty comment
 
-(D)epricated
+(D)ocumentation
 
-    * D1: Token depricated. Default (global)
-    * D2: String depricated. Default(eregi, eregi_replace, ereg, ereg_replace, split, spliti) 
+    * D1: File not documented
+    * D2: Class not documented
+    * D3: Method not documented
+    * D4: Function not documented
+    * D5: Interface not documented
+    * D6: Property not documented 
 
 (W)arning
 
@@ -75,6 +78,7 @@ Ruleset (some rules are not active)
     * W13: Empty interface
     * W16: Hack marked
     * W17: Whitespace after closing tag 
+    * W18: Token depricated. Default (global)
 
 (R)efactor
 
@@ -91,15 +95,6 @@ Ruleset (some rules are not active)
     * R12: Static and nonstatic methods mixed in class
     * R13: To many arguments in use clause
     * R14: Nesting level to deep
-
-(E)rrors
-
-    * E2: File not documented
-    * E3: Class not documented
-    * E4: Method not documented
-    * E5: Function not documented
-    * E6: Interface not documented
-    * E7: Property not documented 
     
 (S)ecurity
 

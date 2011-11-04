@@ -40,7 +40,7 @@ class Lint_class extends BaseLint implements ILint {
 		$this->process_tokens();
 		
 		if(!$this->element->dochead)
-			$this->report('ERR_NO_DOCHEAD_CLASS');
+			$this->report('DOC_NO_DOCHEAD_CLASS');
 			
 		$regex = $this->conf['CON_CLASS_NAME']['compare'];
 		if(!preg_match($regex, $this->element->name))
@@ -96,7 +96,7 @@ class Lint_class extends BaseLint implements ILint {
 					break;
 				case T_VARIABLE:
 					if(!$comment) {
-						$this->report('ERR_NO_DOCHEAD_PROPERTY', $token[1], $token[2]);
+						$this->report('DOC_NO_DOCHEAD_PROPERTY', $token[1], $token[2]);
 					}
 					$comment = false;
 					if($methods > 0)

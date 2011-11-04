@@ -41,7 +41,7 @@ class Lint_interface extends BaseLint implements ILint {
 			$this->report('WAR_EMPTY_INTERFACE');
 		
 		if(!$this->element->dochead)
-			$this->report('ERR_NO_DOCHEAD_INTERFACE');
+			$this->report('DOC_NO_DOCHEAD_INTERFACE');
 			
 		$len = $this->element->length;
 		if($len > $this->conf['REF_CLASS_LENGTH']['compare'])

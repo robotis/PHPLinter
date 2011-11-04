@@ -37,7 +37,7 @@ class Lint_function extends BaseLint implements ILint {
 			$this->report('WAR_EMPTY_FUNCTION');
 			
 		if(!$this->element->dochead)
-			$this->report('ERR_NO_DOCHEAD_FUNCTION');
+			$this->report('DOC_NO_DOCHEAD_FUNCTION');
 			
 		$this->process_tokens();
 		

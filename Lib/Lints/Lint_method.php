@@ -40,7 +40,7 @@ class Lint_method extends BaseLint implements ILint {
 			$this->report('WAR_EMPTY_METHOD');
 			
 		if(!$this->element->dochead)
-			$this->report('ERR_NO_DOCHEAD_METHOD');
+			$this->report('DOC_NO_DOCHEAD_METHOD');
 			
 		if(!$this->element->visibility)
 			$this->report('CON_NO_VISIBILITY');

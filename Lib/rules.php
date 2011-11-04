@@ -166,19 +166,37 @@ return array(
 		'message' => 'Whitespace after final close tag',
 		'flag' => 'W17',
 	),
-	/*
-	 * Depricated warnings
-	 */
-	'DPR_DEPRICATED_TOKEN' => array(
+	'WAR_DEPRICATED_TOKEN' => array(
 		'message_extra' => '`%s` Depricated',
-		'flag' => 'D1',
+		'flag' => 'W18',
 		'compare' => array(T_GLOBAL=>'global')
 	),
-	'DPR_DEPRICATED_STRING' => array(
-		'message_extra' => '`%s` Depricated',
+	/*
+	 *	Documentaion 
+	 */
+	'DOC_NO_DOCHEAD_FILE' => array(
+		'message' => 'File not documented',
+		'flag' => 'D1',
+	),
+	'DOC_NO_DOCHEAD_CLASS' => array(
+		'message' => 'Class not documented',
 		'flag' => 'D2',
-		'compare' => array('eregi', 'eregi_replace', 'ereg', 
-			'ereg_replace', 'split', 'spliti')
+	),
+	'DOC_NO_DOCHEAD_METHOD' => array(
+		'message' => 'Method not documented',
+		'flag' => 'D3',
+	),
+	'DOC_NO_DOCHEAD_FUNCTION' => array(
+		'message' => 'Function not documented',
+		'flag' => 'D4',
+	),
+	'DOC_NO_DOCHEAD_INTERFACE' => array(
+		'message' => 'Interface not documented',
+		'flag' => 'D5',
+	),
+	'DOC_NO_DOCHEAD_PROPERTY' => array(
+		'message_extra' => 'Property not documented `%s`',
+		'flag' => 'D6',
 	),
 	/*
 	 *	Refactor smells 
@@ -247,37 +265,6 @@ return array(
 		'message_extras' => 'Nesting level to deep %d(%d)',
 		'flag' => 'R13',
 		'compare' => 6
-	),
-	/*
-	 *	Errors 
-	 */
-	'ERR_GLOBAL' => array(
-		'message' => '`global` keyword used',
-		'flag' => 'E1',
-	),
-	'ERR_NO_DOCHEAD_FILE' => array(
-		'message' => 'File not documented',
-		'flag' => 'E2',
-	),
-	'ERR_NO_DOCHEAD_CLASS' => array(
-		'message' => 'Class not documented',
-		'flag' => 'E3',
-	),
-	'ERR_NO_DOCHEAD_METHOD' => array(
-		'message' => 'Method not documented',
-		'flag' => 'E4',
-	),
-	'ERR_NO_DOCHEAD_FUNCTION' => array(
-		'message' => 'Function not documented',
-		'flag' => 'E5',
-	),
-	'ERR_NO_DOCHEAD_INTERFACE' => array(
-		'message' => 'Interface not documented',
-		'flag' => 'E6',
-	),
-	'ERR_NO_DOCHEAD_PROPERTY' => array(
-		'message_extra' => 'Property not documented `%s`',
-		'flag' => 'E7',
 	),
 	/*
 	 * Security 

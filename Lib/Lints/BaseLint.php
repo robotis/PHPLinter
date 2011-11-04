@@ -194,9 +194,9 @@ class BaseLint {
 				break;
 			default:
 				$t = $token[0];
-				if(in_array($t, array_keys($this->conf['DPR_DEPRICATED_TOKEN']['compare']))) {
-					$this->report('DPR_DEPRICATED_TOKEN',
-						$this->conf['DPR_DEPRICATED_TOKEN']['compare'][$t]);		
+				if(in_array($t, array_keys($this->conf['WAR_DEPRICATED_TOKEN']['compare']))) {
+					$this->report('WAR_DEPRICATED_TOKEN',
+						$this->conf['WAR_DEPRICATED_TOKEN']['compare'][$t]);		
 				}
 				break;		
 		}
@@ -336,9 +336,6 @@ class BaseLint {
 		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
 			$this->called[] = $token[1];
 			$this->security($pos);
-		}
-		if(in_array($token[1], $this->conf['DPR_DEPRICATED_STRING']['compare'])) {
-			$this->report('DPR_DEPRICATED_STRING', $token[1], $token[2]);		
 		}
 	}
 	/**

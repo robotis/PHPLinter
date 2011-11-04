@@ -11,7 +11,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-W: Dont report warnings.
 	-R: Dont report refactor warnings.
 	-E: Dont report errors.
-	-D: Dont report deprecated warnings.
+	-D: Dont report documentation warnings.
 	-X: Dont report security warnings.
 	-O: Security report only.
 	-S: Score only.

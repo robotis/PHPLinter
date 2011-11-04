@@ -88,6 +88,7 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
+		if($this->tcount === 0) return array();
 		$this->measure_file();
 		$this->debug("\nSTART LINT...", 0, OPT_DEBUG_EXTRA);
 		$lint = new Lint_file($this->element, $this->conf, $this->options);

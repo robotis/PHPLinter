@@ -91,6 +91,10 @@ return array(
 		'message' => 'Empty comment',
 		'flag' => 'C9',
 	),
+	'CON_EMPTY_COMMENT' => array(
+		'message' => 'WTF found in comment',
+		'flag' => 'C10',
+	),
 	/*
 	 *	Warnings 
 	 */
@@ -155,7 +159,7 @@ return array(
 		'flag' => 'W15',
 	),
 	'WAR_HACK_MARKED' => array(
-		'message' => 'Hack found',
+		'message' => 'Hack marked',
 		'flag' => 'W16',
 	),
 	'WAR_WS_AFTER_CLOSE' => array(

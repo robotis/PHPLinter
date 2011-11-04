@@ -1,9 +1,11 @@
 PHPLinter. Static code analyser.
+V2.4
 
 A simple fast lint and score for PHP files.
 
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 
+	-U: Use conf-file FILE.
 	-I: Report extra information (default off).
 	-C: Dont report conventions.
 	-W: Dont report warnings.
@@ -12,15 +14,16 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-D: Dont report deprecated warnings.
 	-X: Dont report security warnings.
 	-O: Security report only.
-	-F: Try to locate unused functions/methods (Experimental).
-	-t: Number of invocations threshold (default 0).
 	-S: Score only.
 	-r: Use following rules (| delimited).
 	-v: Verbose mode
 	-V: Debug mode. Again for extra debug info.
+	-T: Time execution. Again for extra time info.
+	-c: Turn off color output.
 	-e: Add extensions to valid list delimited by '|' (default 'php')
 	-o: Output directory (with -H)
 	-H: HTML report.
+	-w: Overwrite output directory.
 	-i: ignore PATTERN. (Ignore files in directory mode)
 
 Ruleset (some rules are not active)
@@ -49,6 +52,9 @@ Ruleset (some rules are not active)
     * C5: Interface name does not match. Default( /^[A-Z][\w_]{2,}$/ )
     * C6: Visibility missing. (public/protected/private) 
     * C7: Possible code commented out
+    * C8: Property after method declaration in class
+    * C9: Empty comment
+    * C10: WTF found in comment
 
 (D)epricated
 
@@ -61,9 +67,9 @@ Ruleset (some rules are not active)
     * W2: PHP4 style variable
     * W3: Unused argument
     * W4: Unused variable
-    * W5: Unused method (-F switch)
-    * W6: Unused function (-F switch)
-    * W7: Unused class (-F switch)
+    * W5: -
+    * W6: -
+    * W7: -
     * W8: Eval used
     * W9: Public variable
     * W10: Empty class
@@ -71,7 +77,8 @@ Ruleset (some rules are not active)
     * W12: Empty method
     * W13: Empty interface
     * W14: Unreachable code
-    * W16: Whitespace after closing tag 
+    * W16: Hack marked
+    * W17: Whitespace after closing tag 
 
 (R)efactor
 
@@ -84,6 +91,11 @@ Ruleset (some rules are not active)
     * R7: Too many ancestors. Default(6)
     * R8: HTML mixed into code
     * R9: HTML output after final close tag 
+    * R10: Unnecessary inheritance
+    * R11: Nested switch
+    * R12: Static and nonstatic methods mixed in class
+    * R13: To many arguments in use clause
+    * R14: Nesting level to deep
 
 (E)rrors
 
@@ -93,7 +105,7 @@ Ruleset (some rules are not active)
     * E4: Method not documented
     * E5: Function not documented
     * E6: Interface not documented
-    * E7: Class variable not documented 
+    * E7: Property not documented 
     
 (S)ecurity
 

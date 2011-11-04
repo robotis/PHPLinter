@@ -230,7 +230,7 @@ class CLI {
 		$numfiles = count($files);
 		foreach($files as $_) {
 			$this->msg("Linting file: $_\n");
-			if($this->options & OPT_DEBUG_TIME) 
+			if($this->options & OPT_DEBUG_TIME_EXTRA) 
 				$time = microtime(true);
 			$linter = new PHPLinter($_, $this->options, $this->conf, $this->use_rules);
 			$report = $linter->lint();
@@ -244,7 +244,7 @@ class CLI {
 			}
 			$this->penalty += $penalty;
 			$this->msg($this->reporter->score($penalty));
-			if($this->options & OPT_DEBUG_TIME) {
+			if($this->options & OPT_DEBUG_TIME_EXTRA) {
 				$x = microtime(true) - $time;
 				$stats[] = $x;
 				echo "Time for file: $x seconds\n\n";	
@@ -255,7 +255,7 @@ class CLI {
 		if($this->options & OPT_HTML_REPORT) {
 			$this->reporter->toHtml($this->target, $reports, $penaltys);
 		}
-		if($this->options & OPT_DEBUG_TIME) {
+		if($this->options & OPT_DEBUG_TIME_EXTRA) {
 			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[2];
 			$avg = array_sum($arr) / count($arr);

@@ -4,7 +4,7 @@
 *  @desc			PHPLinter autoloader.
 ----------------------------------------------------------------------+
 *  @file 			Lint_function.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     

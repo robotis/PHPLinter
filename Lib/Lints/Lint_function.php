@@ -4,7 +4,7 @@
 *  @desc			Lint a function.
 ----------------------------------------------------------------------+
 *  @file 			Lint_function.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     
@@ -26,13 +26,10 @@ namespace PHPLinter;
 class Lint_function extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyze function
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-//		echo "Lint_function::lint - {$this->element->name}\n";		
 		if($this->element->empty) 
 			$this->report('WAR_EMPTY_FUNCTION');
 			
@@ -50,9 +47,7 @@ class Lint_function extends BaseLint implements ILint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Process tokenstream
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
@@ -62,7 +57,6 @@ class Lint_function extends BaseLint implements ILint {
 		$_locals 	= array();
 		$branches 	= 0;
 		for($i = 0;$i < $tcnt;$i++) {
-//			echo Tokenizer::token_name($et[$i][0]) . "\n";
 			switch($et[$i][0]) {
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {

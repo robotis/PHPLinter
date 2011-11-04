@@ -4,7 +4,7 @@
 *  @desc			Lint a comment.
 ----------------------------------------------------------------------+
 *  @file 			Lint_comment.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     
@@ -39,11 +39,14 @@ class Lint_comment extends BaseLint implements ILint {
 				continue;
 			if(preg_match('/[^\s\/\*]+/u', $comment)) {
 				$empty = false;
-				if(preg_match('/(FIXME|TODO)/i', $comment, $m)) {
+				if(preg_match('/(FIXME|TODO)/iu', $comment, $m)) {
 					$this->report('INF_UNDONE', $m[1]);
 				}
-				if(preg_match('/(HACK)/i', $comment, $m)) {
+				if(preg_match('/(HACK)/iu', $comment, $m)) {
 					$this->report('WAR_HACK_MARKED');
+				}
+				if(preg_match('/(WTF)/iu', $comment, $m)) {
+					$this->report('INF_FOUND_WTF');
 				}
 				if(preg_match($this->conf['CON_WS_COMMENTED_CODE']['compare'], 
 				              $comment, $m)) {

@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Defined constants
 *  @file 			constants.php
-*  @author 			JÃ³hann T. MarÃ­usson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Jun 14, 2010
 *  @package 		phplinter
 *  @copyright     

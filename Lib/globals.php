@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Global variables
 *  @file 			globals.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Feb 15, 2011
 *  @package 		PHPLinter
 *  @copyright     

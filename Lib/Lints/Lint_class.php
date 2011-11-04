@@ -4,7 +4,7 @@
 *  @desc			Lint a class.
 ----------------------------------------------------------------------+
 *  @file 			Lint_class.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     
@@ -26,13 +26,10 @@ namespace PHPLinter;
 class Lint_class extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyze class
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-//		echo "Lint_class::lint - {$this->element->name}\n";
 		if($this->element->empty) {
 			$this->report('WAR_EMPTY_CLASS');
 		}
@@ -72,9 +69,7 @@ class Lint_class extends BaseLint implements ILint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Process tokenstream
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
@@ -85,7 +80,6 @@ class Lint_class extends BaseLint implements ILint {
 		$comment 	= false;
 		for($i = 0;$i < $tcnt;$i++) {
 			$token = $et[$i];
-//			echo Tokenizer::token_name($token[0]) . "\n";
 			switch($token[0]) {
 				case T_COMMENT:
 				case T_DOC_COMMENT:

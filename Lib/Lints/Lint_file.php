@@ -4,7 +4,7 @@
 *  @desc			Lint a file.
 ----------------------------------------------------------------------+
 *  @file 			Lint_file.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     
@@ -26,13 +26,10 @@ namespace PHPLinter;
 class Lint_file extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyze file
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-//		echo "Lint_file::lint - {$this->element->name}\n";
 		$fp = explode('/', $this->element->file);
 		$pretty_file_name = $fp[count($fp)-1];
 		$this->element->parent = $pretty_file_name;
@@ -45,12 +42,10 @@ class Lint_file extends BaseLint implements ILint {
 			}
 			$lnum++;
 		}
-//		$this->element->start_line = 1;
 		
 		$tcnt = $this->element->token_count;
 		$et = $this->element->tokens;
 		for($i = 0;$i < $tcnt;$i++) {
-//			echo Tokenizer::token_name($et[$i][0]) . "\n";
 			switch($et[$i][0]) {
 				case T_CLOSE_TAG:
 					if($this->find($i, T_OPEN_TAG, null) === false) {

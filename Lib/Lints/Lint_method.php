@@ -4,7 +4,7 @@
 *  @desc			Lint a method.
 ----------------------------------------------------------------------+
 *  @file 			Lint_method.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     

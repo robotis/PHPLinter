@@ -4,7 +4,7 @@
 *  @desc			Lint an interface.
 ----------------------------------------------------------------------+
 *  @file 			Lint_interface.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
 *  @copyright     
@@ -26,9 +26,7 @@ namespace PHPLinter;
 class Lint_interface extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return 	FIXME
+	* @desc 	Analyze interface
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {

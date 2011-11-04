@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Report generator
 *  @file 			Report.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @package 		phplinter
 *  @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
@@ -44,7 +44,6 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Derive final score for one file
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$penalty	Float
 	----------------------------------------------------------------------+
 	*/
@@ -57,7 +56,6 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Derive final score for one file
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$penalty	Float
 	----------------------------------------------------------------------+
 	*/
@@ -102,7 +100,6 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	CLI report
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$report		Array
 	----------------------------------------------------------------------+
 	*/
@@ -123,7 +120,6 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	HTML Report
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$report		Array
 	* @param	$penaltys	Array
 	----------------------------------------------------------------------+
@@ -145,6 +141,7 @@ class Report {
 			die("Unable to create `$this->output_dir`...\n");
 		}
 		$this->output_dir = realpath($this->output_dir);
+		Path::write_file($this->output_dir . '/html_report.css', $this->css());
 		foreach($report as $file => $rep) {
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 			$content = '';
@@ -198,7 +195,15 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create index files for report
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
+	* @return	String
+	----------------------------------------------------------------------+
+	*/
+	protected function css() {
+		return file_get_contents(dirname(__FILE__) . '/../html_report.css');
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Create index files for report
 	* @param	$urls		Array
 	* @param	$penaltys	Array
 	* @param	$path		String
@@ -269,7 +274,6 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	CSS Class for score
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$score	float
 	* @return	String
 	----------------------------------------------------------------------+
@@ -290,7 +294,6 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Fills in the correct directorys
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$parts	Array
 	* @param	$url	Array
 	* @param	$urls	Reference (Array)
@@ -343,22 +346,21 @@ class Report {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create HTML report
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$content	HTML
 	* @param	$depth		int
 	* @return	HTML
 	----------------------------------------------------------------------+
 	*/
 	protected function html($content, $depth=0) {
-		$r = $depth > 0 ? str_pad('', $depth*3, '../') : '../';
-		$out = '<!DOCTYPE html>';
-		$out .= '<html>';
-		$out .= '<head>';
-		$out .= '<link rel="stylesheet" type="text/css" href="'.$r.'style.css"/>';
-		$out .= '</head>';
-		$out .= '<body>';
+		$r = str_pad('', ($depth-1)*3, '../');
+		$out = "<!DOCTYPE html>\n";
+		$out .= "<html>\n";
+		$out .= "<head>\n";
+		$out .= '<link rel="stylesheet" type="text/css" href="'.$r.'html_report.css"/>';
+		$out .= "</head>\n";
+		$out .= "<body>\n";
 		$out .= $content;
-		$out .= '</body>';
+		$out .= "</body>\n";
 		$out .= '</html>';
 		return $out;
 	}

@@ -4,7 +4,7 @@
 * @desc			PHPLinter
 ----------------------------------------------------------------------+
 * @file 		Linter.php
-* @author 		Jóhann T. Maríusson <jtm@hi.is>
+* @author 		Jóhann T. Maríusson <jtm@robot.is>
 * @copyright     
 *    phplinter is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
@@ -348,7 +348,6 @@ class PHPLinter {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Output debug info
-	* @author 	Jóhann T. Maríusson <jtm@hi.is>
 	* @param	$out	String
 	* @param	$depth	int
 	----------------------------------------------------------------------+

@@ -138,7 +138,7 @@ class CLI {
 							break;
 						case 'T':
 							if($this->options & OPT_DEBUG_TIME) {
-								$this->options |= (OPT_DEBUG_TIME_EXTRA | OPT_VERBOSE);
+								$this->options |= OPT_DEBUG_TIME_EXTRA;
 							}
 							else $this->options |= OPT_DEBUG_TIME;
 							break;
@@ -247,7 +247,7 @@ class CLI {
 			if($this->options & OPT_DEBUG_TIME_EXTRA) {
 				$x = microtime(true) - $time;
 				$stats[] = $x;
-				echo "Time for file: $x seconds\n\n";	
+				$this->msg("Time for file: $x seconds\n");	
 			}
 			$this->stats[] = $stats;
 		}
@@ -258,8 +258,9 @@ class CLI {
 		if($this->options & OPT_DEBUG_TIME_EXTRA) {
 			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[2];
-			$avg = array_sum($arr) / count($arr);
-			echo "Avarage file lint time: $avg seconds\n";	
+			$cnt = count($arr);
+			$avg = array_sum($arr) / $cnt;
+			echo "$cnt files, Avarage time per file: $avg seconds\n";	
 		}
 		if($this->options & OPT_VERBOSE) {
 			$arr = array();

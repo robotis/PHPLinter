@@ -1,7 +1,16 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Conventions
+*  @desc	Conventions
+*  @flag	C8	L16
+*  @flag	C2	L16
+*  @flag	C6	L22
+*  @flag	C4	L22
+*  @flag	C1	L23
+*  @flag	C3	L35
+*  @flag	C5	L43
+*  @flag	C5	L43
+*  @score	9.92
 ----------------------------------------------------------------------+
 */
 class _Obad_name {

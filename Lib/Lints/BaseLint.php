@@ -50,6 +50,7 @@ class BaseLint {
 		$this->options 	= $options;
 		$this->switch	= false;
 		$this->branches	= 0;
+		$this->branch	= false;
 		$this->nesting  = 0;
 		$dir = dirname(__FILE__);
 		$this->globals = require $dir. '/../globals.php';
@@ -103,7 +104,7 @@ class BaseLint {
 	* @return	Bool
 	----------------------------------------------------------------------+
 	*/
-	private function report_on($flag) {
+	protected function report_on($flag) {
 		if($this->options & OPT_ONLY_SECURITY) {
 			if($flag[0] == 'S' || in_array($flag, array('I2','I3')))
 				return true;
@@ -134,18 +135,8 @@ class BaseLint {
 	*/
 	public function common_tokens($pos) {
 		$token = $this->element->tokens[$pos];
+		$nest = false;
 		switch($token[0]) {
-			case T_PUBLIC:
-			case T_PRIVATE:
-			case T_PROTECTED:
-				$this->element->visibility = true;
-				break;
-			case T_ABSTRACT:
-				$this->element->abstract = true;
-				break;
-			case T_STATIC:
-				$this->element->static = true;
-				break;
 			case T_CLOSE_TAG:
 				$this->report('REF_HTML_MIXIN', null, $token[2]);
 				break;
@@ -153,14 +144,7 @@ class BaseLint {
 			case T_REQUIRE_ONCE:
 			case T_INCLUDE:
 			case T_INCLUDE_ONCE:
-				$n = $pos;
-				while(isset($this->element->tokens[++$n]) 
-						&& $this->element->tokens[$n][0] != T_NEWLINE) {
-					if(in_array($this->element->tokens[$n][1], 
-							    array('$_REQUEST','$_POST','$_GET'))) {
-						$this->report('SEC_ERROR_INCLUDE', $token[1], $token[2]);
-					}
-				}
+				$this->sec_includes($pos);
 				break;	
 			case T_IS_EQUAL:
 			case T_IS_NOT_EQUAL:
@@ -168,35 +152,41 @@ class BaseLint {
 				$this->report('INF_COMPARE');
 				break;
 			case T_BACKTICK:
-				$i = $pos;
-				while(true) {
-					if(empty($this->element->tokens[++$i])) break;
-					$t = $this->element->tokens[$i];
-					if($t[0] == T_BACKTICK) break;
-					if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
-						$this->report('SEC_ERROR_REQUEST', $token[1], $token[2]);
-					}
-				}
+				$this->sec_backtick($pos);
 				break;
 			case T_IF:
 			case T_ELSE:
 			case T_ELSEIF:
 			case T_THEN:
+			case T_FOR:
+			case T_FOREACH:
+			case T_WHILE:
+				if($this->branch === false)
+					$this->branch = $this->nesting;
 				$this->branches++;
+				$nest = true;
 				break;
 			case T_CURLY_CLOSE:
 				$this->nesting--;
+				if($this->switch === $this->nesting) {
+					$this->switch = false;
+				}
 				break;
 			case T_CURLY_OPEN:
-				$this->nesting++;
-				if($this->nesting > $this->conf['REF_DEEP_NESTING']['compare'])
-					$this->report('REF_DEEP_NESTING', $this->nesting, $token[2]);
+				$this->branch = false;
+				break;
+			case T_SEMICOLON:
+				if($this->branch !== false) {
+					$this->nesting = $this->branch;
+					$this->branch = false;
+				}
 				break;
 			case T_SWITCH:
-				if($this->switch) {
+				if($this->switch !== false) {
 					$this->report('REF_NESTED_SWITCH', null, $token[2]);
 				}
-				$this->switch = true;
+				$nest = true;
+				$this->switch = $this->nesting;
 				$this->branches++;
 				break;
 			case T_STRING:
@@ -210,22 +200,10 @@ class BaseLint {
 				}
 				break;		
 		}
-	}
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	Parse a string token
-	* @param	int	current position
-	----------------------------------------------------------------------+
-	*/
-	protected function parse_string($pos) {
-		$token = $this->element->tokens[$pos];
-		$nt = $this->next($pos);
-		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
-			$this->called[] = $token[1];
-			$this->security($pos);
-		}
-		if(in_array($token[1], $this->conf['DPR_DEPRICATED_STRING']['compare'])) {
-			$this->report('DPR_DEPRICATED_STRING', $token[1], $token[2]);		
+		if($nest) {
+			$this->nesting++;
+			if($this->nesting > $this->conf['REF_DEEP_NESTING']['compare'])
+				$this->report('REF_DEEP_NESTING', $this->nesting, $token[2]);
 		}
 	}
 	/**
@@ -243,54 +221,124 @@ class BaseLint {
 	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
-	protected function security($at) {
+	protected function security($pos) {
 		if($this->report_on('S')) {
-			$et = $this->element->tokens;
-			$token = $et[$at];
-			foreach(array(
-					array('sec_1', 'INF_UNSECURE', true),
-					array('sec_2', 'INF_UNSECURE', true),
-					array('sec_3', 'INF_UNSECURE', false),
-					array('sec_4', 'INF_WARNING_DISCLOSURE', false)
-				) as $_) {
-				if(in_array($token[1], $this->$_[0])) {
-					$this->report($_[1], $token[1], $token[2]);
-					$i = $at;
-					if($_[2]) {
-						while($et[++$i][0] != T_PARENTHESIS_CLOSE) {
-							if(in_array($et[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
-								$this->report('SEC_ERROR_REQUEST', $token[1], $token[2]);
-							}
-						}
-					}
-				}
-			}
-			/* Callbacks */
+			$token = $this->element->tokens[$pos];
+			$this->sec_strings($pos);
 			if(in_array($token[1], array_keys($this->sec_5))) {
-				$this->report('INF_UNSECURE', $token[1], $token[2]);
-				foreach($this->sec_5[$token[1]] as $_) {
-					$pos = 0;
-					$i = $at;
-					while($et[++$i][0] != T_PARENTHESIS_CLOSE) {
-						if(in_array($et[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
-							/* In callback position */
-							if($pos == $_) {
-								$this->report('SEC_ERROR_CALLBACK', $token[1], $token[2]);
-							}
-						}
-						$pos++;
-					}
-					/* Last position */
-					if(in_array($et[$i-1][1], array('$_REQUEST','$_POST','$_GET')) 
-						&& $_ == -1) {
-						$this->report('SEC_ERROR_CALLBACK', $token[1], $token[2]);
-					}
-				}
+				$this->sec_callbacks($pos);
 			}
 			/* Special */
 			elseif($token[1] == 'preg_replace') {
 				// check for '//e' flag
 			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Search for security infractions in callback positions
+	* @param	int
+	----------------------------------------------------------------------+
+	*/
+	protected function sec_callbacks($pos) {
+		$o = $this->element->tokens;
+		$t = $o[$pos];
+		$this->report('INF_UNSECURE', $t[1], $t[2]);
+		foreach($this->sec_5[$t[1]] as $_) {
+			$p = 0;
+			$i = $pos;
+			while($o[++$i][0] != T_PARENTHESIS_CLOSE) {
+				if(in_array($o[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+					/* In callback position */
+					if($p == $_) {
+						$this->report('SEC_ERROR_CALLBACK', $t[1], $t[2]);
+					}
+				}
+				$p++;
+			}
+			/* Last position */
+			if(in_array($o[$i-1][1], array('$_REQUEST','$_POST','$_GET')) 
+				&& $_ == -1) {
+				$this->report('SEC_ERROR_CALLBACK', $t[1], $t[2]);
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Search for security infractions in strings
+	* @param	int
+	----------------------------------------------------------------------+
+	*/
+	protected function sec_strings($pos) {
+		$o = $this->element->tokens;
+		$t = $o[$pos];
+		foreach(array(
+					array('sec_1', 'INF_UNSECURE', true),
+					array('sec_2', 'INF_UNSECURE', true),
+					array('sec_3', 'INF_UNSECURE', false),
+					array('sec_4', 'INF_WARNING_DISCLOSURE', false)
+				) as $_) {
+			if(in_array($t[1], $this->$_[0])) {
+				$this->report($_[1], $t[1], $t[2]);
+				$i = $pos;
+				if($_[2]) {
+					while($o[++$i][0] != T_PARENTHESIS_CLOSE) {
+						if(in_array($o[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+							$this->report('SEC_ERROR_REQUEST', $t[1], $t[2]);
+						}
+					}
+				}
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Search for security infractions in includes
+	* @param	int
+	----------------------------------------------------------------------+
+	*/
+	protected function sec_includes($pos) {
+		$i = $pos;
+		$o = $this->element->tokens;
+		while(isset($o[++$i]) && $o[$i][0] != T_NEWLINE) {
+			if(in_array($o[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+				$this->report('SEC_ERROR_INCLUDE', $o[$pos][1], $o[$pos][2]);
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Search for security infractions in backticks
+	* @param	int
+	----------------------------------------------------------------------+
+	*/
+	protected function sec_backtick($pos) {
+		$i = $pos;
+		$o = $this->element->tokens;
+		while(true) {
+			if(empty($o[++$i])) break;
+			$t = $o[$i];
+			if($t[0] == T_BACKTICK) break;
+			if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
+				$this->report('SEC_ERROR_REQUEST', $o[$pos][1], $o[$pos][2]);
+			}
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Parse a string token
+	* @param	int	current position
+	----------------------------------------------------------------------+
+	*/
+	protected function parse_string($pos) {
+		$token = $this->element->tokens[$pos];
+		$nt = $this->next($pos);
+		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
+			$this->called[] = $token[1];
+			$this->security($pos);
+		}
+		if(in_array($token[1], $this->conf['DPR_DEPRICATED_STRING']['compare'])) {
+			$this->report('DPR_DEPRICATED_STRING', $token[1], $token[2]);		
 		}
 	}
 	/**
@@ -338,10 +386,14 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
+		$this->element->dochead = false;
 		if(!empty($this->element->comments)) {
 			foreach($this->element->comments as $element) {
+				if($element->type === T_DOC_COMMENT) $this->element->dochead = true;
 				$lint = new Lint_comment($element, $this->conf, $this->options);
-				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
+				foreach($lint->bind($this)->lint() as $_) {
+					$this->reports[] = $_;
+				}
 				$this->penalty += $lint->penalty();
 			}
 		}
@@ -388,8 +440,11 @@ class BaseLint {
 					return $s == $ll;
 			}));
 			if($cnt == 1 && !in_array($ll, $args)) {
-				if(isset($this->locals[T_VARIABLE]) && !in_array($ll, $this->locals[T_VARIABLE]))
+				if(isset($this->locals[T_VARIABLE]) 
+					&& !in_array($ll, $this->locals[T_VARIABLE]))
+				{
 					$this->report('WAR_UNUSED_VAR', $ll);
+				}
 			}
 		}
 	}

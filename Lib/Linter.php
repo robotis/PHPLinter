@@ -28,24 +28,35 @@ require_once dirname(__FILE__) . '/constants.php';
 * @desc 	Wrapper class for element
 ----------------------------------------------------------------------+
 */
-class Element {}
+class Element {
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Create blank element
+	----------------------------------------------------------------------+
+	*/
+	public function __construct() {
+		$this->visibility = false;
+		$this->abstract = false;
+		$this->static = false;
+	}
+}
 /**
 ----------------------------------------------------------------------+
 * @desc 	Linter. Measures code and splits into elements.
 ----------------------------------------------------------------------+
 */
 class PHPLinter {
-	/* */
+	/* @var Array */
 	protected $options;
-	/* */
+	/* @var Array */
 	protected $conf;
-	/* */
+	/* @var Object */
 	protected $element;
-	/* */
+	/* @var float */
 	protected $score;
-	/* */
+	/* @var Array */
 	protected $names;
-	/* */
+	/* @var Array */
 	protected $called;
 	/**
 	----------------------------------------------------------------------+
@@ -130,30 +141,29 @@ class PHPLinter {
 		$element->tokens = array();
 		$element->start_line = 1;
 		$element->depth = 0;
+		$next_element = new Element();
 		
-		$comments = array();
 		for($i = 0;$i < $this->tcount;$i++) {
 			switch($this->tokens[$i][0]) {
-				case T_DOC_COMMENT:
-					$element->tokens[] = $this->tokens[$i];
-					$comments[] = $this->measure_comment($i, 0, $i);
-					break;
 				case T_COMMENT:
-					$element->tokens[] = $this->tokens[$i];
-					$element->comments[] = $this->measure_comment($i, 0, $i);
+				case T_DOC_COMMENT:
+					$comment = $this->measure_comment($i, 0, $i);
+					if($comment->type === T_DOC_COMMENT) {
+						$next_element->comments[] = $comment;
+					} else {
+						$element->comments[] = $comment;
+					}
 					break;
 				case T_CLASS:
 				case T_FUNCTION:
 				case T_INTERFACE:
-					$inelem = new Element();
-					$inelem->type = $this->tokens[$i][0];
-					$inelem->name = $this->tokens[$this->find($i, T_STRING)][1];
-					$inelem->depth = 1;
-					$inelem->owner = $this->file;
-					$inelem->comments = $comments;
-					$element->tokens[] = array($inelem->type);
-					$element->elements[] = $this->measure($i+1, $inelem, $i);
-					$comments = array();
+					$next_element->type = $this->tokens[$i][0];
+					$next_element->name = $this->tokens[$this->find($i, T_STRING)][1];
+					$next_element->depth = 1;
+					$next_element->owner = $this->file;
+					$element->tokens[] = array($next_element->type);
+					$element->elements[] = $this->measure($i+1, $next_element, $i);
+					$next_element = new Element();
 					$element->tokens[] = array($this->tokens[$i]);
 					break;
 				default:
@@ -200,13 +210,8 @@ class PHPLinter {
 				,$element->owner
 				),$element->depth);
 				
-		$comments = array();
-		$visibility = false;
+		$next_element = new Element();
 		$this->names[] = $element->name;
-		// Save tokens from last newline
-		foreach(range($start, $pos-1) as $_)
-			$element->tokens[] = $this->tokens[$_];
-		// measure
 		for($i = $pos, $nesting = 0; $i < $this->tcount; $i++) {
 			if($nesting > 0 
 				&& $element->empty
@@ -239,15 +244,21 @@ class PHPLinter {
 				case T_PUBLIC:
 				case T_PRIVATE:
 				case T_PROTECTED:
-					$visibility = true;
+					$next_element->visibility = true;
 					break;
-				case T_DOC_COMMENT:
-					$element->tokens[] = $this->tokens[$i];
-					$comments[] = $this->measure_comment($i, $element->depth, $i);
+				case T_ABSTRACT:
+					$next_element->abstract = true;
+					break;
+				case T_STATIC:
+					$next_element->static = true;
 					break;
 				case T_COMMENT:
 					$element->tokens[] = $this->tokens[$i];
 					$element->comments[] = $this->measure_comment($i, $element->depth, $i);
+					break;
+				case T_DOC_COMMENT:
+					$element->tokens[] = $this->tokens[$i];
+					$next_element->comments[] = $this->measure_comment($i, $element->depth, $i);
 					break;
 				case T_CLASS:
 				case T_INTERFACE:
@@ -259,25 +270,27 @@ class PHPLinter {
 						$type = T_ANON_FUNCTION;
 					} else {
 						$name = $this->tokens[$next][1];
-						$type = (in_array($element->type, array(T_CLASS, T_INTERFACE))
-							&& $this->tokens[$i][0] == T_FUNCTION)
-							? T_METHOD 
-							: $this->tokens[$i][0];
+						if(in_array($element->type, array(T_CLASS, T_INTERFACE)) 
+							&& $this->tokens[$i][0] == T_FUNCTION) 
+						{
+							$type = T_METHOD;
+							if($element->type === T_INTERFACE) {
+								$next_element->abstract = true;
+							}
+						}
 					}
 					if($type === T_METHOD || $type === T_ANON_FUNCTION) {
 						$owner = $element->name;
 					} else $owner = $element->owner;
+
 					// Recurs
-					$inelem = new Element();
-					$inelem->type = $type;
-					$inelem->name = $name;
-					$inelem->depth = $element->depth + 1;
-					$inelem->owner = $owner;
-					$inelem->comments = $comments;
-					$inelem->visibility = $visibility;
+					$next_element->type = $type;
+					$next_element->name = $name;
+					$next_element->depth = $element->depth + 1;
+					$next_element->owner = $owner;
 					$element->tokens[] = array($type, '*');
-					$element->elements[] = $this->measure($i+1, $inelem, $i);
-					$comments = array();
+					$element->elements[] = $this->measure($i+1, $next_element, $i);
+					$next_element = new Element();
 					break;
 				default:
 					$element->tokens[] = $this->tokens[$i];
@@ -325,7 +338,7 @@ class PHPLinter {
 		$element = new Element();
 		$element->start = $pos;
 		$element->start_line = $this->tokens[$pos][2];
-		$element->type = T_DOC_COMMENT;
+		$element->type = $this->tokens[$pos][0];
 		$element->name = 'comment';
 		
 		$this->debug("In comment at {$element->start_line}", $depth);
@@ -357,7 +370,6 @@ class PHPLinter {
 			if(!isset($this->tokens[$i+1])) {
 				return false;
 			}
-//			echo Tokenizer::token_name($this->tokens[$i+1][0]) . "\n";
 			if(in_array($this->tokens[++$i][0], $token)) {
 				return $i;
 			}
@@ -411,7 +423,7 @@ class PHPLinter {
 	----------------------------------------------------------------------+
 	*/
 	public function score() {
-		return 10.0 + $this->score;
+		return round(floatval(10.0 + $this->score), 2);
 	}
 	/**
 	----------------------------------------------------------------------+

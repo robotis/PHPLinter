@@ -1,7 +1,28 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-* @desc 	Test
+* 	@desc 	Test
+*	@flag	W4	L28
+*	@flag	I2	L31
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag 	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	W3	L32
+*	@flag	R6	L32
+*	@flag	R13	L32
+*	@score	3.60
+
 ----------------------------------------------------------------------+
 */
 function test() {

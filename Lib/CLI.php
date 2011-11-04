@@ -123,9 +123,11 @@ class CLI {
 							$this->options |= OPT_VERBOSE;
 							break;
 						case 'V':
-							if($this->options & OPT_DEBUG)
+							if($this->options & OPT_DEBUG) {
 								$this->options |= OPT_DEBUG_EXTRA;
-							else $this->options |= OPT_DEBUG;
+							} else {
+								$this->options |= OPT_DEBUG;
+							}
 							break;
 						case 'T':
 							if($this->options & OPT_DEBUG_TIME) {

@@ -33,14 +33,13 @@ class Lint_method extends BaseLint implements ILint {
 	public function _lint() {
 //		echo "Lint_method::lint - {$this->element->name}\n";
 		$this->add_parent_data($this->element->name, T_METHOD);
-		$this->element->abstract = false;
 		
 		$this->process_tokens();
-		
+
 		if($this->element->empty && !$this->element->abstract) 
 			$this->report('WAR_EMPTY_METHOD');
 			
-		if(empty($this->element->comments))
+		if(!$this->element->dochead)
 			$this->report('ERR_NO_DOCHEAD_METHOD');
 			
 		if(!$this->element->visibility)
@@ -65,6 +64,7 @@ class Lint_method extends BaseLint implements ILint {
 		$_locals 	= array();
 		
 		for($i = 0;$i < $tcnt;$i++) {
+//			echo Tokenizer::token_name($et[$i][0]) . "\n";
 			switch($et[$i][0]) {
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
@@ -81,10 +81,6 @@ class Lint_method extends BaseLint implements ILint {
 					} else {
 						$_locals[] = $et[$i][1];
 					}
-					break;
-				case T_SEMICOLON;
-					if(isset($abstract))
-						break 2;
 					break;
 				case T_BACKTICK:
 					$pos = $et[$i];

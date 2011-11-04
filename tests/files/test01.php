@@ -1,9 +1,13 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Test empty stuff
-*  @file 			test01.php
-*  @package 		tests
+*  @desc	Test empty stuff
+*  @flag	W11	L13
+*  @flag	W12	L25	
+*  @flag	W13	L32
+*  @flag	W14	L51
+*  @flag	C9	L52
+*  @score	8.79
 ----------------------------------------------------------------------+
 */
 class TEST_EMPTY{}

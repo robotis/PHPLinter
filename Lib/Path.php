@@ -52,7 +52,7 @@ class Path {
 	* @return	Array
 	----------------------------------------------------------------------+
 	*/
-	public function find($directory, $match, $ignore=null) {
+	public static function find($directory, $match, $ignore=null) {
 		ob_start();
 		system('find ' . $directory . ' -type f');
 		$files = explode("\n", ob_get_clean());
@@ -84,9 +84,6 @@ class Path {
 	            unlink( $file );
 	        }
 	    }
-//	    if(is_dir($root)) {
-//	    	rmdir( $root ); 
-//	    }
 	    return true;
 	}
 	/**

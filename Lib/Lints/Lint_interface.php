@@ -40,7 +40,7 @@ class Lint_interface extends BaseLint implements ILint {
 		if($this->element->empty) 
 			$this->report('WAR_EMPTY_INTERFACE');
 		
-		if(empty($this->element->comments))
+		if(!$this->element->dochead)
 			$this->report('ERR_NO_DOCHEAD_INTERFACE');
 			
 		$len = $this->element->length;

@@ -80,6 +80,7 @@ class Tokenizer {
 				}
 				continue;
 			}
+			
 			// Make distinction
 			if($token[0] == T_STRING) {
 				$token[0] = self::tokenString($token[1]);
@@ -88,13 +89,21 @@ class Tokenizer {
 			// Save token
 			$out[] = $token;
 		}
-		if($skip_whitespace) {
-			foreach($out as $_) {
-				if($_[0] !== T_WHITESPACE) $ret[] = $_;
-			}
-		}
-		return empty($ret) ? $out : $ret;
+		return $skip_whitespace ? self::strip_whitespace($out) : $out;
 	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Strip all whitespace tokens from stream
+	* @param	Array
+	* @return 	Array
+	----------------------------------------------------------------------+
+	*/
+	public static function strip_whitespace($tokens) {
+		foreach($tokens as $_) {
+			if($_[0] !== T_WHITESPACE) $ret[] = $_;
+		}
+		return empty($ret) ? $tokens : $ret;
+	} 
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create new tokens from chars

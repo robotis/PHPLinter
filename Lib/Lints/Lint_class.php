@@ -39,7 +39,7 @@ class Lint_class extends BaseLint implements ILint {
 		
 		$this->process_tokens();
 		
-		if(empty($this->element->comments))
+		if(!$this->element->dochead)
 			$this->report('ERR_NO_DOCHEAD_CLASS');
 			
 		$regex = $this->conf['CON_CLASS_NAME']['compare'];

@@ -5,7 +5,7 @@ A simple fast lint and score for PHP files.
 
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 
-	-U: Use conf-file FILE.
+	-U: Use rules-file FILE.
 	-I: Report extra information (default off).
 	-C: Dont report conventions.
 	-W: Dont report warnings.

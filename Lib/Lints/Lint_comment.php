@@ -39,17 +39,23 @@ class Lint_comment extends BaseLint implements ILint {
 				continue;
 			if(preg_match('/[^\s\/\*]+/u', $comment)) {
 				$empty = false;
-				if(preg_match('/(FIXME|TODO)/iu', $comment, $m)) {
-					$this->report('INF_UNDONE', $m[1]);
-				}
-				if(preg_match('/(HACK)/iu', $comment, $m)) {
-					$this->report('WAR_HACK_MARKED');
-				}
-				if(preg_match('/(WTF)/iu', $comment, $m)) {
-					$this->report('INF_FOUND_WTF');
+				if(preg_match('/(FIXME|TODO|HACK|WTF)/iu', $comment, $m)) {
+					switch(mb_strtolower($m[1])) {
+						case 'fixme':
+						case 'todo':
+							$this->report('INF_UNDONE', $m[1]);
+							break;
+						case 'hack':
+							$this->report('WAR_HACK_MARKED');
+							break;
+						case 'wtf':
+							$this->report('INF_FOUND_WTF');
+							break;
+					}
 				}
 				if(preg_match($this->rules['CON_WS_COMMENTED_CODE']['compare'], 
-				              $comment, $m)) {
+				              $comment, $m)) 
+				{
 					$this->report('CON_WS_COMMENTED_CODE');
 				}
 			}

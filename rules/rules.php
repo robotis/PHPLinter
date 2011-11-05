@@ -95,6 +95,15 @@ return array(
 		'message' => 'Empty comment',
 		'flag' => 'C9',
 	),
+	'CON_FILE_CLASSES' => array(
+		'message_extras' => 'Too many classes defined in file %d(%d)',
+		'flag' => 'C10',
+		'compare' => 1
+	),
+	'CON_PROPERTY_DEFINED_IN_METHOD' => array(
+		'message_extra' => 'Property defined in method: %s',
+		'flag' => 'C11',
+	),
 	/*
 	 *	Warnings 
 	 */
@@ -263,8 +272,28 @@ return array(
 	),	
 	'REF_DEEP_NESTING' => array(
 		'message_extras' => 'Nesting level to deep %d(%d)',
-		'flag' => 'R13',
+		'flag' => 'R14',
 		'compare' => 6
+	),
+	'REF_FILE_FUNCTIONS' => array(
+		'message_extras' => 'Too many functions in file %d(%d)',
+		'flag' => 'R15',
+		'compare' => 50
+	),
+	'REF_CLASS_METHODS' => array(
+		'message_extras' => 'Too many methods in class %d(%d)',
+		'flag' => 'R16',
+		'compare' => 50
+	),
+	'REF_CLASS_PROPERTYS' => array(
+		'message_extras' => 'Too many propertys in class %d(%d)',
+		'flag' => 'R17',
+		'compare' => 50
+	),
+	'REF_FILE_GLOBALS' => array(
+		'message_extras' => 'Too many globals in file %d(%d)',
+		'flag' => 'R18',
+		'compare' => 50
 	),
 	/*
 	 * Security 

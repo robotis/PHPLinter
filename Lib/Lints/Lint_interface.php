@@ -49,10 +49,9 @@ class Lint_interface extends BaseLint implements ILint {
 		if(!preg_match($regex, $this->element->name))
 			$this->report('CON_INTERFACE_NAME', $regex);
 			
-		$tcnt = count($this->element->tokens);
 		$et = $this->element->tokens;
 		$locals 	= array();
-		for($i = 0;$i < $tcnt;$i++) {
+		for($i = 0;$i < $this->element->token_count;$i++) {
 			switch($et[$i][0]) {
 				default:
 					$this->common_tokens($i);

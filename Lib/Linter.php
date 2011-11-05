@@ -80,7 +80,7 @@ class PHPLinter {
 			
 			$this->rules = require dirname(__FILE__) . '/../rules/rules.php';
 			$this->globals = require dirname(__FILE__) . '/globals.php';
-			if(is_array($rules)) {
+			if(is_array($rules) && !empty($rules)) {
 				foreach($rules as $k=>$_)
 					$this->rules[$k] = array_merge($this->rules[$k], $_);
 			}
@@ -192,9 +192,9 @@ class PHPLinter {
 					$next_element->name = $this->tokens[$this->find($i, T_STRING)][1];
 					$next_element->depth = 1;
 					$next_element->owner = $this->file;
+					$element->tokens[] = $this->tokens[$i];
 					$element->elements[] = $this->measure($i+1, $next_element, $i);
 					$next_element = new Element();
-					$element->tokens[] = $this->tokens[$i];
 					break;
 				default:
 					if(!isset($element->start)) {

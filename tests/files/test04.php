@@ -2,14 +2,15 @@
 /**
 ----------------------------------------------------------------------+
 *  @desc	Conventions
-*  @flag	C2	L15
-*  @flag	C6	L21
-*  @flag	C4	L21
-*  @flag	C1	L22
-*  @flag	C3	L34
-*  @flag	C5	L42
-*  @flag	C5	L42
-*  @score	9.93
+*  @flag	C8	L16
+*  @flag	C2	L16
+*  @flag	C6	L22
+*  @flag	C4	L22
+*  @flag	C1	L23
+*  @flag	C3	L35
+*  @flag	C5	L43
+*  @flag	C5	L43
+*  @score	9.92
 ----------------------------------------------------------------------+
 */
 class _Obad_name {

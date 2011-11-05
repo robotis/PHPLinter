@@ -54,6 +54,8 @@ Ruleset (some rules are not active)
     * C7: Possible code commented out
     * C8: Property after method declaration in class
     * C9: Empty comment
+    * C10: Too many classes defined in file. Default(1)
+    * C11: Property defined in method
 
 (D)ocumentation
 
@@ -70,12 +72,11 @@ Ruleset (some rules are not active)
     * W2: PHP4 style variable
     * W3: Unused argument
     * W4: Unused variable
-    * W8: Eval used
-    * W9: Public property
-    * W10: Empty class
-    * W11: Empty function
-    * W12: Empty method
-    * W13: Empty interface
+    * W4: Unused property
+    * W11: Empty class
+    * W12: Empty function
+    * W13: Empty method
+    * W14: Empty interface
     * W16: Hack marked
     * W17: Whitespace after closing tag 
     * W18: Token depricated. Default (global)
@@ -94,7 +95,11 @@ Ruleset (some rules are not active)
     * R11: Nested switch
     * R12: Static and nonstatic methods mixed in class
     * R13: To many arguments in use clause
-    * R14: Nesting level to deep
+    * R14: Nesting level to deep. Default(6)
+    * R15: Too many functions in file. Default(50)
+    * R16: Too many methods in class. Default(50)
+    * R17: Too many propertys in class. Default(50)
+    * R18: Too many globals in file. Default(50)
     
 (S)ecurity
 

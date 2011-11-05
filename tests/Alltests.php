@@ -38,6 +38,7 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	public function extract_test($file) {
 		$flags = array();
 		$lines = array();
+		$rules = array();
 		$score = false;
 		foreach(file(PLROOT . '/tests/files/' . $file) as $line) {
 			if(preg_match('/@flag([\sICWDRES0-9]+)L([0-9]+)/', $line, $m)) {
@@ -47,11 +48,14 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 			elseif(preg_match('/@score([\-\s\.0-9]+)/', $line, $m)) {
 				$score = round(floatval(trim($m[1])), 2);
 			}
+			elseif(preg_match('/@rule([\sA-Z_]+)C(.*)/', $line, $m)) {
+				$rules[trim($m[1])] = array('compare'=>trim($m[2]));
+			}
 			elseif(preg_match('/\*\//', $line, $m)) {
 				break;
 			}
 		}
-		return array($flags, $lines, $score);
+		return array($flags, $lines, $score, $rules);
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -61,10 +65,10 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	public function test_run() {
 		foreach(scandir(PLROOT . '/tests/files') as $_) {
         	if($_[0] === '.') continue;
-        	list($flags, $lines, $score) = $this->extract_test($_);
+        	list($flags, $lines, $score, $rules) = $this->extract_test($_);
         	$fc = count($flags);
         	if($score !== false) {
-        		$ll = new PHPLinter\PHPLinter(PLROOT . '/tests/files/' . $_, OPT_INFORMATION);
+        		$ll = new PHPLinter\PHPLinter(PLROOT . '/tests/files/' . $_, OPT_INFORMATION, $rules);
         		$report = $ll->lint();
         		$this->assertEquals($score, $ll->score(), $_);
         		$this->assertEquals(count($report), $fc, $_);

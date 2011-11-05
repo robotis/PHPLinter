@@ -71,23 +71,9 @@ class Lint_method extends BaseLint implements ILint {
 					break;
 				case T_VARIABLE:
 					if($et[$i][1] == '$this') {
-						$j = $this->find($i, T_STRING, 3);
-						if($j !== false) {
-							$this->add_parent_data($et[$j][1], T_VARIABLE);
-							$i = $j;
-						}
+						$this->parent_local($i);
 					} else {
 						$_locals[] = $et[$i][1];
-					}
-					break;
-				case T_BACKTICK:
-					$pos = $et[$i];
-					while(true) {
-						$t = $et[++$i];
-						if($t[0] == T_BACKTICK) break;
-						if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
-							$this->report('SEC_ERROR_REQUEST', $et[$pos][1]);
-						}
 					}
 					break;
 				default:
@@ -109,5 +95,22 @@ class Lint_method extends BaseLint implements ILint {
 		if(!$this->element->abstract)
 			$this->process_args($locals, $args);
 		$this->process_locals($locals, $_locals, $args);
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Process $this token
+	----------------------------------------------------------------------+
+	*/
+	protected function parent_local(&$pos) {
+		$o = $this->element->tokens;
+		$j = $this->find($pos, T_STRING);
+		if($j !== false) {
+			$k = $this->next($j);
+			if($k === T_PARENTHESIS_OPEN)
+				$this->add_parent_data($o[$j][1], T_METHOD);
+			else
+				$this->add_parent_data($o[$j][1], T_VARIABLE);
+			$pos = $j;
+		}
 	}
 }

@@ -45,6 +45,9 @@ class Lint_file extends BaseLint implements ILint {
 		
 		$tcnt = $this->element->token_count;
 		$et = $this->element->tokens;
+		$classes = 0;
+		$functions = 0;
+		$globals = array();
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
 				case T_CLOSE_TAG:
@@ -58,13 +61,30 @@ class Lint_file extends BaseLint implements ILint {
 						$this->common_tokens($i);
 					}
 					break;
+				case T_CLASS:
+					$classes++;
+					break;
+				case T_FUNCTION:
+					$functions++;
+					break;
+				case T_VARIABLE:
+					$globals[] = $et[$i][1];
+					break;
 				default:
 					$this->common_tokens($i);
 					break;
 			}
 		}
-		if($this->branches > $this->rules['REF_BRANCHES']['compare'])
-			$this->report('REF_BRANCHES', $this->branches);
+		$globals = array_unique($globals);
+		$compares = array(
+			'REF_BRANCHES' => $this->branches,
+			'CON_FILE_CLASSES' => $classes,
+			'REF_FILE_FUNCTIONS' => $functions,
+			'REF_FILE_GLOBALS' => count($globals)
+		);
+		foreach($compares as $k => $_)
+			if($_ > $this->rules[$k]['compare'])
+				$this->report($k, $_);
 			
 		return $this->reports;
 	}

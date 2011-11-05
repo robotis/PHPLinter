@@ -97,7 +97,7 @@ class Lint_class extends BaseLint implements ILint {
 						$this->report('CON_MISPLACED_PROPERTY');
 					$locals[] = substr($token[1], 1);
 					break;
-				case T_METHOD:
+				case T_FUNCTION:
 					$comment = false;
 					$methods++;
 					break;
@@ -106,11 +106,32 @@ class Lint_class extends BaseLint implements ILint {
 					break;
 			}
 		}
+		$lcnt = $this->process_locals($locals);
+		$compares = array(
+			'REF_CLASS_METHODS' => $methods,
+			'REF_CLASS_PROPERTYS' => $lcnt,
+		);
+		foreach($compares as $k => $_)
+			if($_ > $this->rules[$k]['compare'])
+				$this->report($k, $_);
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Process locals at class scope
+	----------------------------------------------------------------------+
+	*/
+	protected function process_locals($locals) {
+		$locals = array_unique($locals);
 		if(empty($this->locals[T_VARIABLE])) 
 			$this->locals[T_VARIABLE] = array();
 		$vars = array_diff($locals, $this->locals[T_VARIABLE]);
 		foreach($vars as $_) {
 			$this->report('WAR_UNUSED_PROPERTY', $_);	
 		}
-	}
+		$udef = array_diff($this->locals[T_VARIABLE], $locals);
+		foreach($udef as $_) {
+			$this->report('CON_PROPERTY_DEFINED_IN_METHOD', $_, $_);	
+		}
+		return count($udef) + count($locals);
+	} 
 }

@@ -14,6 +14,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-D: Dont report documentation warnings.
 	-X: Dont report security warnings.
 	-O: Security report only.
+	-M: View scope map.
 	-S: Score only.
 	-r: Use following rules (| delimited).
 	-v: Verbose mode
@@ -26,6 +27,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-H: HTML report.
 	-w: Overwrite output directory. (Warning: Will empty directory)
 	-i: ignore PATTERN. (Ignore files in directory mode)
+
 
 Ruleset (some rules are not active)
 
@@ -81,6 +83,7 @@ Ruleset (some rules are not active)
     * W16: Hack marked
     * W17: Whitespace after closing tag 
     * W18: Token depricated. Default (global)
+    * W19: Whitespace before first open tag
 
 (R)efactor
 
@@ -101,6 +104,7 @@ Ruleset (some rules are not active)
     * R16: Too many methods in class. Default(50)
     * R17: Too many propertys in class. Default(50)
     * R18: Too many globals in file. Default(50)
+    * R19: HTML output before first open tag
     
 (S)ecurity
 

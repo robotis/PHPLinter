@@ -40,7 +40,7 @@ class Lint_anon_function extends BaseLint implements ILint {
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
 						$args = $this->parse_args($i);
-						if(count($args) > $this->conf['REF_ARGUMENTS']['compare'])
+						if(count($args) > $this->rules['REF_ARGUMENTS']['compare'])
 							$this->report('REF_ARGUMENTS', count($args));
 					}
 					break;
@@ -51,7 +51,7 @@ class Lint_anon_function extends BaseLint implements ILint {
 					$i = $this->find($i, T_PARENTHESIS_OPEN);
 					$_args = $this->parse_args($i);
 					$this->add_parent_data($_args, T_VARIABLE);
-					if(count($_args) > $this->conf['REF_USE_ARGUMENTS']['compare'])
+					if(count($_args) > $this->rules['REF_USE_ARGUMENTS']['compare'])
 						$this->report('REF_USE_ARGUMENTS', count($_args));
 					$args = array_merge($args, $_args);
 					break;
@@ -67,7 +67,7 @@ class Lint_anon_function extends BaseLint implements ILint {
 			'REF_FUNCTION_LENGTH' => $this->element->length
 		);
 		foreach($compares as $k => $_)
-			if($_ > $this->conf[$k]['compare'])
+			if($_ > $this->rules[$k]['compare'])
 				$this->report($k, $_);
 				
 		$this->process_args($locals, $args);	

@@ -31,7 +31,6 @@ class Lint_method extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-//		echo "Lint_method::lint - {$this->element->name}\n";
 		$this->add_parent_data($this->element->name, T_METHOD);
 		
 		$this->process_tokens();
@@ -45,7 +44,7 @@ class Lint_method extends BaseLint implements ILint {
 		if(!$this->element->visibility)
 			$this->report('CON_NO_VISIBILITY');
 			
-		$regex = $this->conf['CON_METHOD_NAME']['compare'];
+		$regex = $this->rules['CON_METHOD_NAME']['compare'];
 		if(!(substr($this->element->name, 0, 2) == '__') 
 			&& !preg_match($regex, $this->element->name))
 			$this->report('CON_METHOD_NAME', $regex);
@@ -64,7 +63,6 @@ class Lint_method extends BaseLint implements ILint {
 		$_locals 	= array();
 		
 		for($i = 0;$i < $tcnt;$i++) {
-//			echo Tokenizer::token_name($et[$i][0]) . "\n";
 			switch($et[$i][0]) {
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
@@ -106,7 +104,7 @@ class Lint_method extends BaseLint implements ILint {
 		);
 		
 		foreach($compares as $k => $_)
-			if($_ > $this->conf[$k]['compare'])
+			if($_ > $this->rules[$k]['compare'])
 				$this->report($k, $_);
 		if(!$this->element->abstract)
 			$this->process_args($locals, $args);

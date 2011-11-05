@@ -38,7 +38,7 @@ class Lint_function extends BaseLint implements ILint {
 			
 		$this->process_tokens();
 		
-		$regex = $this->conf['CON_FUNCTION_NAME']['compare'];
+		$regex = $this->rules['CON_FUNCTION_NAME']['compare'];
 		if(!(substr($this->element->name, 0, 2) == '__') 
 			&& !preg_match($regex, $this->element->name))
 			$this->report('CON_FUNCTION_NAME', $regex);
@@ -80,7 +80,7 @@ class Lint_function extends BaseLint implements ILint {
 			'REF_FUNCTION_LENGTH' => $this->element->length
 		);
 		foreach($compares as $k => $_)
-			if($_ > $this->conf[$k]['compare'])
+			if($_ > $this->rules[$k]['compare'])
 				$this->report($k, $_);
 				
 		$this->process_args($locals, $args);	

@@ -60,7 +60,7 @@ class CLI {
 	protected function help() {
 		echo "PHPLinter. Lint and score PHP files.\n";
 		echo "Usage phplinter -[ICWRESHvVTci[PATTERN]] [file|directory]\n";
-		echo "\t-U: Use conf-file FILE.\n";
+		echo "\t-U: Use rules-file FILE.\n";
 		echo "\t-I: Report extra information (default off).\n";
 		echo "\t-C: Dont report conventions.\n";
 		echo "\t-W: Dont report warnings.\n";

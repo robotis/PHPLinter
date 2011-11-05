@@ -48,7 +48,7 @@ class Lint_comment extends BaseLint implements ILint {
 				if(preg_match('/(WTF)/iu', $comment, $m)) {
 					$this->report('INF_FOUND_WTF');
 				}
-				if(preg_match($this->conf['CON_WS_COMMENTED_CODE']['compare'], 
+				if(preg_match($this->rules['CON_WS_COMMENTED_CODE']['compare'], 
 				              $comment, $m)) {
 					$this->report('CON_WS_COMMENTED_CODE');
 				}

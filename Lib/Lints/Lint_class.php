@@ -39,12 +39,12 @@ class Lint_class extends BaseLint implements ILint {
 		if(!$this->element->dochead)
 			$this->report('DOC_NO_DOCHEAD_CLASS');
 			
-		$regex = $this->conf['CON_CLASS_NAME']['compare'];
+		$regex = $this->rules['CON_CLASS_NAME']['compare'];
 		if(!preg_match($regex, $this->element->name))
 			$this->report('CON_CLASS_NAME', $regex);
 		
 		$len = $this->element->length;
-		if($len > $this->conf['REF_CLASS_LENGTH']['compare'])
+		if($len > $this->rules['REF_CLASS_LENGTH']['compare'])
 			$this->report('REF_CLASS_LENGTH', $len);	
 		
 		if(!empty($this->locals[T_METHOD]) && 

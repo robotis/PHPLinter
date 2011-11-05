@@ -30,7 +30,7 @@ class Lint_interface extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		$regex = $this->conf['CON_INTERFACE_NAME']['compare'];
+		$regex = $this->rules['CON_INTERFACE_NAME']['compare'];
 		if(!(substr($this->element->name, 0, 2) == '__') 
 			&& !preg_match($regex, $this->element->name))
 			$this->report('CON_INTERFACE_NAME', $regex);
@@ -42,10 +42,10 @@ class Lint_interface extends BaseLint implements ILint {
 			$this->report('DOC_NO_DOCHEAD_INTERFACE');
 			
 		$len = $this->element->length;
-		if($len > $this->conf['REF_CLASS_LENGTH']['compare'])
+		if($len > $this->rules['REF_CLASS_LENGTH']['compare'])
 			$this->report('REF_CLASS_LENGTH', $len);	
 			
-		$regex = $this->conf['CON_CLASS_NAME']['compare'];
+		$regex = $this->rules['CON_CLASS_NAME']['compare'];
 		if(!preg_match($regex, $this->element->name))
 			$this->report('CON_INTERFACE_NAME', $regex);
 			

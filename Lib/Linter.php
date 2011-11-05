@@ -49,7 +49,7 @@ class PHPLinter {
 	/* @var Array */
 	protected $options;
 	/* @var Array */
-	protected $conf;
+	protected $rules;
 	/* @var Object */
 	protected $element;
 	/* @var float */
@@ -63,12 +63,12 @@ class PHPLinter {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Create new linter instance
-	* @param	$file	String
-	* @param	$opt	int
-	* @param	$conf	Array
+	* @param	String	Filename
+	* @param	int		Flags
+	* @param	Array	Ruleset
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($file, $opt=0, $conf=null) {
+	public function __construct($file, $opt=0, $rules=null) {
 		$this->options 	= $opt;
 		$this->file 	= $file;
 		exec('php -l ' . escapeshellarg($file), $error, $code);
@@ -78,11 +78,11 @@ class PHPLinter {
 			$this->report 	= array();
 			$this->score 	= 0;
 			
-			$this->conf = require dirname(__FILE__) . '/../rules/rules.php';
+			$this->rules = require dirname(__FILE__) . '/../rules/rules.php';
 			$this->globals = require dirname(__FILE__) . '/globals.php';
-			if(is_array($conf)) {
-				foreach($conf as $k=>$_)
-					$this->conf[$k] = array_merge($this->conf[$k], $_);
+			if(is_array($rules)) {
+				foreach($rules as $k=>$_)
+					$this->rules[$k] = array_merge($this->rules[$k], $_);
 			}
 		}
 	}
@@ -120,7 +120,7 @@ class PHPLinter {
 		} 
 		$this->measure_file();
 		$this->debug("\nSTART LINT...", 0, OPT_DEBUG_EXTRA);
-		$lint = new Lint_file($this->element, $this->conf, $this->options);
+		$lint = new Lint_file($this->element, $this->rules, $this->options);
 		$this->report = $lint->lint();
 		$this->score = $lint->penalty();
 		$this->debug("END LINT...\n", 0, OPT_DEBUG_EXTRA);

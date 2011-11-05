@@ -31,22 +31,22 @@ class BaseLint {
 	/* @var Object */
 	protected $element;
 	/* @var Array */
-	protected $conf;
+	protected $rules;
 	/* @var Float */
 	protected $penalty;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	__construct
 	* @param	Object 	Element Object
-	* @param	Array	Configuration
+	* @param	Array	Rule set
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($element, $config, $options) {
+	public function __construct($element, $rules, $options) {
 		$this->reports 	= array();
 		$this->locals 	= array();
 		$this->element 	= $element;
-		$this->conf 	= $config;
+		$this->rules 	= $rules;
 		$this->options 	= $options;
 		$this->switch	= false;
 		$this->branches	= 0;
@@ -71,7 +71,7 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	protected function report($what, $extra=null, $line=null) {
-		$report = $this->conf[$what];
+		$report = $this->rules[$what];
 		if(!empty($this->use_rules) && !in_array($report['flag'], $this->use_rules)) {
 			return;
 		}
@@ -194,15 +194,15 @@ class BaseLint {
 				break;
 			default:
 				$t = $token[0];
-				if(in_array($t, array_keys($this->conf['WAR_DEPRICATED_TOKEN']['compare']))) {
+				if(in_array($t, array_keys($this->rules['WAR_DEPRICATED_TOKEN']['compare']))) {
 					$this->report('WAR_DEPRICATED_TOKEN',
-						$this->conf['WAR_DEPRICATED_TOKEN']['compare'][$t]);		
+						$this->rules['WAR_DEPRICATED_TOKEN']['compare'][$t]);		
 				}
 				break;		
 		}
 		if($nest) {
 			$this->nesting++;
-			if($this->nesting > $this->conf['REF_DEEP_NESTING']['compare'])
+			if($this->nesting > $this->rules['REF_DEEP_NESTING']['compare'])
 				$this->report('REF_DEEP_NESTING', $this->nesting, $token[2]);
 		}
 	}
@@ -387,7 +387,7 @@ class BaseLint {
 		if(!empty($this->element->comments)) {
 			foreach($this->element->comments as $element) {
 				if($element->type === T_DOC_COMMENT) $this->element->dochead = true;
-				$lint = new Lint_comment($element, $this->conf, $this->options);
+				$lint = new Lint_comment($element, $this->rules, $this->options);
 				foreach($lint->bind($this)->lint() as $_) {
 					$this->reports[] = $_;
 				}
@@ -416,7 +416,7 @@ class BaseLint {
 			foreach($this->element->elements as $element) {
 				$this->profile();
 				$class = "PHPLinter\\{$a[$element->type]}";
-				$lint = new $class($element, $this->conf, $this->options);
+				$lint = new $class($element, $this->rules, $this->options);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();
 				$this->profile($class.'::'.$element->name);

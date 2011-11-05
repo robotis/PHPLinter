@@ -37,7 +37,7 @@ class Lint_file extends BaseLint implements ILint {
 		$lnum = 1;
 		foreach(file($this->element->file) as $_) {
 			$len = mb_strlen($_);
-			if($len > $this->conf['CON_LINE_LENGTH']['compare']) {
+			if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
 				$this->report('CON_LINE_LENGTH', $len, $lnum);
 			}
 			$lnum++;
@@ -63,7 +63,7 @@ class Lint_file extends BaseLint implements ILint {
 					break;
 			}
 		}
-		if($this->branches > $this->conf['REF_BRANCHES']['compare'])
+		if($this->branches > $this->rules['REF_BRANCHES']['compare'])
 			$this->report('REF_BRANCHES', $this->branches);
 			
 		return $this->reports;

@@ -81,7 +81,7 @@ class CLI {
 		echo "\t-e: Add extensions to valid list delimited by '|' (default 'php')\n";
 		echo "\t-o: Output directory (with -H)\n";
 		echo "\t-H: HTML report.\n";
-		echo "\t-w: Overwrite output directory.\n";
+		echo "\t-w: Overwrite output directory. (Warning: Will empty directory)\n";
 		echo "\t-i: ignore PATTERN. (Ignore files in directory mode)\n";
 		echo "<jtm@robot.is>\n";
 		exit;

@@ -24,7 +24,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-e: Add extensions to valid list delimited by '|' (default 'php')
 	-o: Output directory (with -H)
 	-H: HTML report.
-	-w: Overwrite output directory.
+	-w: Overwrite output directory. (Warning: Will empty directory)
 	-i: ignore PATTERN. (Ignore files in directory mode)
 
 Ruleset (some rules are not active)

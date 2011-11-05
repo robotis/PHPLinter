@@ -78,7 +78,7 @@ class PHPLinter {
 			$this->report 	= array();
 			$this->score 	= 0;
 			
-			$this->conf = require dirname(__FILE__) . '/rules.php';
+			$this->conf = require dirname(__FILE__) . '/../rules/rules.php';
 			$this->globals = require dirname(__FILE__) . '/globals.php';
 			if(is_array($conf)) {
 				foreach($conf as $k=>$_)

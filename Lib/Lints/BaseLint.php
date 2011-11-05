@@ -48,10 +48,10 @@ class BaseLint {
 		$this->element 	= $element;
 		$this->rules 	= $rules;
 		$this->options 	= $options;
+		$this->scope	= -1;
+		$this->branches	= -1;
 		$this->switch	= false;
-		$this->branches	= 0;
-		$this->branch	= false;
-		$this->nesting  = 0;
+		$this->final_return = false;
 		$dir = dirname(__FILE__);
 		$this->globals = require $dir. '/../globals.php';
 		if($this->report_on('S')) {
@@ -135,9 +135,21 @@ class BaseLint {
 	*/
 	public function common_tokens($pos) {
 		$token = $this->element->tokens[$pos];
-		$nest = false;
-		switch($token[0]) {
-			case T_CLOSE_TAG:
+		if($this->final_return === 1 
+			&& $token[0] !== T_CLOSE_SCOPE 
+			&& Tokenizer::meaningfull($token[0])) 
+		{
+			$this->final_return = 2;
+			$this->report('WAR_UNREACHABLE_CODE', null, $token[2]);
+		}
+		$t = $token[0];
+		if(in_array($t, array_keys($this->rules['WAR_DEPRICATED_TOKEN']['compare']))) 
+		{
+			$this->report('WAR_DEPRICATED_TOKEN',
+			$this->rules['WAR_DEPRICATED_TOKEN']['compare'][$t]);		
+		}
+		switch($t) {
+			case T_INLINE_HTML:
 				$this->report('REF_HTML_MIXIN', null, $token[2]);
 				break;
 			case T_REQUIRE:
@@ -154,56 +166,37 @@ class BaseLint {
 			case T_BACKTICK:
 				$this->sec_backtick($pos);
 				break;
-			case T_IF:
-			case T_ELSE:
-			case T_ELSEIF:
-			case T_THEN:
-			case T_FOR:
-			case T_FOREACH:
-			case T_WHILE:
-				if($this->branch === false)
-					$this->branch = $this->nesting;
-				$this->branches++;
-				$nest = true;
-				break;
-			case T_CURLY_CLOSE:
-				$this->nesting--;
-				if($this->switch === $this->nesting) {
-					$this->switch = false;
-				}
-				break;
-			case T_CURLY_OPEN:
-				$this->branch = false;
-				break;
-			case T_SEMICOLON:
-				if($this->branch !== false) {
-					$this->nesting = $this->branch;
-					$this->branch = false;
-				}
-				break;
-			case T_SWITCH:
-				if($this->switch !== false) {
-					$this->report('REF_NESTED_SWITCH', null, $token[2]);
-				}
-				$nest = true;
-				$this->switch = $this->nesting;
-				$this->branches++;
-				break;
 			case T_STRING:
 				$this->parse_string($pos);
 				break;
-			default:
-				$t = $token[0];
-				if(in_array($t, array_keys($this->rules['WAR_DEPRICATED_TOKEN']['compare']))) {
-					$this->report('WAR_DEPRICATED_TOKEN',
-						$this->rules['WAR_DEPRICATED_TOKEN']['compare'][$t]);		
+			case T_RETURN:
+			case T_EXIT:
+				if($this->scope === 0 && $this->final_return === false) {
+					$this->final_return = true;
+				}
+				break;
+			case T_OPEN_SCOPE:
+				$this->branches++;
+				if($token[1] === 'switch') {
+					if($this->switch !== false) {
+						$this->report('REF_NESTED_SWITCH', null, $token[2]);
+					}
+					$this->switch = $this->scope;
+				}
+				$this->scope++;
+				if(($this->scope) > $this->rules['REF_DEEP_NESTING']['compare'])
+					$this->report('REF_DEEP_NESTING', $this->scope, $token[2]);
+				break;
+			case T_CLOSE_SCOPE:
+				$this->scope--;
+				if($this->switch === $this->scope)
+					$this->switch = false;
+				break;
+			case T_SEMICOLON:
+				if($this->final_return === true) {
+					$this->final_return = 1;
 				}
 				break;		
-		}
-		if($nest) {
-			$this->nesting++;
-			if($this->nesting > $this->rules['REF_DEEP_NESTING']['compare'])
-				$this->report('REF_DEEP_NESTING', $this->nesting, $token[2]);
 		}
 	}
 	/**
@@ -332,9 +325,8 @@ class BaseLint {
 	*/
 	protected function parse_string($pos) {
 		$token = $this->element->tokens[$pos];
-		$nt = $this->next($pos);
+		$nt = $this->element->tokens[$this->next($pos)][0];
 		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
-			$this->called[] = $token[1];
 			$this->security($pos);
 		}
 	}
@@ -348,12 +340,12 @@ class BaseLint {
 	protected function next($pos) {
 		$i = $pos;
 		$o = $this->element->tokens;
-		while(true) {
-			if(!isset($o[$i+1]))
-				return false;
-			if(Tokenizer::meaningfull($o[++$i][0]))
-				return $o[$i][0];
+		$c = $this->element->token_count;
+		while(++$i < $c) {
+			if(Tokenizer::meaningfull($o[$i][0]))
+				return $i;
 		}
+		return false;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -367,14 +359,14 @@ class BaseLint {
 	protected function find($pos, $token, $limit=10) {
 		$i = $pos;
 		$o = $this->element->tokens;
-		while(true) {
-			if(!isset($o[$i+1]))
-				return false;
-			if($o[++$i][0] == $token)
+		$c = $this->element->token_count;
+		while(++$i < $c) {
+			if($o[$i][0] == $token)
 				return $i;
 			if(!empty($limit) && ($i - $pos) == $limit)
-				return false;
+				break;
 		}
+		return false;
 	}
 	/**
 	----------------------------------------------------------------------+

@@ -2,12 +2,14 @@
 /**
 ----------------------------------------------------------------------+
 * @desc 	TEST
-* @flag		R11	L24
-* @flag		R14	L57
-* @flag		R14	L79
-* @flag		R4	L89
-* @flag		R14	L102
-* @score	6.00
+* @flag		R11	L26
+* @flag		R14	L59
+* @flag		R14	L81
+* @flag		R4	L91
+* @flag		R14	L104
+* @flag		R14	L132
+* @flag		I2	L144
+* @score	5.20
 ----------------------------------------------------------------------+
 */
 class Test {
@@ -114,5 +116,37 @@ class Test {
 		if(true)
 		$var = 10;
 		return $var;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Test
+	----------------------------------------------------------------------+
+	*/
+	public function test_for() {
+		for($i =0; $i<3;$i++) {
+			if(true) 
+				if(true) 
+					if(true) 
+						if(true) 
+							if(true)
+								if(true)
+									// Too deep
+									return false;
+		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Scope test
+	----------------------------------------------------------------------+
+	*/
+	public function test_scoping($dirs) {
+		if($dirs) {
+			uksort($dirs, function($a, $b) {
+				return strtolower($a) > strtolower($b);
+			});
+		}
+		for($i =0; $i<3;$i++)
+			return $i;
+		return $dirs;
 	}
 }

@@ -43,6 +43,7 @@ define('OPT_USE_COLOR',					0x08000);
 define('OPT_DEBUG_TIME',				0x10000);
 define('OPT_DEBUG_TIME_EXTRA',			0x20000);
 define('OPT_QUIET',						0x40000);
+define('OPT_SCOPE_MAP',					0x80000);
 
 // SCORE
 define('SCORE_FULL',					10.0);
@@ -75,5 +76,8 @@ define('T_SELF', 					1016);
 define('T_PARENT', 					1017);
 define('T_BACKTICK', 				1018);
 define('T_ANON_FUNCTION', 			1019);
+define('T_BASIC_CURLY_OPEN',		1020);
+define('T_OPEN_SCOPE',				1021);
+define('T_CLOSE_SCOPE',				1022);
 
 //define('PHPL_PROFILE_ON', 			true);

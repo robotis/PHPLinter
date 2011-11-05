@@ -105,7 +105,7 @@ class Lint_method extends BaseLint implements ILint {
 		$o = $this->element->tokens;
 		$j = $this->find($pos, T_STRING);
 		if($j !== false) {
-			$k = $this->next($j);
+			$k = $o[$this->next($j)][0];
 			if($k === T_PARENTHESIS_OPEN)
 				$this->add_parent_data($o[$j][1], T_METHOD);
 			else

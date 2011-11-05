@@ -1,14 +1,16 @@
+
 <?php
 /**
 ----------------------------------------------------------------------+
 *  @desc			Test old stuff
-*  @flag	W1	L14
-*  @flag	W2	L15
-*  @flag	D6	L15
-*  @flag	D6	L16
-*  @flag	C4	L22
-*  @flag	W17	L28
-*  @score	8.49
+*  @flag	W19	L1
+*  @flag	W1	L16
+*  @flag	W2	L17
+*  @flag	D6	L17
+*  @flag	D6	L18
+*  @flag	C4	L24
+*  @flag	W17	L33
+*  @score	8.19
 ----------------------------------------------------------------------+
 */
 class TEST{
@@ -25,4 +27,7 @@ class TEST{
 	}
 }
 // Whitespace after close tag
+
+
+
 ?>

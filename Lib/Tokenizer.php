@@ -113,7 +113,7 @@ class Tokenizer {
 	*/
 	public static function tokenChar($char) {
 		switch($char) {
-			case '{': return T_CURLY_OPEN;
+			case '{': return T_BASIC_CURLY_OPEN;
 			case '}': return T_CURLY_CLOSE;
 			case '[': return T_SQUARE_OPEN;
 			case ']': return T_SQUARE_CLOSE;

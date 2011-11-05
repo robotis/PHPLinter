@@ -48,6 +48,8 @@ class Report {
 	----------------------------------------------------------------------+
 	*/
 	public function score($penalty, $num=null) {
+		if($penalty === false)
+			return "No score available\n";
 		$full = (is_numeric($num))
 			? ($num * SCORE_FULL) : SCORE_FULL;
 		return sprintf("Score: %.2f out of %.2f\n", 

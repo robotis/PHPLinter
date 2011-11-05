@@ -33,6 +33,7 @@ class Lint_comment extends BaseLint implements ILint {
 	public function lint() {
 		$tcnt = count($this->element->tokens);
 		$empty = true;
+		$code = false;
 		for($i = 0;$i < $tcnt;$i++) {
 			$comment = $this->element->tokens[$i][1];
 			if($this->element->tokens[$i] === T_NEWLINE)
@@ -53,10 +54,11 @@ class Lint_comment extends BaseLint implements ILint {
 							break;
 					}
 				}
-				if(preg_match($this->rules['CON_WS_COMMENTED_CODE']['compare'], 
+				if(!$code && preg_match($this->rules['CON_WS_COMMENTED_CODE']['compare'], 
 				              $comment, $m)) 
 				{
 					$this->report('CON_WS_COMMENTED_CODE');
+					$code = true;
 				}
 			}
 		}

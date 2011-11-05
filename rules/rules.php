@@ -180,6 +180,10 @@ return array(
 		'flag' => 'W18',
 		'compare' => array(T_GLOBAL=>'global')
 	),
+	'WAR_WS_BEFORE_OPEN' => array(
+		'message' => 'Whitespace before first open tag',
+		'flag' => 'W19',
+	),
 	/*
 	 *	Documentaion 
 	 */
@@ -294,6 +298,10 @@ return array(
 		'message_extras' => 'Too many globals in file %d(%d)',
 		'flag' => 'R18',
 		'compare' => 50
+	),
+	'REF_HTML_BEFORE_OPEN' => array(
+		'message' => 'HTML output before first open tag',
+		'flag' => 'R19',
 	),
 	/*
 	 * Security 

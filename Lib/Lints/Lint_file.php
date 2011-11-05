@@ -26,6 +26,20 @@ namespace PHPLinter;
 class Lint_file extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
+	* @desc 	__construct
+	* @param	Object 	Element Object
+	* @param	Array	Rule set
+	* @param	Int		Option flags
+	----------------------------------------------------------------------+
+	*/
+	public function __construct($element, $rules, $options) {
+		parent::__construct($element, $rules, $options);
+		// File scope at 0
+		$this->scope	= 0;
+		$this->branches	= 0;
+	}
+	/**
+	----------------------------------------------------------------------+
 	* @desc 	Analyze file
 	----------------------------------------------------------------------+
 	*/
@@ -45,20 +59,24 @@ class Lint_file extends BaseLint implements ILint {
 		
 		$tcnt = $this->element->token_count;
 		$et = $this->element->tokens;
+		$open = false;
 		$classes = 0;
 		$functions = 0;
 		$globals = array();
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
-				case T_CLOSE_TAG:
-					if($this->find($i, T_OPEN_TAG, null) === false) {
-						if(count($et) - $i > 1)
-							if($this->next($i))
-								$this->report('REF_HTML_AFTER_CLOSE', null, $et[$i][2]);
-							else
-								$this->report('WAR_WS_AFTER_CLOSE', null, $et[$i][2]);
-					} else {
+				case T_INLINE_HTML:
+					if($open === true) 
 						$this->common_tokens($i);
+					break;
+				case T_CLOSE_TAG:
+					if($this->pclosetag($i))
+						break 2;
+					break;
+				case T_OPEN_TAG:
+					if($open === false) {
+						$this->popentag($i);
+						$open = true;
 					}
 					break;
 				case T_CLASS:
@@ -88,4 +106,37 @@ class Lint_file extends BaseLint implements ILint {
 			
 		return $this->reports;
 	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Process open tag
+	----------------------------------------------------------------------+
+	*/
+	protected function popentag($pos) {
+		$o = $this->element->tokens;
+		if($pos > 0) {
+			$k = $this->find(-1, T_INLINE_HTML, $pos);
+			if($k !== false)
+				$this->report('REF_HTML_BEFORE_OPEN', null, $o[$k][2]);
+			else
+				$this->report('WAR_WS_BEFORE_OPEN', null, $o[$pos-1][2]);
+		}
+	}	
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Process close tag
+	----------------------------------------------------------------------+
+	*/
+	protected function pclosetag($pos) {
+		$o = $this->element->tokens;
+		if($this->find($pos, T_OPEN_TAG, null) === false) {
+			if(($this->element->token_count - $pos) > 1) {
+				if($this->next($pos) !== false)
+					$this->report('REF_HTML_AFTER_CLOSE', null, $o[$pos][2]);
+				else
+					$this->report('WAR_WS_AFTER_CLOSE', null, $o[$pos][2]);
+				return true;
+			}
+		} 
+		return false;
+	}	
 }

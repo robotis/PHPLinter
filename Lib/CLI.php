@@ -69,6 +69,7 @@ class CLI {
 		echo "\t-D: Dont report documentation warnings.\n";
 		echo "\t-X: Dont report security warnings.\n";
 		echo "\t-O: Security report only.\n";
+		echo "\t-M: View scope map.\n";
 //		echo "\t-F: Try to locate unused functions/methods (Experimental).\n";
 //		echo "\t-t: Number of invocations threshold (default 0).\n";
 		echo "\t-S: Score only.\n";
@@ -128,6 +129,9 @@ class CLI {
 							break;
 						case 'q':
 							$this->options |= OPT_QUIET;
+							break;
+						case 'M':
+							$this->options |= OPT_SCOPE_MAP;
 							break;
 						case 'V':
 							if($this->options & OPT_DEBUG) {

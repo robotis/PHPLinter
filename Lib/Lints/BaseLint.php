@@ -53,7 +53,8 @@ class BaseLint {
 		$this->switch	= false;
 		$this->final_return = false;
 		$dir = dirname(__FILE__);
-		$this->globals = require $dir. '/../globals.php';
+		$this->globals 	= require $dir. '/../globals.php';
+		$this->uvars	= require $dir. '/../uservars.php';
 		if($this->report_on('S')) {
 			$this->sec_1 = require($dir . '/../security/command_exection.php');
 			$this->sec_2 = require($dir . '/../security/filesystem.php');
@@ -241,7 +242,7 @@ class BaseLint {
 			$p = 0;
 			$i = $pos;
 			while($o[++$i][0] != T_PARENTHESIS_CLOSE) {
-				if(in_array($o[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+				if(in_array($o[$i][1], $this->uvars)) {
 					/* In callback position */
 					if($p == $_) {
 						$this->report('SEC_ERROR_CALLBACK', $t[1], $t[2]);
@@ -250,7 +251,7 @@ class BaseLint {
 				$p++;
 			}
 			/* Last position */
-			if(in_array($o[$i-1][1], array('$_REQUEST','$_POST','$_GET')) 
+			if(in_array($o[$i-1][1], $this->uvars) 
 				&& $_ == -1) {
 				$this->report('SEC_ERROR_CALLBACK', $t[1], $t[2]);
 			}
@@ -276,7 +277,7 @@ class BaseLint {
 				$i = $pos;
 				if($_[2]) {
 					while($o[++$i][0] != T_PARENTHESIS_CLOSE) {
-						if(in_array($o[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+						if(in_array($o[$i][1], $this->uvars)) {
 							$this->report('SEC_ERROR_REQUEST', $t[1], $t[2]);
 						}
 					}
@@ -294,7 +295,7 @@ class BaseLint {
 		$i = $pos;
 		$o = $this->element->tokens;
 		while(isset($o[++$i]) && $o[$i][0] != T_NEWLINE) {
-			if(in_array($o[$i][1], array('$_REQUEST','$_POST','$_GET'))) {
+			if(in_array($o[$i][1], $this->uvars)) {
 				$this->report('SEC_ERROR_INCLUDE', $o[$pos][1], $o[$pos][2]);
 			}
 		}
@@ -312,7 +313,7 @@ class BaseLint {
 			if(empty($o[++$i])) break;
 			$t = $o[$i];
 			if($t[0] == T_BACKTICK) break;
-			if(in_array($t[1], array('$_REQUEST','$_POST','$_GET'))) {
+			if(in_array($t[1], $this->uvars)) {
 				$this->report('SEC_ERROR_REQUEST', $o[$pos][1], $o[$pos][2]);
 			}
 		}

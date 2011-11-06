@@ -126,6 +126,8 @@ class BaseLint {
 				return (!($this->options & OPT_NO_DEPRICATED));
 			case 'S':
 				return (!($this->options & OPT_NO_SECURITY));
+			case 'F':
+				return (!($this->options & OPT_NO_FORMATTING));
 		}
 	}
 	/**

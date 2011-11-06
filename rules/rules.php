@@ -105,6 +105,33 @@ return array(
 		'flag' => 'C11',
 	),
 	/*
+	 * Formatting
+	 */
+	'FMT_MIXED_SPACES_TABS' => array(
+		'message' => 'Spaces mixed with tabs',
+		'flag' => 'F1',
+	),
+	'FMT_ICONSISTANT_INDENT' => array(
+		'message' => 'Inconsistant indentation',
+		'flag' => 'F2',
+	),
+	'FMT_OPER_SPACE_BEFORE' => array(
+		'message' => 'Operator not preceded by a space',
+		'flag' => 'F3',
+	),
+	'FMT_OPER_SPACE_AFTER' => array(
+		'message' => 'Operator not followed by a space',
+		'flag' => 'F4',
+	),
+	'FMT_COMMA_SPACE_AFTER' => array(
+		'message' => 'Comma not followed by a space',
+		'flag' => 'F5',
+	),
+	'FMT_MULTIPLE_STATEMENTS_ON_LINE' => array(
+		'message' => 'Multiple statements on single line',
+		'flag' => 'F6',
+	),
+	/*
 	 *	Warnings 
 	 */
 	'WAR_OLD_STYLE_CONSTRUCT' => array(
@@ -302,6 +329,11 @@ return array(
 	'REF_HTML_BEFORE_OPEN' => array(
 		'message' => 'HTML output before first open tag',
 		'flag' => 'R19',
+	),
+	'REF_FILE_LENGTH' => array(
+		'message_extras' => 'File to long %d(%d)',
+		'flag' => 'R20',
+		'compare' => 3000
 	),
 	/*
 	 * Security 

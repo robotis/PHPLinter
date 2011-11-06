@@ -92,7 +92,7 @@ class Report {
 			$codes = array(
 				'black' => 30, 'red' => 31, 'green' => 32,
 				'brown' => 33, 'blue' => 34, 'purple' => 35,
-				'cyan' => 36, 'white' => 37,
+				'cyan' => 36, 'white' => 37
 			);
 			if(!isset($codes[$color])) $color = 'black';
 			return sprintf($tpl, $attr, $codes[$color], $msg);
@@ -107,8 +107,8 @@ class Report {
 	*/
 	public function toCli($report, $format="| {F} | {M} | `{W}` Line: {L}\n") {
 		$fcolors = array(
-			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' =>array(1,'brown'),
-			'I' => 'green', 'R' => 'purple', 'S' => 'cyan'
+			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' => array(1, 'brown'),
+			'I' => 'green', 'R' => 'purple', 'S' => 'cyan', 'F' => array(1, 'black')
 		);
 		foreach($report as $_) {
 			$out = str_replace('{F}', $this->color(str_pad($_['flag'], 3), 

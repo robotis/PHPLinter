@@ -48,21 +48,14 @@ class Lint_file extends BaseLint implements ILint {
 		$pretty_file_name = $fp[count($fp)-1];
 		$this->element->parent = $pretty_file_name;
 		
-		$lnum = 1;
-		foreach(file($this->element->file) as $_) {
-			$len = mb_strlen($_);
-			if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
-				$this->report('CON_LINE_LENGTH', $len, $lnum);
-			}
-			$lnum++;
-		}
+		$this->plines();
 		
 		$tcnt = $this->element->token_count;
 		$et = $this->element->tokens;
-		$open = false;
-		$classes = 0;
-		$functions = 0;
-		$globals = array();
+		$open 		= false;
+		$classes 	= 0;
+		$functions 	= 0;
+		$globals 	= array();
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
 				case T_INLINE_HTML:
@@ -105,6 +98,31 @@ class Lint_file extends BaseLint implements ILint {
 				$this->report($k, $_);
 			
 		return $this->reports;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Process file lines
+	----------------------------------------------------------------------+
+	*/
+	protected function plines() {
+		$lnum = 1;
+		foreach(file($this->element->file) as $_) {
+			$len = mb_strlen($_);
+			if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
+				$this->report('CON_LINE_LENGTH', $len, $lnum);
+			}
+//			if(preg_match('/^(\s+)[^\s]+$/u', $_, $m)) {
+//				$t = trim($m[1], "\t");
+//				$s = trim($m[1], " ");
+//				if($t && $s) {
+//					$this->report('FMT_MIXED_SPACES_TABS', null, $lnum);
+//				}
+//			}
+			$lnum++;
+		}
+		if($lnum > $this->rules['REF_FILE_LENGTH']['compare']) {
+			$this->report('REF_FILE_LENGTH', $lnum);
+		}
 	}
 	/**
 	----------------------------------------------------------------------+

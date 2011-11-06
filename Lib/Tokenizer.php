@@ -51,7 +51,7 @@ class Tokenizer {
 				$string = str_split($token[1]);
 				$substr = '';
 				foreach($string as $_) {
-					if($_ == $eol) {
+					if($_ === $eol) {
 						if(!empty($substr)) {
 							$tkn = array(
 								$token[0],

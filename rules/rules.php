@@ -333,7 +333,7 @@ return array(
 	'REF_FILE_LENGTH' => array(
 		'message_extras' => 'File to long %d(%d)',
 		'flag' => 'R20',
-		'compare' => 3000
+		'compare' => 4000
 	),
 	/*
 	 * Security 

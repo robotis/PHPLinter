@@ -105,6 +105,7 @@ Ruleset (some rules are not active)
     * R17: Too many propertys in class. Default(50)
     * R18: Too many globals in file. Default(50)
     * R19: HTML output before first open tag
+    * R20: File to long. Default(4000)
     
 (S)ecurity
 

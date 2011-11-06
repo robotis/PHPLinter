@@ -44,13 +44,13 @@ define('OPT_DEBUG_TIME',				0x010000);
 define('OPT_DEBUG_TIME_EXTRA',			0x020000);
 define('OPT_QUIET',						0x040000);
 define('OPT_SCOPE_MAP',					0x080000);
-define('OPT_NO_FORMATTING',			   	0x100000);	
+define('OPT_FORMATTING',			   	0x100000);	
 
 // SCORE
 define('SCORE_FULL',					10.0);
 define('I_PENALTY',						0);
 define('C_PENALTY',						0.01);
-define('F_PENALTY',						0.05);
+define('F_PENALTY',						0.01);
 define('W_PENALTY',						0.3);
 define('D_PENALTY',						0.3);
 define('R_PENALTY',						0.8);

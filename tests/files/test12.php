@@ -27,28 +27,28 @@ class Test {
 	/* @var int */
 	private $v6;
 	/**
-	 * TEST
-	 */
+	* TEST
+	*/
 	public function mt1() {$this->v1 = 1;}
 	/**
-	 * TEST
-	 */
+	* TEST
+	*/
 	public function mt2() {$this->v2 = 1;}
 	/**
-	 * TEST
-	 */
+	* TEST
+	*/
 	public function mt3() {$this->v3 = 1;}
 	/**
-	 * TEST
-	 */
+	* TEST
+	*/
 	public function mt4() {$this->v4 = 1;}
 	/**
-	 * TEST
-	 */
+	* TEST
+	*/
 	public function mt5() {$this->v5 = 1;}
 	/**
-	 * TEST
-	 */
+	* TEST
+	*/
 	public function mt6() {$this->v6 = 1;}
 }
 $v1 = $v2 = $v3 = $v4 = $v5 = $v6;

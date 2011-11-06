@@ -95,8 +95,8 @@ class PHPLinter {
 				$rules = preg_split('/\|/u', $rules);
 				foreach($this->rules as &$_) {
 					$_['used'] = in_array($_['flag'], $rules);
- 				}
- 				unset($_);
+				}
+				unset($_);
 			}
 		} else {
 			$this->score = false;

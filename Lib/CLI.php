@@ -65,6 +65,7 @@ class CLI {
 		echo "\t-U: Use rules-file FILE.\n";
 		echo "\t-I: Report extra information (default off).\n";
 		echo "\t-C: Dont report conventions.\n";
+		echo "\t-F: Report formatting errors.\n";
 		echo "\t-W: Dont report warnings.\n";
 		echo "\t-R: Dont report refactor warnings.\n";
 		echo "\t-E: Dont report errors.\n";
@@ -110,6 +111,9 @@ class CLI {
 							break;
 						case 'C':
 							$this->options |= OPT_NO_CONVENTION;
+							break;
+						case 'F':
+							$this->options |= OPT_FORMATTING;
 							break;
 						case 'W':
 							$this->options |= OPT_NO_WARNING;

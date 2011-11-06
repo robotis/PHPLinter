@@ -106,22 +106,24 @@ class Lint_file extends BaseLint implements ILint {
 	*/
 	protected function plines() {
 		$lnum = 1;
-		foreach(file($this->element->file) as $_) {
-			$len = mb_strlen($_);
-			if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
-				$this->report('CON_LINE_LENGTH', $len, $lnum);
+		if($this->report_on('C') || $this->report_on('F')) {
+			foreach(file($this->element->file) as $_) {
+				$len = mb_strlen($_);
+				if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
+					$this->report('CON_LINE_LENGTH', $len, $lnum);
+				}
+				if($this->report_on('F') && preg_match('/^(\s+)[^\s]+$/u', $_, $m)) {
+					$t = trim($m[1], "\t");
+					$s = trim($m[1], " ");
+					if($t && $s) {
+						$this->report('FMT_MIXED_SPACES_TABS', null, $lnum);
+					}
+				}
+				$lnum++;
 			}
-//			if(preg_match('/^(\s+)[^\s]+$/u', $_, $m)) {
-//				$t = trim($m[1], "\t");
-//				$s = trim($m[1], " ");
-//				if($t && $s) {
-//					$this->report('FMT_MIXED_SPACES_TABS', null, $lnum);
-//				}
-//			}
-			$lnum++;
-		}
-		if($lnum > $this->rules['REF_FILE_LENGTH']['compare']) {
-			$this->report('REF_FILE_LENGTH', $lnum);
+			if($lnum > $this->rules['REF_FILE_LENGTH']['compare']) {
+				$this->report('REF_FILE_LENGTH', $lnum);
+			}
 		}
 	}
 	/**

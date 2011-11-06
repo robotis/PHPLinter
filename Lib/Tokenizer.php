@@ -174,6 +174,8 @@ class Tokenizer {
 			case T_NULL:				return 'T_NULL';
 			case T_SELF:				return 'T_SELF';
 			case T_PARENT:				return 'T_PARENT';
+			case T_OPEN_SCOPE:			return 'T_OPEN_SCOPE';
+			case T_CLOSE_SCOPE:			return 'T_CLOSE_SCOPE';
 			default:
 				return token_name($token);
 		}

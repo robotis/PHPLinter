@@ -68,7 +68,8 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
         	list($flags, $lines, $score, $rules) = $this->extract_test($_);
         	$fc = count($flags);
         	if($score !== false) {
-        		$ll = new PHPLinter\PHPLinter(PLROOT . '/tests/files/' . $_, OPT_INFORMATION, $rules);
+        		$ll = new PHPLinter\PHPLinter(PLROOT . '/tests/files/' . $_, 
+        									  OPT_INFORMATION, null, $rules);
         		$report = $ll->lint();
         		$this->assertEquals($score, $ll->score(), $_);
         		$this->assertEquals(count($report), $fc, $_);

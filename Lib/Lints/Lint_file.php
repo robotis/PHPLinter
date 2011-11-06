@@ -32,7 +32,7 @@ class Lint_file extends BaseLint implements ILint {
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($element, $rules, $options) {
+	public function __construct($element, $rules, $options=0) {
 		parent::__construct($element, $rules, $options);
 		// File scope at 0
 		$this->scope	= 0;

@@ -42,7 +42,7 @@ class BaseLint {
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($element, $rules, $options) {
+	public function __construct($element, $rules, $options=0) {
 		$this->reports 	= array();
 		$this->locals 	= array();
 		$this->element 	= $element;

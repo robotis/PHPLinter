@@ -62,7 +62,7 @@ class PHPLinter {
 	* @param	Array	Ruleset
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($file, $opt=0, $rules=null) {
+	public function __construct($file, $opt=0, $rules=null, $override=null) {
 		$this->options 	= $opt;
 		$this->file 	= $file;
 		exec('php -l ' . escapeshellarg($file), $error, $code);
@@ -75,9 +75,19 @@ class PHPLinter {
 			
 			$this->rules = require dirname(__FILE__) . '/../rules/rules.php';
 			$this->globals = require dirname(__FILE__) . '/globals.php';
-			if(is_array($rules) && !empty($rules)) {
-				foreach($rules as $k=>$_)
-					$this->rules[$k] = array_merge($this->rules[$k], $_);
+			
+			if(is_array($override) && !empty($override)) {
+            foreach($override as $k=>$_)
+            	$this->rules[$k] = array_merge($this->rules[$k], $_);
+			}
+			
+			// View only certain rules
+			if(!empty($rules))  {
+				$rules = preg_split('/\|/u', $rules);
+				foreach($this->rules as &$_) {
+					$_['used'] = in_array($_['flag'], $rules);
+ 				}
+ 				unset($_);
 			}
 		} else {
 			$this->score = false;

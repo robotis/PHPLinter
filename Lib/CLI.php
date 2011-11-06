@@ -42,6 +42,8 @@ class CLI {
 	protected $penalty;
 	/* @var Array */
 	protected $stats;
+	/* @var String */
+	protected $settings_file;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	__construct. Defaults to use color.

@@ -262,22 +262,21 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
-		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
 		if($this->options & OPT_HTML_REPORT) {
 			$this->reporter->toHtml($this->target, $reports, $penaltys);
 		}
+		$cnt = count($this->stats);
+		$this->msg("$cnt files, ", 0);	
+		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
+		$arr = array();
+		foreach($this->stats as $_) $arr[] = $_[1];
+		array_multisort($this->stats, SORT_NUMERIC, $arr);
+		$this->msg("Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n", 0);
 		if($this->options & OPT_DEBUG_TIME_EXTRA) {
 			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[2];
-			$cnt = count($arr);
 			$avg = array_sum($arr) / $cnt;
-			echo "$cnt files, Avarage time per file: $avg seconds\n";	
-		}
-		if($this->options & OPT_VERBOSE) {
-			$arr = array();
-			foreach($this->stats as $_) $arr[] = $_[1];
-			array_multisort($this->stats, SORT_NUMERIC, $arr);
-			echo "Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n";
+			echo "Avarage time per file: $avg seconds\n";	
 		}
 	}
 	/**

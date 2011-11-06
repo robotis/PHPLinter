@@ -157,9 +157,9 @@ class CLI {
 						case 'H':
 							$this->options |= OPT_HTML_REPORT;
 							break;
-//						case 'F':
-//							$this->options |= OPT_FIND_FUNC;
-//							break;
+						case 'F':
+							$this->options |= OPT_FIND_FUNC;
+							break;
 						case 'w':
 							$this->options |= OPT_OVERWRITE_REPORT;
 							break;
@@ -169,9 +169,9 @@ class CLI {
 						case 'i':
 							$this->ignore = "/{$argv[++$i]}/";
 							continue 3;
-//						case 't':
-//							$this->threshold = intval($argv[++$i]);
-//							continue 3;
+						case 't':
+							$this->threshold = intval($argv[++$i]);
+							continue 3;
 						case 'o':
 							$this->output_dir = $argv[++$i];
 							continue 3;
@@ -300,7 +300,7 @@ class CLI {
 		if(!isset($this->target) || !file_exists($this->target)) {
 			$this->error('Need valid target...');
 		}
-		ini_set('memory_limit', "512M");
+		ini_set('memory_limit', '512M');
 		set_time_limit (0);
 		$this->reporter = new Report($this->output_dir, $this->options);
 		if($this->options & OPT_DEBUG_TIME) 
@@ -322,7 +322,11 @@ class CLI {
 		
 		if($this->options & OPT_DEBUG_TIME) {
 			$x = microtime(true) - $time;
-			echo "Total time: $x seconds\n";	
+			$this->msg("Total time: $x seconds\n", OPT_DEBUG_TIME);	
+		}
+		if($this->options & OPT_DEBUG) {
+			$mem =  memory_get_peak_usage(true);
+			echo 'Peak memory use: ' . round($mem/1048576,2) . " MiB\n";
 		}
 	}
 }

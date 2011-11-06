@@ -193,7 +193,7 @@ class PHPLinter {
 							 ,Tokenizer::token_name($element->type)
 							 ,$element->start_line
 							 ,$element->owner
-					), $element->depth, OPT_DEBUG|OPT_SCOPE_MAP, true);
+					), $element->depth, OPT_SCOPE_MAP, true);
 				
 		$this->scope = array();
 		
@@ -317,7 +317,7 @@ class PHPLinter {
 							 ,$element->name
 							 ,Tokenizer::token_name($element->type)
 							 ,$element->end_line
-					 ), $element->depth, OPT_DEBUG|OPT_SCOPE_MAP, true);
+					 ), $element->depth, OPT_SCOPE_MAP, true);
 		return $element;
 	}
 	/**
@@ -371,7 +371,7 @@ class PHPLinter {
 			$this->debug(sprintf('Scope opened by `%s` line %d'
 								 ,$token[1]
 								 ,$token[2])
-						,$depth, OPT_DEBUG|OPT_SCOPE_MAP, true);
+						,$depth, OPT_SCOPE_MAP, true);
 			$this->scope[] = $token;
 			$element->tokens[] = array(T_OPEN_SCOPE, $token[1], $token[2]);
 		}
@@ -396,7 +396,7 @@ class PHPLinter {
 					$this->debug(sprintf('Scope closed by `%s` line %d'
 										 ,$token[1]
 										 ,$token[2])
-								,$depth, OPT_DEBUG|OPT_SCOPE_MAP, true);
+								,$depth, OPT_SCOPE_MAP, true);
 					$element->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
 				}
 			}
@@ -405,7 +405,7 @@ class PHPLinter {
 			$this->debug(sprintf('Scope closed by `%s` line %d'
 								 ,$token[1]
 								 ,$token[2])
-						,$depth, OPT_DEBUG|OPT_SCOPE_MAP, true);
+						,$depth, OPT_SCOPE_MAP, true);
 			array_pop($this->scope);
 			$element->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
 		}
@@ -443,7 +443,7 @@ class PHPLinter {
 		$element->name = 'comment';
 		$depth += count($this->scope);
 		
-		$this->debug("In comment at {$element->start_line}", $depth);
+		$this->debug("In comment at {$element->start_line}", $depth, OPT_SCOPE_MAP);
 		for($i = $pos;$i < $this->tcount;$i++) {
 			if(Tokenizer::meaningfull($this->tokens[$i][0])) {
 				$i--;
@@ -454,7 +454,7 @@ class PHPLinter {
 		if($i === $this->tcount) $i--;
 		$element->end = $i;
 		$element->end_line = $this->tokens[$i][2];
-		$this->debug("Exiting comment at {$element->end_line}", $depth);
+		$this->debug("Exiting comment at {$element->end_line}", $depth, OPT_SCOPE_MAP);
 		$ret = $i;
 		return $element;
 	}

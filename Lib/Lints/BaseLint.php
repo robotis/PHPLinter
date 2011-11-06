@@ -412,6 +412,7 @@ class BaseLint {
 				$lint = new $class($element, $this->rules, $this->options);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();
+				unset($lint);
 				$this->profile($class.'::'.$element->name);
 			}
 		}

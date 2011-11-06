@@ -59,10 +59,12 @@ class PHPLinter {
 	* @desc 	Create new linter instance
 	* @param	String	Filename
 	* @param	int		Flags
-	* @param	Array	Ruleset
+	* @param	String	Use rules
+	* @param	String	Filename
+	* @param	Array	Override Ruleset
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($file, $opt=0, $rules=null, $override=null) {
+	public function __construct($file, $opt=0, $rules=null, $override=null, $rules_file=null) {
 		$this->options 	= $opt;
 		$this->file 	= $file;
 		exec('php -l ' . escapeshellarg($file), $error, $code);
@@ -73,7 +75,14 @@ class PHPLinter {
 			$this->ignore_next = array();
 			$this->scope	= array();
 			
-			$this->rules = require dirname(__FILE__) . '/../rules/rules.php';
+			if(!empty($rules_file)) { 
+				if(file_exists($rules_file)) {
+					$this->rules = require $rules_file;
+					$this->debug("Using user supplied rulesfile `$rules_file`\n", 0, OPT_VERBOSE);
+				}
+			} else {
+				$this->rules = require dirname(__FILE__) . '/../rules/rules.php';
+			}
 			$this->globals = require dirname(__FILE__) . '/globals.php';
 			
 			if(is_array($override) && !empty($override)) {

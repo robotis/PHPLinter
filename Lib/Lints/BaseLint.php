@@ -53,8 +53,8 @@ class BaseLint {
 		$this->switch	= false;
 		$this->final_return = false;
 		$dir = dirname(__FILE__);
-		$this->globals 	= require $dir. '/../globals.php';
-		$this->uvars	= require $dir. '/../uservars.php';
+		$this->globals 	= require $dir . '/../globals.php';
+		$this->uvars	= require $dir . '/../uservars.php';
 		if($this->report_on('S')) {
 			$this->sec_1 = require($dir . '/../security/command_exection.php');
 			$this->sec_2 = require($dir . '/../security/filesystem.php');

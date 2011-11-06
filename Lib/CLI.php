@@ -236,7 +236,8 @@ class CLI {
 			$this->msg("Linting file: $_\n");
 			if($this->options & OPT_DEBUG_TIME_EXTRA) 
 				$time = microtime(true);
-			$linter = new PHPLinter($_, $this->options, $this->use_rules);
+			$linter = new PHPLinter($_, $this->options, $this->use_rules, 
+									null, $this->settings_file);
 			$report = $linter->lint();
 			$penalty = $linter->penalty();
 			$stats = array($_, $linter->score());
@@ -280,7 +281,8 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function lint_file($file) {
-		$linter = new PHPLinter($file, $this->options, $this->use_rules);
+		$linter = new PHPLinter($file, $this->options, $this->use_rules, 
+								null, $this->settings_file);
 		$report = $linter->lint();
 		if(!($this->options & OPT_SCORE_ONLY) && !($this->options & OPT_QUIET)) {
 			$this->reporter->toCli($report);

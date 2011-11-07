@@ -168,22 +168,23 @@ class CLI {
 							$this->options |= OPT_OVERWRITE_REPORT;
 							break;
 						case 'r':
-							$this->use_rules = $argv[++$i];
+							$this->use_rules = $this->consume($argv, $argc, $i);
 							continue 3;
 						case 'i':
-							$this->ignore = "/{$argv[++$i]}/";
+							$ignore = $this->consume($argv, $argc, $i);
+							$this->ignore = "/$ignore/";
 							continue 3;
 						case 't':
 							$this->threshold = intval($argv[++$i]);
 							continue 3;
 						case 'o':
-							$this->output_dir = $argv[++$i];
+							$this->output_dir = $this->consume($argv, $argc, $i);
 							continue 3;
 						case 'U':
-							$this->settings_file = $argv[++$i];
+							$this->settings_file = $this->consume($argv, $argc, $i);
 							continue 3;
 						case 'e':
-							$ext = trim($argv[++$i]);
+							$ext = $this->consume($argv, $argc, $i);
 							if(preg_match('/[a-z0-9\|]+/iu', $ext)) {
 								$this->extensions .= '|'.$ext;
 							} elseif(!empty($ext)) {
@@ -200,6 +201,20 @@ class CLI {
 				$this->target = $argv[$i];
 			}
 		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Consume next cli argument
+	* @param	String
+	----------------------------------------------------------------------+
+	*/
+	protected function consume($argv, $argc, &$i) {
+		if(mb_strlen($argv[$i]) > 2) {
+			return mb_substr($argv[$i], 2);
+		}
+		if(isset($argv[++$i])) return trim($argv[$i]);
+		$i--;
+		return false;
 	}
 	/**
 	----------------------------------------------------------------------+

@@ -53,7 +53,9 @@ class Path {
 	public static function find($directory, $match, $ignore=null) {
 		ob_start();
 		system('find ' . $directory . ' -type f');
+		$ignore = '/' . str_replace('/', '\\/', $ignore) . '/';
 		$files = explode("\n", ob_get_clean());
+		
 		foreach($files as $file) {
 			if(isset($ignore) && preg_match($ignore, $file))
 				continue;

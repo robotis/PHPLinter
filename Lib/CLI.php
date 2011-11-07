@@ -172,7 +172,7 @@ class CLI {
 							continue 3;
 						case 'i':
 							$ignore = $this->consume($argv, $argc, $i);
-							$this->ignore = "/$ignore/";
+							$this->ignore = $ignore;
 							continue 3;
 						case 't':
 							$this->threshold = intval($argv[++$i]);

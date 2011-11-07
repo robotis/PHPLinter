@@ -303,8 +303,6 @@ class CLI {
 		if(!isset($this->target) || !file_exists($this->target)) {
 			$this->error('Need valid target...');
 		}
-		ini_set('memory_limit', '512M');
-		set_time_limit (0);
 		$this->reporter = new Report($this->output_dir, $this->options);
 		if($this->options & OPT_DEBUG_TIME) 
 			$time = microtime(true);

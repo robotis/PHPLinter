@@ -186,9 +186,9 @@ class Report {
 			if($this->options & OPT_VERBOSE) 
 				echo "Wrote to file `$ofile`\n";
 			Path::write_file($ofile, $this->html($out, count($pp)));
-			$url['file'] = $file;
-			$url['url'] = strtr($rfile, './', '__').'.html';
-			$url['sort'] = strtolower($url['url']);
+			$url['phplinter___file'] = $file;
+			$url['phplinter___url'] = strtr($rfile, './', '__').'.html';
+			$url['phplinter___sort'] = strtolower($url['phplinter___url']);
 			$this->parts($pp, $url, $urls);
 		}
 		$urls = $this->sort($urls);
@@ -222,15 +222,15 @@ class Report {
 
 		foreach($urls as $k => $_) {
 			$content .= '<tr>';
-			if(isset($_['file'])) {
-				$score = (SCORE_FULL + $penaltys[$_['file']]);
+			if(isset($_['phplinter___file'])) {
+				$score = (SCORE_FULL + $penaltys[$_['phplinter___file']]);
 				$total += $score;
 				$num++;
 				$class = $this->get_score_class($score);
 				$content .= '<td class="'.$class.'">'.sprintf('%.2f', $score).'</td>';
 				$limit = $score == 10 ? 'perfect' : 'limit';
 				$content .= '<td class="'.$limit.'">'.sprintf('%.2f', SCORE_FULL).'</td>';
-				$content .= '<td><a href="'.$_['url'].'">'.substr(realpath($_['file']), 
+				$content .= '<td><a href="'.$_['phplinter___url'].'">'.substr(realpath($_['phplinter___file']), 
 																  strlen($this->root . $path))
 							. '</a></td>';
 			} else {
@@ -324,7 +324,7 @@ class Report {
 		$files = array();
 		$dirs = array();
 		foreach($urls as $k => $_) {
-			if(isset($_['sort']))
+			if(isset($_['phplinter___sort']))
 				$files[] = $_;
 			else $dirs[$k] = $_;
 		}
@@ -334,7 +334,7 @@ class Report {
 			});
 		}
 		if(!empty($files)) {
-			foreach($files as $_) $arr[] = $_['sort'];
+			foreach($files as $_) $arr[] = $_['phplinter___sort'];
 			array_multisort($files, SORT_ASC, $arr);
 		}
 		$urls = array_merge($dirs, $files);

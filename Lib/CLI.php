@@ -168,23 +168,23 @@ class CLI {
 							$this->options |= OPT_OVERWRITE_REPORT;
 							break;
 						case 'r':
-							$this->use_rules = $this->consume($argv, $argc, $i);
+							$this->use_rules = $this->consume($argv, $i);
 							continue 3;
 						case 'i':
-							$ignore = $this->consume($argv, $argc, $i);
+							$ignore = $this->consume($argv, $i);
 							$this->ignore = $ignore;
 							continue 3;
 						case 't':
 							$this->threshold = intval($argv[++$i]);
 							continue 3;
 						case 'o':
-							$this->output_dir = $this->consume($argv, $argc, $i);
+							$this->output_dir = $this->consume($argv, $i);
 							continue 3;
 						case 'U':
-							$this->settings_file = $this->consume($argv, $argc, $i);
+							$this->settings_file = $this->consume($argv, $i);
 							continue 3;
 						case 'e':
-							$ext = $this->consume($argv, $argc, $i);
+							$ext = $this->consume($argv, $i);
 							if(preg_match('/[a-z0-9\|]+/iu', $ext)) {
 								$this->extensions .= '|'.$ext;
 							} elseif(!empty($ext)) {
@@ -208,7 +208,7 @@ class CLI {
 	* @param	String
 	----------------------------------------------------------------------+
 	*/
-	protected function consume($argv, $argc, &$i) {
+	protected function consume($argv, &$i) {
 		if(mb_strlen($argv[$i]) > 2) {
 			return mb_substr($argv[$i], 2);
 		}

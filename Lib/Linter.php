@@ -74,6 +74,7 @@ class PHPLinter {
 			$this->score 	= 0;
 			$this->ignore_next = array();
 			$this->scope	= array();
+			$this->in_defined = false;
 			
 			if(!empty($rules_file)) { 
 				if(file_exists($rules_file)) {
@@ -240,6 +241,10 @@ class PHPLinter {
 				case T_SWITCH:
 					$this->open_scope($i, $element);
 					break;
+				case T_LOGICAL_OR:
+					if($this->in_defined)
+						$this->open_scope($i, $element);
+					break;
 				case T_FOR:
 					$this->open_scope($i, $element);
 					$this->ignore_next[] = T_SEMICOLON;
@@ -300,6 +305,10 @@ class PHPLinter {
 					$this->scope = $scope;
 					$next_element = new Element();
 					break;
+				case T_STRING:
+					if($tokens[$i][1] === 'defined')
+						$this->in_defined = true;
+					$element->tokens[] = $tokens[$i];
 				default:
 					$element->tokens[] = $tokens[$i];
 					break;
@@ -409,6 +418,7 @@ class PHPLinter {
 			array_pop($this->scope);
 			$element->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
 		}
+		$this->in_defined = false;
 	}
 	/**
 	----------------------------------------------------------------------+

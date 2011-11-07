@@ -303,6 +303,7 @@ class CLI {
 		if(!isset($this->target) || !file_exists($this->target)) {
 			$this->error('Need valid target...');
 		}
+		
 		$this->reporter = new Report($this->output_dir, $this->options);
 		if($this->options & OPT_DEBUG_TIME) 
 			$time = microtime(true);

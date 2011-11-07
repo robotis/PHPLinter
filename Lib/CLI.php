@@ -263,8 +263,10 @@ class CLI {
 			$penalty = $linter->penalty();
 			$stats = array($_, $linter->score());
 			if($this->options & OPT_HTML_REPORT) {
-				$href = (preg_match('/^\.\/?/', $_)) 
+				if($_[0] !== '/') {
+					$href = (preg_match('/^\.\//', $_)) 
 							? $_ : "./$_";
+				} else $href = $_;
 				$reports[$href] = $report;
 				$penaltys[$href] = $penalty;
 			}

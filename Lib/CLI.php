@@ -303,15 +303,17 @@ class CLI {
 		if(!isset($this->target) || !file_exists($this->target)) {
 			$this->error('Need valid target...');
 		}
-		
+
 		$this->reporter = new Report($this->output_dir, $this->options);
 		if($this->options & OPT_DEBUG_TIME) 
 			$time = microtime(true);
-		
+
 		if(is_dir($this->target)) {
 			if($this->options & OPT_HTML_REPORT) {
-				if(isset($this->output_dir) 
-					&& file_exists($this->output_dir) 
+				if(empty($this->output_dir)) {
+					$this->error('No output directory selected...');
+				}
+				if(file_exists($this->output_dir) 
 					&& !($this->options & OPT_OVERWRITE_REPORT)) 
 				{
 					$this->error('Output directory not empty, will not overwrite...');

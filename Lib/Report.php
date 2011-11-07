@@ -223,6 +223,7 @@ class Report {
 		foreach($urls as $k => $_) {
 			$content .= '<tr>';
 			if(isset($_['file'])) {
+				
 				$score = (SCORE_FULL + $penaltys[$_['file']]);
 				$total += $score;
 				$num++;

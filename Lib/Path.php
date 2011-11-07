@@ -53,10 +53,13 @@ class Path {
 	public static function find($directory, $match, $ignore=null) {
 		ob_start();
 		system('find ' . $directory . ' -type f');
-		if(!empty($ignore))
-			$ignore = '/' . str_replace('/', '\\/', $ignore) . '/';
+		if(!empty($ignore)) {
+			$ignore = str_replace('/', '\\/', $ignore);
+			$ignore = str_replace('.', '\\.', $ignore);
+			$ignore = str_replace('*', '', $ignore);
+			$ignore = '/' . $ignore . '/';
+		}
 		$files = explode("\n", ob_get_clean());
-		
 		foreach($files as $file) {
 			if(isset($ignore) && preg_match($ignore, $file))
 				continue;

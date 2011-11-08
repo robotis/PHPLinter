@@ -1,7 +1,17 @@
 PHPLinter. Static code analyser.
 V2.4
 
-A simple fast lint and score for PHP files.
+A simple fast lint and score for PHP files. Attempts to analyze the code to
+locate problem areas, flagging infractions to the rule set and giving a score
+anywhere from 10.0 to minus infinity.
+
+Disclaimer:
+
+	No real codebase will have a perfect score. The results of phplinter are
+	an estimation and thus not perfect. It does not parse expressions and it
+	can not find runtime errors. There will be false positives from time to time.
+	It was built for speed and efficiency to use with our massive and rather
+	messy codebase.
 
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 
@@ -29,7 +39,7 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-i: ignore PATTERN. (Ignore files in directory mode)
 
 
-Ruleset (some rules are not active)
+Ruleset (some rules may not be active)
 
     * I: Information
     * C: Conventions
@@ -38,14 +48,14 @@ Ruleset (some rules are not active)
     * R: Refactor
     * S: Security
 
-(I)nformation
+(I)nformation (No penalty)
 
     * I1: FIXME/TODO
     * I2: Possible unsecure function
     * I3: Possible information disclosure
     * I4: Loose comparison operator used
 
-(C)onventions
+(C)onventions (0.01 penalty)
 
     * C1: Line to long. Default (85)
     * C2: Class name does not match. Default( /^[A-Z][\w_]{2,}$/ )
@@ -59,7 +69,7 @@ Ruleset (some rules are not active)
     * C10: Too many classes defined in file. Default(1)
     * C11: Property defined in method
 
-(D)ocumentation
+(D)ocumentation (0.3 penalty)
 
     * D1: File not documented
     * D2: Class not documented
@@ -68,7 +78,7 @@ Ruleset (some rules are not active)
     * D5: Interface not documented
     * D6: Property not documented 
 
-(W)arning
+(W)arning (0.3 penalty)
 
     * W1: PHP4 style constuctor
     * W2: PHP4 style variable
@@ -85,7 +95,7 @@ Ruleset (some rules are not active)
     * W18: Token depricated. Default (global)
     * W19: Whitespace before first open tag
 
-(R)efactor
+(R)efactor (0.8 penalty)
 
     * R1: Method to long. Default(300)
     * R2: Function to long. Default(300)
@@ -107,7 +117,7 @@ Ruleset (some rules are not active)
     * R19: HTML output before first open tag
     * R20: File to long. Default(4000)
     
-(S)ecurity
+(S)ecurity (1.0 penalty)
 
 	* S1: GET/POST/REQUEST used directly in unsecure function
 	* S2: Unsecure use of include/require

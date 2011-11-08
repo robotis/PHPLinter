@@ -32,7 +32,7 @@ class Tokenizer {
 	----------------------------------------------------------------------+
 	*/
 	public static function tokenize($file, $skip_whitespace=true) {
-		$eol = "\n";
+		$eol = PHP_EOL;
 		$all = token_get_all(file_get_contents($file));
 		$lnum = 1;
 		$out = array();

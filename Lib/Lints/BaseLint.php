@@ -296,7 +296,7 @@ class BaseLint {
 	protected function sec_includes($pos) {
 		$i = $pos;
 		$o = $this->element->tokens;
-		while(isset($o[++$i]) && $o[$i][0] != T_NEWLINE) {
+		while(isset($o[++$i]) && $o[$i][0] !== T_SEMICOLON) {
 			if(in_array($o[$i][1], $this->uvars)) {
 				$this->report('SEC_ERROR_INCLUDE', $o[$pos][1], $o[$pos][2]);
 			}

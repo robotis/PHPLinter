@@ -130,7 +130,7 @@ class Lint_class extends BaseLint implements ILint {
 		}
 		$udef = array_diff($this->locals[T_VARIABLE], $locals);
 		foreach($udef as $_) {
-			$this->report('CON_PROPERTY_DEFINED_IN_METHOD', $_, $_);	
+			$this->report('CON_PROPERTY_DEFINED_IN_METHOD', $_);	
 		}
 		return count($udef) + count($locals);
 	} 

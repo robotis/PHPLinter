@@ -330,6 +330,9 @@ class CLI {
 				if(empty($this->output_dir)) {
 					$this->error('No output directory selected...');
 				}
+				if($this->output_dir == $this->target) {
+					$this->error('Output directory same as target, aborting...');
+				}
 				if(file_exists($this->output_dir) 
 					&& !($this->options & OPT_OVERWRITE_REPORT)) 
 				{

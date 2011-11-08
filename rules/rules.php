@@ -339,7 +339,7 @@ return array(
 	 * Security 
 	 */
 	'SEC_ERROR_REQUEST' => array(
-		'message_extra' => 'GET/POST/REQUEST used directly in unsecure function: `%s`',
+		'message_extra' => 'GET/POST/REQUEST/FILE used directly in unsecure function: `%s`',
 		'flag' => 'S1',
 		'penalty' => 10.0,
 	),

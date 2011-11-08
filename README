@@ -119,6 +119,6 @@ Ruleset (some rules may not be active)
     
 (S)ecurity (1.0 penalty)
 
-	* S1: GET/POST/REQUEST used directly in unsecure function
+	* S1: GET/POST/REQUEST/FILE used directly in unsecure function
 	* S2: Unsecure use of include/require
 	* S3: Unsecure callback in function call

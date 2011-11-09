@@ -35,7 +35,7 @@ class Lint_function extends BaseLint implements ILint {
 			
 		if(!$this->element->dochead)
 			$this->report('DOC_NO_DOCHEAD_FUNCTION');
-			
+
 		$this->process_tokens();
 		
 		$regex = $this->rules['CON_FUNCTION_NAME']['compare'];
@@ -71,7 +71,6 @@ class Lint_function extends BaseLint implements ILint {
 					break;
 			}
 		}
-		
 		$locals = array_unique($_locals);
 		$compares = array(
 			'REF_ARGUMENTS' => count($args),

@@ -179,7 +179,7 @@ class PHPLinter {
 	protected function measure($pos, $element, &$ret) { 
 		$start = $this->last_newline($pos);
 		$element->start = $start;
-		
+
 		if($element->type === T_FILE) {
 			$element->start_line = 1;
 			$element->empty = false;

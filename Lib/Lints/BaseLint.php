@@ -163,8 +163,7 @@ class BaseLint {
 				break;	
 			case T_IS_EQUAL:
 			case T_IS_NOT_EQUAL:
-				$this->element->start_line = $token[2];
-				$this->report('INF_COMPARE');
+				$this->report('INF_COMPARE', null, $token[2]);
 				break;
 			case T_BACKTICK:
 				$this->sec_backtick($pos);

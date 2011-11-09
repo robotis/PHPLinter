@@ -12,6 +12,8 @@ Disclaimer:
 	can not find runtime errors. There will be false positives from time to time.
 	It was built for speed and efficiency to use with our massive and rather
 	messy codebase.
+	
+	It is not meant as a replacement for other, more customizable tools.
 
 Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 

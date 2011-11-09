@@ -174,7 +174,11 @@ class BaseLint {
 				break;
 			case T_RETURN:
 			case T_EXIT:
-				if($this->scope === 0 && $this->final_return === false) {
+				$prev = $this->element->tokens[$this->prev($pos)];
+				if(!in_array($prev[0], array(T_LOGICAL_OR, T_BOOLEAN_OR)) 
+					&& $this->scope === 0 
+					&& $this->final_return === false) 
+				{
 					$this->final_return = true;
 				}
 				break;
@@ -345,6 +349,23 @@ class BaseLint {
 		$o = $this->element->tokens;
 		$c = $this->element->token_count;
 		while(++$i < $c) {
+			if(Tokenizer::meaningfull($o[$i][0]))
+				return $i;
+		}
+		return false;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Return the previous meaningfull token
+	* @param	int	current position
+	* @return	Int
+	----------------------------------------------------------------------+
+	*/
+	protected function prev($pos) {
+		$i = $pos;
+		$o = $this->element->tokens;
+		$c = $this->element->start;
+		while(--$i > $c) {
 			if(Tokenizer::meaningfull($o[$i][0]))
 				return $i;
 		}

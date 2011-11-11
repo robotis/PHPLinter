@@ -230,6 +230,7 @@ class BaseLint {
 			/* Special */
 			elseif($token[1] == 'preg_replace') {
 				// check for '//e' flag
+				
 			}
 		}
 	}
@@ -317,7 +318,7 @@ class BaseLint {
 		while(true) {
 			if(empty($o[++$i])) break;
 			$t = $o[$i];
-			if($t[0] == T_BACKTICK) break;
+			if($t[0] === T_BACKTICK || $t[0] === T_SEMICOLON) break;
 			if(in_array($t[1], $this->uvars)) {
 				$this->report('SEC_ERROR_REQUEST', $o[$pos][1], $o[$pos][2]);
 			}

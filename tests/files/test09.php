@@ -24,3 +24,4 @@ assert($test);
 array_walk($test, $_GET['breach']);
 array_walk($_GET['breach'], $test);
 `{$_GET['breach']}`;
+preg_match("/{$_GET['breach']}/e", $p, $m);

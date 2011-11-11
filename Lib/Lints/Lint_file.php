@@ -152,8 +152,8 @@ class Lint_file extends BaseLint implements ILint {
 			if(($this->element->token_count - $pos) > 1) {
 				if($this->next($pos) !== false)
 					$this->report('REF_HTML_AFTER_CLOSE', null, $o[$pos][2]);
-				else
-					$this->report('WAR_WS_AFTER_CLOSE', null, $o[$pos][2]);
+//				else
+//					$this->report('WAR_WS_AFTER_CLOSE', null, $o[$pos][2]);
 				return true;
 			}
 		} 

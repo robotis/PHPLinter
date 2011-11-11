@@ -89,3 +89,4 @@ exit();
 // Unreachable code here
 $var = 1;
 echo($var);
+?>

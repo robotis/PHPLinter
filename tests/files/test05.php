@@ -4,13 +4,12 @@
 ----------------------------------------------------------------------+
 *  @desc			Test old stuff
 *  @flag	W19	L1
-*  @flag	W1	L16
-*  @flag	W2	L17
+*  @flag	W1	L15
+*  @flag	W2	L16
+*  @flag	D6	L16
 *  @flag	D6	L17
-*  @flag	D6	L18
-*  @flag	C4	L24
-*  @flag	W17	L33
-*  @score	8.19
+*  @flag	C4	L23
+*  @score	8.49
 ----------------------------------------------------------------------+
 */
 class TEST{
@@ -26,8 +25,4 @@ class TEST{
 		$this->oldvar = 'used';
 	}
 }
-// Whitespace after close tag
-
-
-
 ?>

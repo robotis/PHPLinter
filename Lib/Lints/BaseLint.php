@@ -403,6 +403,7 @@ class BaseLint {
 		if(!empty($this->element->comments)) {
 			foreach($this->element->comments as $element) {
 				if($element->type === T_DOC_COMMENT) $this->element->dochead = true;
+				$element->owner = $this->element->name;
 				$lint = new Lint_comment($element, $this->rules, $this->options);
 				foreach($lint->bind($this)->lint() as $_) {
 					$this->reports[] = $_;

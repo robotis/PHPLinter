@@ -26,8 +26,8 @@ require_once 'PHPUnit/Framework/TestSuite.php';
 require_once 'PHPUnit/Extensions/PhptTestSuite.php';
 
 define('PLROOT', realpath(dirname(__FILE__) . '/../'));
-require PLROOT . '/Lib/autoloader.php';
-require PLROOT . '/Lib/constants.php';
+require PLROOT . '/phplinter/autoloader.php';
+require PLROOT . '/phplinter/constants.php';
 
 class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	/**
@@ -68,7 +68,7 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
         	list($flags, $lines, $score, $rules) = $this->extract_test($_);
         	$fc = count($flags);
         	if($score !== false) {
-        		$ll = new PHPLinter\PHPLinter(PLROOT . '/tests/files/' . $_, 
+        		$ll = new phplinter\Linter(PLROOT . '/tests/files/' . $_, 
         									  OPT_INFORMATION, null, $rules);
         		$report = $ll->lint();
         		$this->assertEquals($score, $ll->score(), $_);
@@ -87,8 +87,8 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	*/
 	public function test_self() {
 		$dir = PLROOT . '/Lib/';
-		foreach(PHPLinter\Path::find($dir, '/\.php$/') as $_) {
-			$ll = new PHPLinter\PHPLinter($_);
+		foreach(phplinter\Path::find($dir, '/\.php$/') as $_) {
+			$ll = new phplinter\Linter($_);
 			$ll->lint();
 			$score = $ll->score();
 			$this->assertTrue($score > 9.50, "$_: $score !> 9.50");

@@ -21,7 +21,7 @@
 *
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
+namespace phplinter;
 require_once dirname(__FILE__) . '/constants.php';
 /**
 ----------------------------------------------------------------------+
@@ -45,7 +45,7 @@ class Element {
 * @desc 	Linter. Measures code and splits into elements.
 ----------------------------------------------------------------------+
 */
-class PHPLinter {
+class Linter {
 	/* @var Array */
 	protected $options;
 	/* @var Array */
@@ -133,7 +133,7 @@ class PHPLinter {
 			$this->debug("Empty file.. Skipping\n", 0, OPT_VERBOSE);
 		} else {
 			$element = $this->measure_file();
-			$lint = new Lint_file($element, $this->rules, $this->options);
+			$lint = new Lint\LFile($element, $this->rules, $this->options);
 			$this->report = $lint->lint();
 			$this->score = $lint->penalty();
 			if(!empty($this->report)) {

@@ -22,7 +22,7 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter; 
+namespace phplinter; 
 class CLI {
 	/* @var Array */
 	protected $options;
@@ -269,7 +269,7 @@ class CLI {
 			$this->msg("Linting file: $_\n");
 			if($this->options & OPT_DEBUG_TIME_EXTRA) 
 				$time = microtime(true);
-			$linter = new PHPLinter($_, $this->options, $this->use_rules, 
+			$linter = new Linter($_, $this->options, $this->use_rules, 
 									null, $this->settings_file);
 			$report = $linter->lint();
 			$penalty = $linter->penalty();

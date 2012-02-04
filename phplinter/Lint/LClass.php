@@ -22,8 +22,8 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
-class Lint_class extends BaseLint implements ILint {
+namespace phplinter\Lint;
+class LClass extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Analyze class

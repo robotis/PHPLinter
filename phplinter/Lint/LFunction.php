@@ -1,9 +1,9 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Lint a method.
+*  @desc			Lint a function.
 ----------------------------------------------------------------------+
-*  @file 			Lint_method.php
+*  @file 			Lint_function.php
 *  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
@@ -22,46 +22,40 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
-class Lint_method extends BaseLint implements ILint {
+namespace phplinter\Lint;
+class LFunction extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	analyse element
-	* @return 	Array	Reports
+	* @desc 	Analyze function
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		$this->add_parent_data($this->element->name, T_METHOD);
-		
-		$this->process_tokens();
-
-		if($this->element->empty && !$this->element->abstract) 
-			$this->report('WAR_EMPTY_METHOD');
+		if($this->element->empty) 
+			$this->report('WAR_EMPTY_FUNCTION');
 			
 		if(!$this->element->dochead)
-			$this->report('DOC_NO_DOCHEAD_METHOD');
-			
-		if(!$this->element->visibility)
-			$this->report('CON_NO_VISIBILITY');
-			
-		$regex = $this->rules['CON_METHOD_NAME']['compare'];
+			$this->report('DOC_NO_DOCHEAD_FUNCTION');
+
+		$this->process_tokens();
+		
+		$regex = $this->rules['CON_FUNCTION_NAME']['compare'];
 		if(!(substr($this->element->name, 0, 2) == '__') 
 			&& !preg_match($regex, $this->element->name))
-			$this->report('CON_METHOD_NAME', $regex);
+			$this->report('CON_FUNCTION_NAME', $regex);
 			
 		return $this->reports;
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Process token array
+	* @desc 	Process tokenstream
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
-		$tcnt 		= $this->element->token_count;
+		$tcnt 		= count($this->element->tokens);
 		$et 		= $this->element->tokens;
 		$args		= false;
 		$_locals 	= array();
-		
+		$branches 	= 0;
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
 				case T_PARENTHESIS_OPEN:
@@ -70,11 +64,7 @@ class Lint_method extends BaseLint implements ILint {
 					}
 					break;
 				case T_VARIABLE:
-					if($et[$i][1] == '$this') {
-						$this->parent_local($i);
-					} else {
-						$_locals[] = $et[$i][1];
-					}
+					$_locals[] = $et[$i][1];
 					break;
 				default:
 					$this->common_tokens($i);
@@ -86,31 +76,14 @@ class Lint_method extends BaseLint implements ILint {
 			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
 			'REF_BRANCHES' => $this->branches,
-			'REF_METHOD_LENGTH' => $this->element->length
+			'REF_FUNCTION_LENGTH' => $this->element->length
 		);
-		
 		foreach($compares as $k => $_)
 			if($_ > $this->rules[$k]['compare'])
 				$this->report($k, $_);
-		if(!$this->element->abstract)
-			$this->process_args($locals, $args);
+				
+		$this->process_args($locals, $args);	
 		$this->process_locals($locals, $_locals, $args);
 	}
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	Process $this token
-	----------------------------------------------------------------------+
-	*/
-	protected function parent_local(&$pos) {
-		$o = $this->element->tokens;
-		$j = $this->find($pos, T_STRING);
-		if($j !== false) {
-			$k = $o[$this->next($j+1)][0];
-			if($k === T_PARENTHESIS_OPEN)
-				$this->add_parent_data($o[$j][1], T_METHOD);
-			else
-				$this->add_parent_data($o[$j][1], T_VARIABLE);
-			$pos = $j;
-		}
-	}
 }
+

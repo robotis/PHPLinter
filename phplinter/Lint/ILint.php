@@ -1,9 +1,9 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Lint a comment.
+*  @desc			ILint interface
 ----------------------------------------------------------------------+
-*  @file 			Lint_comment.php
+*  @file 			Lint_function.php
 *  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
@@ -22,47 +22,12 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
-class Lint_comment extends BaseLint implements ILint {
+namespace phplinter\Lint;
+interface ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Analyze comment
-	* @return 	Array
+	* @desc 	Analyze
 	----------------------------------------------------------------------+
 	*/
-	public function lint() {
-		$tcnt = count($this->element->tokens);
-		$empty = true;
-		$code = false;
-		for($i = 0;$i < $tcnt;$i++) {
-			$comment = $this->element->tokens[$i][1];
-			if($this->element->tokens[$i] === T_NEWLINE)
-				continue;
-			if(preg_match('/[^\s\/\*]+/u', $comment)) {
-				$empty = false;
-				if(preg_match('/(FIXME|TODO|HACK|WTF)/iu', $comment, $m)) {
-					switch(mb_strtolower($m[1])) {
-						case 'fixme':
-						case 'todo':
-							$this->report('INF_UNDONE', $m[1]);
-							break;
-						case 'hack':
-							$this->report('WAR_HACK_MARKED');
-							break;
-						case 'wtf':
-							$this->report('INF_FOUND_WTF');
-							break;
-					}
-				}
-				if(!$code && preg_match($this->rules['CON_WS_COMMENTED_CODE']['compare'], 
-				              $comment, $m)) 
-				{
-					$this->report('CON_WS_COMMENTED_CODE');
-					$code = true;
-				}
-			}
-		}
-		if($empty) $this->report('CON_EMPTY_COMMENT');
-		return $this->reports;
-	}
+	public function lint();
 }

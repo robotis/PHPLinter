@@ -1,7 +1,7 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Lint a function.
+*  @desc			Lint an anonymous function.
 ----------------------------------------------------------------------+
 *  @file 			Lint_function.php
 *  @author 			Jóhann T. Maríusson <jtm@robot.is>
@@ -22,49 +22,38 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
-class Lint_function extends BaseLint implements ILint {
+namespace phplinter\Lint;
+class LAnon_function extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Analyze function
+	* @desc 	Analyze
+	* @return 	Array
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		if($this->element->empty) 
-			$this->report('WAR_EMPTY_FUNCTION');
-			
-		if(!$this->element->dochead)
-			$this->report('DOC_NO_DOCHEAD_FUNCTION');
-
-		$this->process_tokens();
-		
-		$regex = $this->rules['CON_FUNCTION_NAME']['compare'];
-		if(!(substr($this->element->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->element->name))
-			$this->report('CON_FUNCTION_NAME', $regex);
-			
-		return $this->reports;
-	}
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	Process tokenstream
-	----------------------------------------------------------------------+
-	*/
-	protected function process_tokens() {
 		$tcnt 		= count($this->element->tokens);
 		$et 		= $this->element->tokens;
 		$args		= false;
 		$_locals 	= array();
-		$branches 	= 0;
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
 						$args = $this->parse_args($i);
+						if(count($args) > $this->rules['REF_ARGUMENTS']['compare'])
+							$this->report('REF_ARGUMENTS', count($args));
 					}
 					break;
 				case T_VARIABLE:
 					$_locals[] = $et[$i][1];
+					break;
+				case T_USE: 
+					$i = $this->find($i, T_PARENTHESIS_OPEN);
+					$_args = $this->parse_args($i);
+					$this->add_parent_data($_args, T_VARIABLE);
+					if(count($_args) > $this->rules['REF_USE_ARGUMENTS']['compare'])
+						$this->report('REF_USE_ARGUMENTS', count($_args));
+					$args = array_merge($args, $_args);
 					break;
 				default:
 					$this->common_tokens($i);
@@ -73,7 +62,6 @@ class Lint_function extends BaseLint implements ILint {
 		}
 		$locals = array_unique($_locals);
 		$compares = array(
-			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
 			'REF_BRANCHES' => $this->branches,
 			'REF_FUNCTION_LENGTH' => $this->element->length
@@ -84,6 +72,7 @@ class Lint_function extends BaseLint implements ILint {
 				
 		$this->process_args($locals, $args);	
 		$this->process_locals($locals, $_locals, $args);
+		
+		return $this->reports;
 	}
 }
-

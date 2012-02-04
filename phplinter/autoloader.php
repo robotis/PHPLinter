@@ -22,32 +22,16 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
+namespace phplinter;
 function PHPLinter_autoload($class) {
-	$dir = dirname(__FILE__);
-	$cls = preg_split('/\\\/u', $class);
-	switch($class) {
-		case 'PHPLinter\Report':
-		case 'PHPLinter\Tokenizer':
-		case 'PHPLinter\Path':
-		case 'PHPLinter\CLI':
-			require "$dir/{$cls[1]}.php";
-			break;
-		case 'PHPLinter\PHPLinter':
-			require "$dir/Linter.php";
-			break;
-		case 'PHPLinter\ILint':
-		case 'PHPLinter\BaseLint':
-		case 'PHPLinter\Lint_file':
-		case 'PHPLinter\Lint_method':
-		case 'PHPLinter\Lint_function':
-		case 'PHPLinter\Lint_anon_function':
-		case 'PHPLinter\Lint_class':
-		case 'PHPLinter\Lint_interface':
-		case 'PHPLinter\Lint_security':
-		case 'PHPLinter\Lint_comment':
-			require "$dir/Lints/{$cls[1]}.php";
-			break;
+	$dir = dirname(__FILE__) . '/../';
+	if(mb_strpos($class, '\\') !== false) {
+		$parts = explode('\\', $class);
+		$file = $dir . implode('/', $parts) . '.php';
+		if(file_exists($file)) {
+			require($file);
+			return;
+		}
 	}
 }
-spl_autoload_register('PHPLinter\PHPLinter_autoload');
+spl_autoload_register('phplinter\PHPLinter_autoload');

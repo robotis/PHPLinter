@@ -22,7 +22,7 @@
 *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
+namespace phplinter\Lint;
 class BaseLint {
 	/* @var Array */
 	protected $reports;
@@ -56,11 +56,11 @@ class BaseLint {
 		$this->globals 	= require $dir . '/../globals.php';
 		$this->uvars	= require $dir . '/../uservars.php';
 		if($this->report_on('S')) {
-			$this->sec_1 = require($dir . '/../security/command_exection.php');
-			$this->sec_2 = require($dir . '/../security/filesystem.php');
-			$this->sec_3 = require($dir . '/../security/low_risk.php');
-			$this->sec_4 = require($dir . '/../security/information_disclosure.php');
-			$this->sec_5 = require($dir . '/../security/accept_callbacks.php');
+			$this->sec_1 = require($dir . '/../Security/command_exection.php');
+			$this->sec_2 = require($dir . '/../Security/filesystem.php');
+			$this->sec_3 = require($dir . '/../Security/low_risk.php');
+			$this->sec_4 = require($dir . '/../Security/information_disclosure.php');
+			$this->sec_5 = require($dir . '/../Security/accept_callbacks.php');
 		}
 	}
 	/**
@@ -140,7 +140,7 @@ class BaseLint {
 		$token = $this->element->tokens[$pos];
 		if($this->final_return === 1 
 			&& $token[0] !== T_CLOSE_SCOPE 
-			&& Tokenizer::meaningfull($token[0])) 
+			&& \phplinter\Tokenizer::meaningfull($token[0])) 
 		{
 			$this->final_return = 2;
 			$this->report('WAR_UNREACHABLE_CODE', null, $token[2]);
@@ -349,7 +349,7 @@ class BaseLint {
 		$o = $this->element->tokens;
 		$c = $this->element->token_count;
 		while(++$i < $c) {
-			if(Tokenizer::meaningfull($o[$i][0]))
+			if(\phplinter\Tokenizer::meaningfull($o[$i][0]))
 				return $i;
 		}
 		return false;
@@ -366,7 +366,7 @@ class BaseLint {
 		$o = $this->element->tokens;
 		$c = $this->element->start;
 		while(--$i > $c) {
-			if(Tokenizer::meaningfull($o[$i][0]))
+			if(\phplinter\Tokenizer::meaningfull($o[$i][0]))
 				return $i;
 		}
 		return false;
@@ -404,7 +404,7 @@ class BaseLint {
 			foreach($this->element->comments as $element) {
 				if($element->type === T_DOC_COMMENT) $this->element->dochead = true;
 				$element->owner = $this->element->name;
-				$lint = new Lint_comment($element, $this->rules, $this->options);
+				$lint = new LComment($element, $this->rules, $this->options);
 				foreach($lint->bind($this)->lint() as $_) {
 					$this->reports[] = $_;
 				}
@@ -422,17 +422,17 @@ class BaseLint {
 	protected function recurse() {
 		if(!empty($this->element->elements)) {
 			$a = array(
-				T_CLASS 		=> 'Lint_class',
-				T_DOC_COMMENT	=> 'Lint_comment',
-				T_FUNCTION 		=> 'Lint_function',
-				T_ANON_FUNCTION => 'Lint_anon_function',
-				T_INTERFACE 	=> 'Lint_interface',
-				T_METHOD 		=> 'Lint_method',
-				T_FILE 			=> 'Lint_file',
+				T_CLASS 		=> 'LClass',
+				T_DOC_COMMENT	=> 'LComment',
+				T_FUNCTION 		=> 'LFunction',
+				T_ANON_FUNCTION => 'LAnon_function',
+				T_INTERFACE 	=> 'LInterface',
+				T_METHOD 		=> 'LMethod',
+				T_FILE 			=> 'LFile',
 			);
 			foreach($this->element->elements as $element) {
 				$this->profile();
-				$class = "PHPLinter\\{$a[$element->type]}";
+				$class = "\\phplinter\\Lint\\{$a[$element->type]}";
 				$lint = new $class($element, $this->rules, $this->options);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();

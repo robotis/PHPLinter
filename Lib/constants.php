@@ -45,6 +45,8 @@ define('OPT_DEBUG_TIME_EXTRA',			0x020000);
 define('OPT_QUIET',						0x040000);
 define('OPT_SCOPE_MAP',					0x080000);
 define('OPT_FORMATTING',			   	0x100000);	
+define('OPT_JSON_REPORT',			   	0x200000);
+define('OPT_HARVEST_DOCS',			   	0x400000);
 
 // SCORE
 define('SCORE_FULL',					10.0);

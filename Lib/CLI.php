@@ -61,32 +61,39 @@ class CLI {
 	*/
 	protected function help() {
 		echo "PHPLinter. Lint and score PHP files.\n";
-		echo "Usage phplinter -[ICWRESHMUvVTwc] -i[PATTERN] -e[PATTERN] -o[directory] [file|directory]\n";
-		echo "\t-U: Use rules-file FILE.\n";
+		echo "Usage phplinter [Options] [file|directory]\n\n";
+		echo "\t-q: Quiet mode (Surpress output)\n";
+		echo "\t-v: Verbose mode\n";
+		echo "\t-c: Turn off color output.\n";
+		echo "\t-S: Score only.\n";
+		
+		echo "\nFilters:\n";
 		echo "\t-I: Report extra information (default off).\n";
 		echo "\t-C: Dont report conventions.\n";
-		echo "\t-F: Report formatting errors.\n";
 		echo "\t-W: Dont report warnings.\n";
 		echo "\t-R: Dont report refactor warnings.\n";
 		echo "\t-E: Dont report errors.\n";
 		echo "\t-D: Dont report documentation warnings.\n";
 		echo "\t-X: Dont report security warnings.\n";
 		echo "\t-O: Security report only.\n";
+		echo "\t-r RULES: Use following rules (| delimited).\n";
+// 		echo "\t-U FILE: Use rules-file.\n";
+		
+		echo "\nDebugging:\n";
 		echo "\t-M: View scope map.\n";
-//		echo "\t-F: Try to locate unused functions/methods (Experimental).\n";
-//		echo "\t-t: Number of invocations threshold (default 0).\n";
-		echo "\t-S: Score only.\n";
-		echo "\t-r: Use following rules (| delimited).\n";
-		echo "\t-v: Verbose mode\n";
-		echo "\t-q: Quiet mode (Surpress output)\n";
 		echo "\t-V: Debug mode. Again for extra debug info.\n";
 		echo "\t-T: Time execution. Again for extra time info.\n";
-		echo "\t-c: Turn off color output.\n";
-		echo "\t-e: Add extensions to valid list delimited by '|' (default 'php')\n";
-		echo "\t-o: Output directory (with -H)\n";
-		echo "\t-H: HTML report.\n";
+		
+		echo "\nReporting:\n";
+		echo "\t-H PATH: HTML report.\n";
+		echo "\t-J PATH: JSON report.\n";
+		echo "\t-i PATTERN: Ignore pattern (| delimited)\n";
+		echo "\t-e PATTERN: file extensions (| delimited) (default 'php')\n";
 		echo "\t-w: Overwrite output directory. (Warning: Will empty directory)\n";
-		echo "\t-i: ignore PATTERN. (Ignore files in directory mode)\n";
+		
+		echo "\nOther (Experimental):\n";
+		echo "\t-Z PATH: Harvest documentation into json-file.\n";
+		echo "\t-F: Report formatting errors.\n";
 		echo "<jtm@robot.is>\n";
 		exit;
 	}
@@ -160,10 +167,16 @@ class CLI {
 							break;
 						case 'H':
 							$this->options |= OPT_HTML_REPORT;
-							break;
-						case 'F':
-							$this->options |= OPT_FIND_FUNC;
-							break;
+							$this->html_out = $this->consume($argv, $i);
+							continue 3;
+						case 'J':
+							$this->options |= OPT_JSON_REPORT;
+							$this->json_out = $this->consume($argv, $i);
+							continue 3;
+						case 'Z':
+							$this->options |= OPT_HARVEST_DOCS;
+							$this->docs_out = $this->consume($argv, $i);
+							continue 3;
 						case 'w':
 							$this->options |= OPT_OVERWRITE_REPORT;
 							break;

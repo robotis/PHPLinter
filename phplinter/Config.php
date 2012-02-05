@@ -90,13 +90,13 @@ class Config {
 	protected function _parse_filter($conf) {
 		if(isset($conf->filter)) {
 			foreach(array(
-						"information" 	=> OPT_NO_INFORMATION,
-						"conventions" 	=> OPT_NO_CONVENTION,
-						"warnings" 		=> OPT_NO_WARNING,
-						"refactor" 		=> OPT_NO_REFACTOR,
-						"errors" 		=> OPT_NO_ERROR,
-						"documentation" => OPT_NO_DEPRICATED,
-						"security" 		=> OPT_NO_SECURITY
+				"information" 	=> OPT_NO_INFORMATION,
+				"conventions" 	=> OPT_NO_CONVENTION,
+				"warnings" 		=> OPT_NO_WARNING,
+				"refactor" 		=> OPT_NO_REFACTOR,
+				"errors" 		=> OPT_NO_ERROR,
+				"documentation" => OPT_NO_DEPRICATED,
+				"security" 		=> OPT_NO_SECURITY
 			) as $k => $_)
 			{
 				if(in_array($k, $conf->filter)) {

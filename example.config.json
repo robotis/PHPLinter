@@ -14,7 +14,7 @@
 		"security"
 	],
 	"report": {
-		"html": {
+		"json": {
 			"out": "/home/jtm/code/PHPLinter/work",
 			"overwrite": false,
 			"dry_run": false

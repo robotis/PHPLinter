@@ -8,14 +8,13 @@ class Html extends Base {
 	*/
 	public function prepare() {
 		$this->html = $this->config->check('html');
-		$html = $this->config->check('html');
-		if(empty($html['out'])) {
+		if(empty($this->html['out'])) {
 			return 'No output directory selected...';
 		}
-		if($html['out'] == $this->config->check('target')) {
+		if($this->html['out'] == $this->config->check('target')) {
 			return 'Output directory same as target, aborting...';
 		}
-		if(file_exists($html['out'])
+		if(file_exists($this->html['out'])
 			&& !($this->config->check(OPT_OVERWRITE_REPORT)))
 		{
 			return 'Output directory not empty, will not overwrite...';
@@ -206,15 +205,15 @@ class Html extends Base {
 	*/
 	protected function get_score_class($score) {
 		if($score < 0)
-		return 'terrible';
+			return 'terrible';
 		elseif($score < 5)
-		return 'bad';
+			return 'bad';
 		elseif($score < 7)
-		return 'average';
+			return 'average';
 		elseif($score < 9)
-		return 'good';
+			return 'good';
 		elseif($score < 10)
-		return 'vgood';
+			return 'vgood';
 		return 'perfect';
 	}
 	/**
@@ -254,7 +253,7 @@ class Html extends Base {
 		}
 		if(!empty($dirs)) {
 			uksort($dirs, function($a, $b) {
-				return strtolower($a) > strtolower($b);
+				return mb_strtolower($a) > mb_strtolower($b);
 			});
 		}
 		if(!empty($files)) {

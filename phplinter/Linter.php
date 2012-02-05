@@ -25,23 +25,6 @@ namespace phplinter;
 require_once dirname(__FILE__) . '/constants.php';
 /**
 ----------------------------------------------------------------------+
-* @desc 	Wrapper class for element
-----------------------------------------------------------------------+
-*/
-class Element {
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	Create blank element
-	----------------------------------------------------------------------+
-	*/
-	public function __construct() {
-		$this->visibility = false;
-		$this->abstract = false;
-		$this->static = false;
-	}
-}
-/**
-----------------------------------------------------------------------+
 * @desc 	Linter. Measures code and splits into elements.
 ----------------------------------------------------------------------+
 */
@@ -128,8 +111,8 @@ class Linter {
 		} elseif($this->tcount === 0) {
 			$this->debug("Empty file.. Skipping\n", 0, OPT_VERBOSE);
 		} else {
-			$element = $this->measure_file();
-			$lint = new Lint\LFile($element, $this->rules, $this->config);
+			$node = $this->measure_file();
+			$lint = new Lint\LFile($node, $this->rules, $this->config);
 			$this->report = $lint->lint();
 			$this->score = $lint->penalty();
 			if(!empty($this->report)) {
@@ -146,20 +129,20 @@ class Linter {
 	*/
 	protected function measure_file() {
 		$this->profile();		
-		$element 			= new Element();
-		$element->type 		= T_FILE;
-		$element->file	 	= $this->file;
-		$element->parent	= $this->file;
-		$element->name 		= $this->file;
-		$element->owner 	= $this->file;
-		$element->tokens 	= array();
-		$element->depth 	= 0;
-		$element 			= $this->measure(0, $element, $i);
-		$element->end_line 	= $this->tokens[$i][2];
-		$element->length 	= ($element->end_line - $element->start_line);
-		$element->token_count = count($element->tokens);
+		$node 				= new Lint\Node();
+		$node->type 		= T_FILE;
+		$node->file	 		= $this->file;
+		$node->parent		= $this->file;
+		$node->name 		= $this->file;
+		$node->owner 		= $this->file;
+		$node->tokens 		= array();
+		$node->depth 		= 0;
+		$node 				= $this->measure(0, $node, $i);
+		$node->end_line 	= $this->tokens[$i][2];
+		$node->length 		= ($node->end_line - $node->start_line);
+		$node->token_count 	= count($node->tokens);
 		$this->profile('measure_file::' . $this->file);
-		return $element;
+		return $node;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -172,48 +155,48 @@ class Linter {
 	* @return	int
 	----------------------------------------------------------------------+
 	*/
-	protected function measure($pos, $element, &$ret) { 
+	protected function measure($pos, $node, &$ret) { 
 		$start = $this->last_newline($pos);
-		$element->start = $start;
+		$node->start = $start;
 
-		if($element->type === T_FILE) {
-			$element->start_line = 1;
-			$element->empty = false;
+		if($node->type === T_FILE) {
+			$node->start_line = 1;
+			$node->empty = false;
 		} else {
-			$element->start_line = $this->tokens[$start][2] + 1;
-			$element->empty = true;
+			$node->start_line = $this->tokens[$start][2] + 1;
+			$node->empty = true;
 		}
 
 		$this->debug(sprintf('In element `%s` of type `%s` line %d; Owned by `%s`'
-							 ,$element->name
-							 ,Tokenizer::token_name($element->type)
-							 ,$element->start_line
-							 ,$element->owner
-					), $element->depth, OPT_SCOPE_MAP, true);
+							 ,$node->name
+							 ,Tokenizer::token_name($node->type)
+							 ,$node->start_line
+							 ,$node->owner
+					), $node->depth, OPT_SCOPE_MAP, true);
 				
 		$this->scope = array();
 		
-		$next_element = new Element();
+		$next_element = new Lint\Node();
 		$tokens = $this->tokens;
 		for($i = $pos; $i < $this->tcount; $i++) {
 			if(count($this->scope) > 0 
-				&& $element->empty
+				&& $node->empty
 			    && Tokenizer::meaningfull($tokens[$i][0]) 
 			    && $tokens[$i][0] !== T_CURLY_CLOSE) 
 			{
-				$element->empty = false;
+				$node->empty = false;
 			}
 			if(!empty($this->ignore_next) 
 				&& $tokens[$i][0] === $this->ignore_next[count($this->ignore_next) - 1]) 
 			{
-				$element->tokens[] = $tokens[$i];
+				$node->tokens[] = $tokens[$i];
 				array_pop($this->ignore_next);
 				continue;
 			}
 			switch($tokens[$i][0]) {
 				case T_INLINE_HTML:
 					// Gather inline html into one token
-					$element->tokens[] = $tokens[$i];
+					$node->tokens[] = $tokens[$i];
 					while(++$i < $this->tcount 
 						&& in_array($tokens[$i][0], array(T_INLINE_HTML, T_NEWLINE)));
 					$i--;
@@ -226,7 +209,7 @@ class Linter {
 						$this->tokens[$i][1] = 'elseif';
 						$this->ignore_next[] = T_IF;
 					}
-					$this->open_scope($i, $element);
+					$this->open_scope($i, $node);
 					break;
 				case T_IF:
 				case T_ELSEIF:
@@ -234,26 +217,26 @@ class Linter {
 				case T_FOREACH:
 				case T_WHILE:
 				case T_SWITCH:
-					$this->open_scope($i, $element);
+					$this->open_scope($i, $node);
 					break;
 				case T_FOR:
-					$this->open_scope($i, $element);
+					$this->open_scope($i, $node);
 					$this->ignore_next[] = T_SEMICOLON;
 					$this->ignore_next[] = T_SEMICOLON;
 					break;
 				case T_BASIC_CURLY_OPEN:
-					$this->open_scope($i, $element);
+					$this->open_scope($i, $node);
 					break;
 				case T_SEMICOLON:
-					$this->close_scope($i, $element);
-					$element->tokens[] = $tokens[$i];
-					if(empty($this->scope) && $element->empty) {
+					$this->close_scope($i, $node);
+					$node->tokens[] = $tokens[$i];
+					if(empty($this->scope) && $node->empty) {
 						$i++;
 						break 2;
 					} 
 					break;
 				case T_CURLY_CLOSE:
-					$this->close_scope($i, $element);
+					$this->close_scope($i, $node);
 					if(empty($this->scope)) {
 						$i++;
 						break 2;
@@ -274,54 +257,54 @@ class Linter {
 					$next_element->static = true;
 					break;
 				case T_COMMENT:
-					$element->tokens[] = $tokens[$i];
-					$element->comments[] = $this->measure_comment($i, $element->depth, $i);
+					$node->tokens[] = $tokens[$i];
+					$node->comments[] = $this->measure_comment($i, $node->depth, $i);
 					break;
 				case T_DOC_COMMENT:
-					$element->tokens[] = $tokens[$i];
-					$next_element->comments[] = $this->measure_comment($i, $element->depth, $i);
+					$node->tokens[] = $tokens[$i];
+					$next_element->comments[] = $this->measure_comment($i, $node->depth, $i);
 					break;
 				case T_CLASS:
 				case T_INTERFACE:
 				case T_FUNCTION:
-					list($type, $name, $owner) = $this->determine_type($i, $element, $next_element);
+					list($type, $name, $owner) = $this->determine_type($i, $node, $next_element);
 					$next_element->type = $type;
 					$next_element->name = $name;
-					$next_element->depth = $element->depth + 1;
+					$next_element->depth = $node->depth + 1;
 					$next_element->owner = $owner;
-					$element->tokens[] = $tokens[$i];
+					$node->tokens[] = $tokens[$i];
 					// preserve scope
 					$scope = $this->scope;
-					$element->elements[] = $this->measure($i+1, $next_element, $i);
+					$node->elements[] = $this->measure($i+1, $next_element, $i);
 					$this->scope = $scope;
-					$next_element = new Element();
+					$next_element = new Lint\Node();
 					break;
 				default:
-					$element->tokens[] = $tokens[$i];
+					$node->tokens[] = $tokens[$i];
 					break;
 			}
 		}
 		// In case $i is over the buffer
-		$element->end = ($i >= $this->tcount)
+		$node->end = ($i >= $this->tcount)
 			? --$i : $i;
 			
-		$element->end_line = $tokens[$i][2];
-		$element->length = ($element->end_line - $element->start_line);
-		$element->token_count = count($element->tokens);
+		$node->end_line = $tokens[$i][2];
+		$node->length = ($node->end_line - $node->start_line);
+		$node->token_count = count($node->tokens);
 		$ret = ($i > 0) ? --$i : $i;
 		$this->debug(sprintf('Exiting element `%s` of type `%s` line %d'
-							 ,$element->name
-							 ,Tokenizer::token_name($element->type)
-							 ,$element->end_line
-					 ), $element->depth, OPT_SCOPE_MAP, true);
-		return $element;
+							 ,$node->name
+							 ,Tokenizer::token_name($node->type)
+							 ,$node->end_line
+					 ), $node->depth, OPT_SCOPE_MAP, true);
+		return $node;
 	}
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Determine type of new element
 	----------------------------------------------------------------------+
 	*/
-	protected function determine_type($pos, $element, &$next_element) {
+	protected function determine_type($pos, $node, &$next_element) {
 		$tokens = $this->tokens;
 		$next = $this->find($pos, array(T_STRING, T_PARENTHESIS_OPEN));
 		$type = $tokens[$pos][0];
@@ -331,18 +314,18 @@ class Linter {
 			$type = T_ANON_FUNCTION;
 		} else {
 			$name = $tokens[$next][1];
-			if(in_array($element->type, array(T_CLASS, T_INTERFACE)) 
+			if(in_array($node->type, array(T_CLASS, T_INTERFACE)) 
 				&& $tokens[$pos][0] == T_FUNCTION) 
 			{
 				$type = T_METHOD;
-				if($element->type === T_INTERFACE) {
+				if($node->type === T_INTERFACE) {
 					$next_element->abstract = true;
 				}
 			}
 		}
 		if($type === T_METHOD || $type === T_ANON_FUNCTION) {
-			$owner = $element->name;
-		} else $owner = $element->owner;
+			$owner = $node->name;
+		} else $owner = $node->owner;
 		return array($type, $name, $owner);
 	}
 	/**
@@ -350,7 +333,7 @@ class Linter {
 	* @desc 	Open scope, set scope token
 	----------------------------------------------------------------------+
 	*/
-	protected function open_scope($pos, $element) {
+	protected function open_scope($pos, $node) {
 		$token = $this->tokens[$pos];
 		$scope = true;
 		if($token[0] === T_BASIC_CURLY_OPEN && !empty($this->scope)) {
@@ -363,13 +346,13 @@ class Linter {
 			$this->scope[] = $last;
 		} 
 		if($scope) {
-			$depth = count($this->scope) + $element->depth;
+			$depth = count($this->scope) + $node->depth;
 			$this->debug(sprintf('Scope opened by `%s` line %d'
 								 ,$token[1]
 								 ,$token[2])
 						,$depth, OPT_SCOPE_MAP, true);
 			$this->scope[] = $token;
-			$element->tokens[] = array(T_OPEN_SCOPE, $token[1], $token[2]);
+			$node->tokens[] = array(T_OPEN_SCOPE, $token[1], $token[2]);
 		}
 	}
 	/**
@@ -377,7 +360,7 @@ class Linter {
 	* @desc 	Close scope, set scope token
 	----------------------------------------------------------------------+
 	*/
-	protected function close_scope($pos, $element) {
+	protected function close_scope($pos, $node) {
 		$token = $this->tokens[$pos];
 		if($token[0] === T_SEMICOLON) {
 			if(!empty($this->scope)) {
@@ -388,22 +371,22 @@ class Linter {
 						$this->scope[] = $last;
 						break;
 					}
-					$depth = count($this->scope) + $element->depth;
+					$depth = count($this->scope) + $node->depth;
 					$this->debug(sprintf('Scope closed by `%s` line %d'
 										 ,$token[1]
 										 ,$token[2])
 								,$depth, OPT_SCOPE_MAP, true);
-					$element->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
+					$node->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
 				}
 			}
 		} else {
-			$depth = count($this->scope) + $element->depth;
+			$depth = count($this->scope) + $node->depth;
 			$this->debug(sprintf('Scope closed by `%s` line %d'
 								 ,$token[1]
 								 ,$token[2])
 						,$depth, OPT_SCOPE_MAP, true);
 			array_pop($this->scope);
-			$element->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
+			$node->tokens[] = array(T_CLOSE_SCOPE, $token[1], $token[2]);
 		}
 	}
 	/**
@@ -432,27 +415,27 @@ class Linter {
 	----------------------------------------------------------------------+
 	*/
 	protected function measure_comment($pos, $depth, &$ret) {
-		$element = new Element();
-		$element->start = $pos;
-		$element->start_line = $this->tokens[$pos][2];
-		$element->type = $this->tokens[$pos][0];
-		$element->name = 'comment';
+		$node = new Lint\Node();
+		$node->start = $pos;
+		$node->start_line = $this->tokens[$pos][2];
+		$node->type = $this->tokens[$pos][0];
+		$node->name = 'comment';
 		$depth += count($this->scope);
 		
-		$this->debug("In comment at {$element->start_line}", $depth, OPT_SCOPE_MAP, true);
+		$this->debug("In comment at {$node->start_line}", $depth, OPT_SCOPE_MAP, true);
 		for($i = $pos;$i < $this->tcount;$i++) {
 			if(Tokenizer::meaningfull($this->tokens[$i][0])) {
 				$i--;
 				break;
 			}
-			$element->tokens[] = $this->tokens[$i];
+			$node->tokens[] = $this->tokens[$i];
 		}
 		if($i === $this->tcount) $i--;
-		$element->end = $i;
-		$element->end_line = $this->tokens[$i][2];
-		$this->debug("Exiting comment at {$element->end_line}", $depth, OPT_SCOPE_MAP, true);
+		$node->end = $i;
+		$node->end_line = $this->tokens[$i][2];
+		$this->debug("Exiting comment at {$node->end_line}", $depth, OPT_SCOPE_MAP, true);
 		$ret = $i;
-		return $element;
+		return $node;
 	}
 	/**
 	----------------------------------------------------------------------+

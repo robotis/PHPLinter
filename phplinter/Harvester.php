@@ -2,7 +2,7 @@
 /**
 ----------------------------------------------------------------------+
 *  @desc			Harvester
-*  @copyright 		Copyright 2012, RHÍ
+*  @copyright 		Copyright 2012
 *  @file 			Harvester.php
 *  @author 			Jóhann T. Maríusson <jtm@hi.is>
 *  @since 		    Feb 2, 2012

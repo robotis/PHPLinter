@@ -6,12 +6,6 @@
 	"quiet": false,
 	"information": true,
 	"filter": [
-		"conventions",
-		"warnings",
-		"refactor",
-		"errors",
-		"documentation",
-		"security"
 	],
 	"report": {
 		"json": {

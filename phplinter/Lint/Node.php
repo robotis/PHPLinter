@@ -7,8 +7,25 @@ class Node {
 	----------------------------------------------------------------------+
 	*/
 	public function __construct() {
-		$this->visibility = false;
-		$this->abstract = false;
-		$this->static = false;
+		$this->visibility 	= null;
+		$this->abstract 	= null;
+		$this->static 		= null;
+		$this->extends 		= null;
+		$this->implements 	= null;
+		$this->namespace 	= null;
+		$this->arguments 	= null;
+		$this->type 		= null;
+		$this->file	 		= null;
+		$this->parent		= null;
+		$this->name 		= null;
+		$this->owner 		= null;
+		$this->depth 		= null;
+		$this->end_line 	= null;
+		$this->length 		= null;
+		$this->token_count 	= null;
+		
+		$this->comments 	= array();
+		$this->tokens 		= array();
+		$this->nodes 		= array();
 	}
 }

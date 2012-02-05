@@ -57,18 +57,36 @@ class Config {
 	protected function _parse($conf) {
 		foreach(array(
 			'target',
-			'verbose'
+			'ignore',
+			'extensions'
 		) as $_) 
 		{
 			if($conf->$_)
 				$this->_options[$_] = $conf->$_;
 		}
 		foreach(array(
-			'verbose' => OPT_VERBOSE
+			'verbose' => OPT_VERBOSE,
+			'score_only' => OPT_SCORE_ONLY
 		) as $k => $_) 
 		{
-			if($conf->$k)
+			if(isset($conf->$k) && $conf->$k)
 				$this->_flags |= $_;
+		}
+		if(isset($conf->filter)) {
+			foreach(array(
+				"information" => OPT_NO_INFORMATION,
+				"conventions" => OPT_NO_CONVENTION,
+				"warnings" => OPT_NO_WARNING,
+				"refactor" => OPT_NO_REFACTOR,
+				"errors" => OPT_NO_ERROR,
+				"documentation" => OPT_NO_DEPRICATED,
+				"security" => OPT_NO_SECURITY
+			) as $k => $_) 
+			{
+				if(in_array($k, $conf->filter)) {
+					$this->_flags |= $_;
+				}
+			}
 		}
 	}
 }

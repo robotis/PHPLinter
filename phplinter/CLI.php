@@ -106,7 +106,7 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	public function process_options($argv, $argc) {
-		$flags = OPT_USE_COLOR;
+		$flags = OPT_USE_COLOR | OPT_NO_INFORMATION;
 		$options = array();
 		for($i = 1;$i < $argc; $i++) {
 			if($argv[$i][0] == '-') {
@@ -114,7 +114,7 @@ class CLI {
 				for($j=1; $j < $l; $j++) {
 					switch($argv[$i][$j]) {
 						case 'I':
-							$flags |= OPT_INFORMATION;
+							$flags &= ~OPT_NO_INFORMATION;
 							break;
 						case 'D':
 							$flags |= OPT_NO_DEPRICATED;
@@ -191,9 +191,6 @@ class CLI {
 							continue 3;
 						case 't':
 							$options['threshold'] = intval($argv[++$i]);
-							continue 3;
-						case 'o':
-							$options['output_dir'] = $this->consume($argv, $i);
 							continue 3;
 						case 'e':
 							$options['extensions'] = '';

@@ -1,4 +1,28 @@
 {
 	"target": "/home/jtm/code/PHPLinter",
-	"verbose": true
+	"score_only": false,
+	"ignore": "",
+	"extensions": "",
+	"filter": [
+		"conventions",
+		"warnings",
+		"refactor",
+		"errors",
+		"documentation",
+		"security"
+	],
+	"report": {
+		"html": {
+			"out": "",
+			"overwrite": false
+		},
+		"json": {
+			"out": "",
+			"overwrite": false
+		}
+	},
+	"harvest_docs": {
+		"out": "",
+		"overwrite": false
+	}
 }

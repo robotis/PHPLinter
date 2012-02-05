@@ -121,7 +121,7 @@ class BaseLint {
 			case 'E':
 				return (!($this->config->check(OPT_NO_ERROR)));
 			case 'I':
-				return (!($this->config->check(OPT_INFORMATION)));
+				return (!($this->config->check(OPT_NO_INFORMATION)));
 			case 'D':
 				return (!($this->config->check(OPT_NO_DEPRICATED)));
 			case 'S':

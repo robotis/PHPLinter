@@ -30,30 +30,30 @@ class LClass extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		if($this->element->empty) {
+		if($this->node->empty) {
 			$this->report('WAR_EMPTY_CLASS');
 		}
 		
 		$this->process_tokens();
 		
-		if(!$this->element->dochead)
+		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_CLASS');
 			
 		$regex = $this->rules['CON_CLASS_NAME']['compare'];
-		if(!preg_match($regex, $this->element->name))
+		if(!preg_match($regex, $this->node->name))
 			$this->report('CON_CLASS_NAME', $regex);
 		
-		$len = $this->element->length;
+		$len = $this->node->length;
 		if($len > $this->rules['REF_CLASS_LENGTH']['compare'])
 			$this->report('REF_CLASS_LENGTH', $len);	
 		
 		if(!empty($this->locals[T_METHOD]) && 
-			in_array($this->element->name, $this->locals[T_METHOD]))
+			in_array($this->node->name, $this->locals[T_METHOD]))
 			$this->report('WAR_OLD_STYLE_CONSTRUCT');
 			
-		if(!empty($this->element->elements)) {
+		if(!empty($this->node->nodes)) {
 			$static = array(0,0);
-			foreach($this->element->elements as $_) {
+			foreach($this->node->nodes as $_) {
 				if(isset($_->static) && $_->static) {
 					$static[0]++;
 				} else {
@@ -73,8 +73,8 @@ class LClass extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
-		$tcnt 		= $this->element->token_count;
-		$et 		= $this->element->tokens;
+		$tcnt 		= $this->node->token_count;
+		$et 		= $this->node->tokens;
 		$locals 	= array();
 		$methods 	= 0;
 		$comment 	= false;

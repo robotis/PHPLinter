@@ -31,8 +31,8 @@ class Harvester {
 	* @return   Array
 	----------------------------------------------------------------------+
 	*/
-	public function harvest($element) {
-		return $this->harvest_element($element);
+	public function harvest($node) {
+		return $this->harvest_node($node);
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -41,33 +41,33 @@ class Harvester {
 	* @return   Array
 	----------------------------------------------------------------------+
 	*/
-	protected function harvest_element($element, $namespace=null) {
+	protected function harvest_node($node, $namespace=null) {
 		$out = array();
-		if(isset($element->name) && $element->type != T_ANON_FUNCTION) {
+		if(isset($node->name) && $node->type != T_ANON_FUNCTION) {
 			$out = array(
-				'name' => $element->name,
-				'file' => realpath($element->file),
-				'type' => Tokenizer::token_name($element->type),
-				'comment' => $this->harvest_comment($element),
-				'static' => $element->static,
-				'abstract' => $element->abstract,
-				'visibility' => $element->visibility,
+				'name' => $node->name,
+				'file' => realpath($node->file),
+				'type' => Tokenizer::token_name($node->type),
+				'comment' => $this->harvest_comment($node),
+				'static' => $node->static,
+				'abstract' => $node->abstract,
+				'visibility' => $node->visibility,
 				'namespace' => $namespace,
-				'inherits' => $element->inherits,
-				'implements' => $element->implements,
-				'arguments' => $element->arguments
+				'inherits' => $node->inherits,
+				'implements' => $node->implements,
+				'arguments' => $node->arguments
 			);
-			if($element->namespace) {
-				$namespace = $element->namespace;
+			if($node->namespace) {
+				$namespace = $node->namespace;
 				$out['namespace'] = $namespace;
 			}
-			if(!empty($element->score)) {
-				$out['score'] = $element->score;
+			if(!empty($node->score)) {
+				$out['score'] = $node->score;
 			}
-			if(!empty($element->elements)) {
+			if(!empty($node->nodes)) {
 				$nodes = array();
-				foreach($element->elements as $_) {
-					$nodes[] = $this->harvest_element($_, $namespace);
+				foreach($node->nodes as $_) {
+					$nodes[] = $this->harvest_node($_, $namespace);
 				}
 				if($nodes) {
 					$out['nodes'] = $nodes;
@@ -83,10 +83,10 @@ class Harvester {
 	* @return   Array
 	----------------------------------------------------------------------+
 	*/
-	protected function harvest_comment($element) {
+	protected function harvest_comment($node) {
 		$comment = array();
-		if(!empty($element->comments)) {
-			foreach($element->comments as $_) {
+		if(!empty($node->comments)) {
+			foreach($node->comments as $_) {
 				if($_->type === T_DOC_COMMENT) {
 					$val = '';
 					$tag = '';

@@ -30,17 +30,17 @@ class LFunction extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		if($this->element->empty) 
+		if($this->node->empty) 
 			$this->report('WAR_EMPTY_FUNCTION');
 			
-		if(!$this->element->dochead)
+		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_FUNCTION');
 
 		$this->process_tokens();
 		
 		$regex = $this->rules['CON_FUNCTION_NAME']['compare'];
-		if(!(substr($this->element->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->element->name))
+		if(!(substr($this->node->name, 0, 2) == '__') 
+			&& !preg_match($regex, $this->node->name))
 			$this->report('CON_FUNCTION_NAME', $regex);
 			
 		return $this->reports;
@@ -51,8 +51,8 @@ class LFunction extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
-		$tcnt 		= count($this->element->tokens);
-		$et 		= $this->element->tokens;
+		$tcnt 		= count($this->node->tokens);
+		$et 		= $this->node->tokens;
 		$args		= false;
 		$_locals 	= array();
 		$branches 	= 0;
@@ -76,7 +76,7 @@ class LFunction extends BaseLint implements ILint {
 			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
 			'REF_BRANCHES' => $this->branches,
-			'REF_FUNCTION_LENGTH' => $this->element->length
+			'REF_FUNCTION_LENGTH' => $this->node->length
 		);
 		foreach($compares as $k => $_)
 			if($_ > $this->rules[$k]['compare'])

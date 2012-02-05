@@ -26,27 +26,27 @@ namespace phplinter\Lint;
 class LMethod extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	analyse element
+	* @desc 	analyse node
 	* @return 	Array	Reports
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		$this->add_parent_data($this->element->name, T_METHOD);
+		$this->add_parent_data($this->node->name, T_METHOD);
 		
 		$this->process_tokens();
 
-		if($this->element->empty && !$this->element->abstract) 
+		if($this->node->empty && !$this->node->abstract) 
 			$this->report('WAR_EMPTY_METHOD');
 			
-		if(!$this->element->dochead)
+		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_METHOD');
 			
-		if(!$this->element->visibility)
+		if(!$this->node->visibility)
 			$this->report('CON_NO_VISIBILITY');
 			
 		$regex = $this->rules['CON_METHOD_NAME']['compare'];
-		if(!(substr($this->element->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->element->name))
+		if(!(substr($this->node->name, 0, 2) == '__') 
+			&& !preg_match($regex, $this->node->name))
 			$this->report('CON_METHOD_NAME', $regex);
 			
 		return $this->reports;
@@ -57,8 +57,8 @@ class LMethod extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	protected function process_tokens() {
-		$tcnt 		= $this->element->token_count;
-		$et 		= $this->element->tokens;
+		$tcnt 		= $this->node->token_count;
+		$et 		= $this->node->tokens;
 		$args		= false;
 		$_locals 	= array();
 		
@@ -86,13 +86,13 @@ class LMethod extends BaseLint implements ILint {
 			'REF_ARGUMENTS' => count($args),
 			'REF_LOCALS' => count($locals),
 			'REF_BRANCHES' => $this->branches,
-			'REF_METHOD_LENGTH' => $this->element->length
+			'REF_METHOD_LENGTH' => $this->node->length
 		);
 		
 		foreach($compares as $k => $_)
 			if($_ > $this->rules[$k]['compare'])
 				$this->report($k, $_);
-		if(!$this->element->abstract)
+		if(!$this->node->abstract)
 			$this->process_args($locals, $args);
 		$this->process_locals($locals, $_locals, $args);
 	}
@@ -102,7 +102,7 @@ class LMethod extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	protected function parent_local(&$pos) {
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		$j = $this->find($pos, T_STRING);
 		if($j !== false) {
 			$k = $o[$this->next($j+1)][0];

@@ -29,7 +29,7 @@ class BaseLint {
 	/* @var Array */
 	protected $locals;
 	/* @var Object */
-	protected $element;
+	protected $node;
 	/* @var Array */
 	protected $rules;
 	/* @var Float */
@@ -42,10 +42,10 @@ class BaseLint {
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($element, $rules, $config) {
+	public function __construct($node, $rules, $config) {
 		$this->reports 	= array();
 		$this->locals 	= array();
-		$this->element 	= $element;
+		$this->node 	= $node;
 		$this->rules 	= $rules;
 		$this->config 	= $config;
 		$this->scope	= -1;
@@ -79,9 +79,9 @@ class BaseLint {
 		if(isset($report['used']) && $report['used'] === false)
 			return;		
 		if(!empty($report) && $this->report_on($report['flag'])) {
-			$where = isset($this->element->parent) 
-				? $this->element->parent : 'COMMENT';
-			if(isset($this->element->name)) $where = $this->element->name;
+			$where = isset($this->node->parent) 
+				? $this->node->parent : 'COMMENT';
+			if(isset($this->node->name)) $where = $this->node->name;
 			if(isset($report['message_extras'])) {
 				$report['message'] = sprintf($report['message_extras'], 
 					$extra, $report['compare']);
@@ -89,7 +89,7 @@ class BaseLint {
 				$report['message'] = sprintf($report['message_extra'], $extra);
 			}
 			$report['where'] = $where;
-			$report['line'] = empty($line) ? $this->element->start_line : $line;
+			$report['line'] = empty($line) ? $this->node->start_line : $line;
 			$this->reports[] = $report;
 			
 			$flag = $report['flag'][0];
@@ -100,7 +100,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Report on element ?
+	* @desc 	Report on node ?
 	* @param	String	Flag
 	* @return	Bool
 	----------------------------------------------------------------------+
@@ -137,7 +137,7 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	public function common_tokens($pos) {
-		$token = $this->element->tokens[$pos];
+		$token = $this->node->tokens[$pos];
 		if($this->final_return === 1 
 			&& $token[0] !== T_CLOSE_SCOPE 
 			&& \phplinter\Tokenizer::meaningfull($token[0])) 
@@ -173,7 +173,7 @@ class BaseLint {
 				break;
 			case T_RETURN:
 			case T_EXIT:
-				$prev = $this->element->tokens[$this->prev($pos)];
+				$prev = $this->node->tokens[$this->prev($pos)];
 				if(!in_array($prev[0], array(T_LOGICAL_OR, T_BOOLEAN_OR)) 
 					&& $this->scope === 0 
 					&& $this->final_return === false) 
@@ -222,7 +222,7 @@ class BaseLint {
 	*/
 	protected function security($pos) {
 		if($this->report_on('S')) {
-			$token = $this->element->tokens[$pos];
+			$token = $this->node->tokens[$pos];
 			$this->sec_strings($pos);
 			if(in_array($token[1], array_keys($this->sec_5))) {
 				$this->sec_callbacks($pos);
@@ -241,7 +241,7 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	protected function sec_callbacks($pos) {
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		$t = $o[$pos];
 		$this->report('INF_UNSECURE', $t[1], $t[2]);
 		foreach($this->sec_5[$t[1]] as $_) {
@@ -270,7 +270,7 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	protected function sec_strings($pos) {
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		$t = $o[$pos];
 		foreach(array(
 					array('sec_1', 'INF_UNSECURE', true),
@@ -299,7 +299,7 @@ class BaseLint {
 	*/
 	protected function sec_includes($pos) {
 		$i = $pos;
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		while(isset($o[++$i]) && $o[$i][0] !== T_SEMICOLON) {
 			if(in_array($o[$i][1], $this->uvars)) {
 				$this->report('SEC_ERROR_INCLUDE', $o[$pos][1], $o[$pos][2]);
@@ -314,7 +314,7 @@ class BaseLint {
 	*/
 	protected function sec_backtick($pos) {
 		$i = $pos;
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		while(true) {
 			if(empty($o[++$i])) break;
 			$t = $o[$i];
@@ -331,8 +331,8 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	protected function parse_string($pos) {
-		$token = $this->element->tokens[$pos];
-		$nt = $this->element->tokens[$this->next($pos)][0];
+		$token = $this->node->tokens[$pos];
+		$nt = $this->node->tokens[$this->next($pos)][0];
 		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
 			$this->security($pos);
 		}
@@ -346,8 +346,8 @@ class BaseLint {
 	*/
 	protected function next($pos) {
 		$i = $pos;
-		$o = $this->element->tokens;
-		$c = $this->element->token_count;
+		$o = $this->node->tokens;
+		$c = $this->node->token_count;
 		while(++$i < $c) {
 			if(\phplinter\Tokenizer::meaningfull($o[$i][0]))
 				return $i;
@@ -363,8 +363,8 @@ class BaseLint {
 	*/
 	protected function prev($pos) {
 		$i = $pos;
-		$o = $this->element->tokens;
-		$c = $this->element->start;
+		$o = $this->node->tokens;
+		$c = $this->node->start;
 		while(--$i > $c) {
 			if(\phplinter\Tokenizer::meaningfull($o[$i][0]))
 				return $i;
@@ -382,8 +382,8 @@ class BaseLint {
 	*/
 	protected function find($pos, $token, $limit=10) {
 		$i = $pos;
-		$o = $this->element->tokens;
-		$c = $this->element->token_count;
+		$o = $this->node->tokens;
+		$c = $this->node->token_count;
 		while(++$i < $c) {
 			if($o[$i][0] == $token)
 				return $i;
@@ -394,17 +394,17 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Analyse element
+	* @desc 	Analyse node
 	* @return 	Array	Reports
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
-		$this->element->dochead = false;
-		if(!empty($this->element->comments)) {
-			foreach($this->element->comments as $element) {
-				if($element->type === T_DOC_COMMENT) $this->element->dochead = true;
-				$element->owner = $this->element->name;
-				$lint = new LComment($element, $this->rules, $this->config);
+		$this->node->dochead = false;
+		if(!empty($this->node->comments)) {
+			foreach($this->node->comments as $node) {
+				if($node->type === T_DOC_COMMENT) $this->node->dochead = true;
+				$node->owner = $this->node->name;
+				$lint = new LComment($node, $this->rules, $this->config);
 				foreach($lint->bind($this)->lint() as $_) {
 					$this->reports[] = $_;
 				}
@@ -416,11 +416,11 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Analyse elements owned by current element
+	* @desc 	Analyse nodes owned by current node
 	----------------------------------------------------------------------+
 	*/
 	protected function recurse() {
-		if(!empty($this->element->elements)) {
+		if(!empty($this->node->nodes)) {
 			$a = array(
 				T_CLASS 		=> 'LClass',
 				T_DOC_COMMENT	=> 'LComment',
@@ -430,14 +430,14 @@ class BaseLint {
 				T_METHOD 		=> 'LMethod',
 				T_FILE 			=> 'LFile',
 			);
-			foreach($this->element->elements as $element) {
+			foreach($this->node->nodes as $node) {
 				$this->profile();
-				$class = "\\phplinter\\Lint\\{$a[$element->type]}";
-				$lint = new $class($element, $this->rules, $this->config);
+				$class = "\\phplinter\\Lint\\{$a[$node->type]}";
+				$lint = new $class($node, $this->rules, $this->config);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();
 				unset($lint);
-				$this->profile($class.'::'.$element->name);
+				$this->profile($class.'::'.$node->name);
 			}
 		}
 	}
@@ -491,7 +491,7 @@ class BaseLint {
 	*/
 	protected function parse_args(&$i) {
 		$out = array();
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		while(true) {
 			switch($o[++$i][0]) {
 				case T_VARIABLE:
@@ -518,7 +518,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Add data to element parent
+	* @desc 	Add data to node parent
 	* @param	String	Name
 	* @param	int		Type
 	----------------------------------------------------------------------+
@@ -534,7 +534,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Bind parent element to current element
+	* @desc 	Bind parent node to current node
 	* @param	Object		BaseLint
 	* @return 	this
 	----------------------------------------------------------------------+

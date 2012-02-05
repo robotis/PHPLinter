@@ -31,27 +31,27 @@ class LInterface extends BaseLint implements ILint {
 	*/
 	public function _lint() {
 		$regex = $this->rules['CON_INTERFACE_NAME']['compare'];
-		if(!(substr($this->element->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->element->name))
+		if(!(substr($this->node->name, 0, 2) == '__') 
+			&& !preg_match($regex, $this->node->name))
 			$this->report('CON_INTERFACE_NAME', $regex);
 			
-		if($this->element->empty) 
+		if($this->node->empty) 
 			$this->report('WAR_EMPTY_INTERFACE');
 		
-		if(!$this->element->dochead)
+		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_INTERFACE');
 			
-		$len = $this->element->length;
+		$len = $this->node->length;
 		if($len > $this->rules['REF_CLASS_LENGTH']['compare'])
 			$this->report('REF_CLASS_LENGTH', $len);	
 			
 		$regex = $this->rules['CON_CLASS_NAME']['compare'];
-		if(!preg_match($regex, $this->element->name))
+		if(!preg_match($regex, $this->node->name))
 			$this->report('CON_INTERFACE_NAME', $regex);
 			
-		$et = $this->element->tokens;
+		$et = $this->node->tokens;
 		$locals 	= array();
-		for($i = 0;$i < $this->element->token_count;$i++) {
+		for($i = 0;$i < $this->node->token_count;$i++) {
 			switch($et[$i][0]) {
 				default:
 					$this->common_tokens($i);
@@ -60,7 +60,7 @@ class LInterface extends BaseLint implements ILint {
 		}
 		
 		if(!empty($this->locals[T_METHOD]) && 
-			in_array($this->element->name, $this->locals[T_METHOD]))
+			in_array($this->node->name, $this->locals[T_METHOD]))
 			$this->report('WAR_OLD_STYLE_CONSTRUCT');
 		
 		return $this->reports;

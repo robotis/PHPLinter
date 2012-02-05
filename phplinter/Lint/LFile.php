@@ -27,13 +27,13 @@ class LFile extends BaseLint implements ILint {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	__construct
-	* @param	Object 	Element Object
+	* @param	Object 	Node Object
 	* @param	Array	Rule set
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($element, $rules, $options=0) {
-		parent::__construct($element, $rules, $options);
+	public function __construct($node, $rules, $options=0) {
+		parent::__construct($node, $rules, $options);
 		// File scope at 0
 		$this->scope	= 0;
 		$this->branches	= 0;
@@ -44,14 +44,14 @@ class LFile extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		$fp = explode('/', $this->element->file);
+		$fp = explode('/', $this->node->file);
 		$pretty_file_name = $fp[count($fp)-1];
-		$this->element->parent = $pretty_file_name;
+		$this->node->parent = $pretty_file_name;
 		
 		$this->plines();
 		
-		$tcnt = $this->element->token_count;
-		$et = $this->element->tokens;
+		$tcnt = $this->node->token_count;
+		$et = $this->node->tokens;
 		$open 		= false;
 		$classes 	= 0;
 		$functions 	= 0;
@@ -107,7 +107,7 @@ class LFile extends BaseLint implements ILint {
 	protected function plines() {
 		$lnum = 1;
 		if($this->report_on('C') || $this->report_on('F')) {
-			foreach(file($this->element->file) as $_) {
+			foreach(file($this->node->file) as $_) {
 				$len = mb_strlen($_);
 				if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
 					$this->report('CON_LINE_LENGTH', $len, $lnum);
@@ -132,7 +132,7 @@ class LFile extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	protected function popentag($pos) {
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		if($pos > 0) {
 			$k = $this->find(-1, T_INLINE_HTML, $pos);
 			if($k !== false)
@@ -147,9 +147,9 @@ class LFile extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	protected function pclosetag($pos) {
-		$o = $this->element->tokens;
+		$o = $this->node->tokens;
 		if($this->find($pos, T_OPEN_TAG, null) === false) {
-			if(($this->element->token_count - $pos) > 1) {
+			if(($this->node->token_count - $pos) > 1) {
 				if($this->next($pos) !== false)
 					$this->report('REF_HTML_AFTER_CLOSE', null, $o[$pos][2]);
 //				else

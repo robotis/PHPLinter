@@ -25,7 +25,7 @@ namespace phplinter;
 require_once dirname(__FILE__) . '/constants.php';
 /**
 ----------------------------------------------------------------------+
-* @desc 	Linter. Measures code and splits into elements.
+* @desc 	Linter. Measures code and splits into nodes.
 ----------------------------------------------------------------------+
 */
 class Linter {
@@ -146,7 +146,7 @@ class Linter {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Split token stream into elements of type function, comment,
+	* @desc 	Split token stream into nodes of type function, comment,
 	* 			class or method.
 	* @param	$pos		int
 	* @param	$in_name	String
@@ -167,7 +167,7 @@ class Linter {
 			$node->empty = true;
 		}
 
-		$this->debug(sprintf('In element `%s` of type `%s` line %d; Owned by `%s`'
+		$this->debug(sprintf('In Node `%s` of type `%s` line %d; Owned by `%s`'
 							 ,$node->name
 							 ,Tokenizer::token_name($node->type)
 							 ,$node->start_line
@@ -176,7 +176,7 @@ class Linter {
 				
 		$this->scope = array();
 		
-		$next_element = new Lint\Node();
+		$next_node = new Lint\Node();
 		$tokens = $this->tokens;
 		for($i = $pos; $i < $this->tcount; $i++) {
 			if(count($this->scope) > 0 
@@ -248,13 +248,13 @@ class Linter {
 				case T_PUBLIC:
 				case T_PRIVATE:
 				case T_PROTECTED:
-					$next_element->visibility = true;
+					$next_node->visibility = true;
 					break;
 				case T_ABSTRACT:
-					$next_element->abstract = true;
+					$next_node->abstract = true;
 					break;
 				case T_STATIC:
-					$next_element->static = true;
+					$next_node->static = true;
 					break;
 				case T_COMMENT:
 					$node->tokens[] = $tokens[$i];
@@ -262,22 +262,22 @@ class Linter {
 					break;
 				case T_DOC_COMMENT:
 					$node->tokens[] = $tokens[$i];
-					$next_element->comments[] = $this->measure_comment($i, $node->depth, $i);
+					$next_node->comments[] = $this->measure_comment($i, $node->depth, $i);
 					break;
 				case T_CLASS:
 				case T_INTERFACE:
 				case T_FUNCTION:
-					list($type, $name, $owner) = $this->determine_type($i, $node, $next_element);
-					$next_element->type = $type;
-					$next_element->name = $name;
-					$next_element->depth = $node->depth + 1;
-					$next_element->owner = $owner;
+					list($type, $name, $owner) = $this->determine_type($i, $node, $next_node);
+					$next_node->type = $type;
+					$next_node->name = $name;
+					$next_node->depth = $node->depth + 1;
+					$next_node->owner = $owner;
 					$node->tokens[] = $tokens[$i];
 					// preserve scope
 					$scope = $this->scope;
-					$node->elements[] = $this->measure($i+1, $next_element, $i);
+					$node->nodes[] = $this->measure($i+1, $next_node, $i);
 					$this->scope = $scope;
-					$next_element = new Lint\Node();
+					$next_node = new Lint\Node();
 					break;
 				default:
 					$node->tokens[] = $tokens[$i];
@@ -292,7 +292,7 @@ class Linter {
 		$node->length = ($node->end_line - $node->start_line);
 		$node->token_count = count($node->tokens);
 		$ret = ($i > 0) ? --$i : $i;
-		$this->debug(sprintf('Exiting element `%s` of type `%s` line %d'
+		$this->debug(sprintf('Exiting Node `%s` of type `%s` line %d'
 							 ,$node->name
 							 ,Tokenizer::token_name($node->type)
 							 ,$node->end_line
@@ -301,10 +301,10 @@ class Linter {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Determine type of new element
+	* @desc 	Determine type of new node
 	----------------------------------------------------------------------+
 	*/
-	protected function determine_type($pos, $node, &$next_element) {
+	protected function determine_type($pos, $node, &$next_node) {
 		$tokens = $this->tokens;
 		$next = $this->find($pos, array(T_STRING, T_PARENTHESIS_OPEN));
 		$type = $tokens[$pos][0];
@@ -319,7 +319,7 @@ class Linter {
 			{
 				$type = T_METHOD;
 				if($node->type === T_INTERFACE) {
-					$next_element->abstract = true;
+					$next_node->abstract = true;
 				}
 			}
 		}

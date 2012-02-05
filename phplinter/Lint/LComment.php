@@ -31,12 +31,12 @@ class LComment extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
-		$tcnt = count($this->element->tokens);
+		$tcnt = count($this->node->tokens);
 		$empty = true;
 		$code = false;
 		for($i = 0;$i < $tcnt;$i++) {
-			$comment = $this->element->tokens[$i][1];
-			if($this->element->tokens[$i] === T_NEWLINE)
+			$comment = $this->node->tokens[$i][1];
+			if($this->node->tokens[$i] === T_NEWLINE)
 				continue;
 			if(preg_match('/[^\s\/\*]+/u', $comment)) {
 				$empty = false;

@@ -31,8 +31,8 @@ class LAnon_function extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		$tcnt 		= count($this->element->tokens);
-		$et 		= $this->element->tokens;
+		$tcnt 		= count($this->node->tokens);
+		$et 		= $this->node->tokens;
 		$args		= false;
 		$_locals 	= array();
 		for($i = 0;$i < $tcnt;$i++) {
@@ -64,7 +64,7 @@ class LAnon_function extends BaseLint implements ILint {
 		$compares = array(
 			'REF_LOCALS' => count($locals),
 			'REF_BRANCHES' => $this->branches,
-			'REF_FUNCTION_LENGTH' => $this->element->length
+			'REF_FUNCTION_LENGTH' => $this->node->length
 		);
 		foreach($compares as $k => $_)
 			if($_ > $this->rules[$k]['compare'])

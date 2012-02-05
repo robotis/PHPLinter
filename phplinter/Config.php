@@ -69,13 +69,16 @@ class Config {
 				$this->_options[$_] = $conf->$_;
 		}
 		foreach(array(
-			'score_only' => OPT_SCORE_ONLY,
-			'quiet' => OPT_QUIET,
+			'score_only' 	=> OPT_SCORE_ONLY,
+			'quiet' 		=> OPT_QUIET
 		) as $k => $_) 
 		{
 			if(isset($conf->$k) && $conf->$k)
 				$this->_flags |= $_;
 		}
+		if(isset($conf->information))
+			$this->_flags &= ~OPT_NO_INFORMATION;
+		
 		$this->_parse_filter($conf);
 		$this->_parse_report($conf);
 	}

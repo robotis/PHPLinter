@@ -24,26 +24,14 @@
 */
 namespace phplinter; 
 class CLI {
-	/* @var Array */
-	protected $options;
-	/* @var String */
-	protected $output_dir;
 	/* @var String */
 	protected $target;
 	/* @var Array */
-	protected $conf;
-	/* @var Array */
 	protected $use_rules;
-	/* @var Array */
-	protected $extensions;
-	/* @var Array */
-	protected $ignore;
 	/* @var float */
 	protected $penalty;
 	/* @var Array */
 	protected $stats;
-	/* @var String */
-	protected $settings_file;
 	/* @var Config Object */
 	protected $config;
 	/**
@@ -52,8 +40,6 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	public function __construct() {
-		$this->options |= OPT_USE_COLOR;
-		$this->extensions = 'php';
 		$this->stats = array();
 	}
 	/**
@@ -153,7 +139,7 @@ class CLI {
 							if($flags & OPT_DEBUG) {
 								$flags |= OPT_DEBUG_EXTRA;
 							} else {
-								$flags |= OPT_DEBUG;
+								$flags |= (OPT_DEBUG | OPT_VERBOSE);
 							}
 							break;
 						case 'T':
@@ -216,6 +202,7 @@ class CLI {
 		$this->config = empty($conffile) 
 			? new Config()
 			: new Config($conffile);
+		// CLI switches override config-file
 		$this->config->setFlags($flags);
 		$this->config->setOptions($options);
 	}
@@ -261,10 +248,12 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function lint_directory() {
-		$this->options |= OPT_SCORE_ONLY;
-		$files = (isset($this->ignore))
-			? Path::find($this->target, "/^.*?\.$this->extensions$/", $this->ignore)
-			: Path::find($this->target, "/^.*?\.$this->extensions$/");
+		$ext = $this->config->check('extensions');
+		if(empty($ext)) $ext = 'php';
+		$ignore = $this->config->check('ignore');
+		$files = empty($ignore)
+			? Path::find($this->target, "/^.*?\.($ext)$/u")
+			: Path::find($this->target, "/^.*?\.($ext)$/u", $ignore);
 			
 		$verbose = $this->config->check(OPT_VERBOSE);
 		$this->penalty = 0;
@@ -281,8 +270,8 @@ class CLI {
 			$stats = array($_, $linter->score());
 			if($this->config->check(OPT_REPORT)) {
 				if($_[0] !== '/') {
-					$href = (preg_match('/^\.\//', $_)) 
-							? $_ : "./$_";
+					$href = (preg_match('/^\.\//u', $_)) 
+								? $_ : "./$_";
 				} else $href = $_;
 				$reports[$href] = $report;
 				$penaltys[$href] = $penalty;
@@ -296,7 +285,7 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
-		$this->reporter->create($reports, $penaltys, $this->target);
+		$this->reporter->create($reports, null, $this->target);
 		$cnt = count($this->stats);
 		$this->msg("$cnt files, ", 0);	
 		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
@@ -319,7 +308,7 @@ class CLI {
 	*/
 	protected function lint_file($file) {
 		$linter = new Linter($file, $this->config);
-		$this->reporter->create($linter->lint());
+		$this->reporter->create($linter->lint(), $linter->penalty());
 	}
 	/**
 	----------------------------------------------------------------------+

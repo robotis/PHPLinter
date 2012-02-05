@@ -9,7 +9,7 @@ class Bash extends Base {
 	public function create($report, $penaltys=null, $root=null) {
 		$format="| {F} | {M} | `{W}` Line: {L}\n";
 		$fcolors = array(
-			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' => array(1, 'brown'),
+			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' => array(2, 'brown'),
 			'I' => 'green', 'R' => 'purple', 'S' => 'cyan', 'F' => array(1, 'black')
 		);
 		foreach($report as $_) {
@@ -19,6 +19,9 @@ class Bash extends Base {
 			$out = str_replace('{W}', $_['where'], $out);
 			$out = str_replace('{L}', $_['line'], $out);
 			echo $out;
+		}
+		if($penaltys) {
+			echo $this->score($penaltys);
 		}
 	}
 	/**

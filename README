@@ -1,5 +1,5 @@
 PHPLinter. Static code analyser.
-V2.4
+V3.0
 
 A simple fast lint and score for PHP files. Attempts to analyze the code to
 locate problem areas, flagging infractions to the rule set and giving a score

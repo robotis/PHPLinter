@@ -4,6 +4,7 @@
 	"ignore": "",
 	"extensions": "",
 	"quiet": false,
+	"information": true,
 	"filter": [
 		"conventions",
 		"warnings",

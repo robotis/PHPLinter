@@ -86,7 +86,7 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	----------------------------------------------------------------------+
 	*/
 	public function test_self() {
-		$dir = PLROOT . '/Lib/';
+		$dir = PLROOT . '/phplinter/';
 		foreach(phplinter\Path::find($dir, '/\.php$/') as $_) {
 			$ll = new phplinter\Linter($_);
 			$ll->lint();

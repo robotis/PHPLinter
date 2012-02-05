@@ -6,13 +6,13 @@ class Bash extends Base {
 	* @desc 	FIXME
 	----------------------------------------------------------------------+
 	*/
-	public function create() {
+	public function create($report, $penaltys=null, $root=null) {
 		$format="| {F} | {M} | `{W}` Line: {L}\n";
 		$fcolors = array(
 			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' => array(1, 'brown'),
 			'I' => 'green', 'R' => 'purple', 'S' => 'cyan', 'F' => array(1, 'black')
 		);
-		foreach($this->data as $_) {
+		foreach($report as $_) {
 			$out = str_replace('{F}', $this->color(str_pad($_['flag'], 3), 
 							   $fcolors[$_['flag'][0]]), $format);
 			$out = str_replace('{M}', str_pad($_['message'], 50), $out);
@@ -36,7 +36,7 @@ class Bash extends Base {
 	----------------------------------------------------------------------+
 	*/
 	public function color($msg, $color="black", $nl=false) {
-		if($this->options & OPT_USE_COLOR) {
+		if($this->config->check(OPT_USE_COLOR)) {
 			$attr = 0;
 			if(is_array($color)) {
 				$attr = intval($color[0]);

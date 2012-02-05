@@ -106,7 +106,7 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	public function process_options($argv, $argc) {
-		$flags = OPT_USE_COLOR | OPT_NO_INFORMATION;
+		$flags = OPT_USE_COLOR | OPT_NO_INFORMATION | OPT_NO_FORMATTING;
 		$options = array();
 		for($i = 1;$i < $argc; $i++) {
 			if($argv[$i][0] == '-') {
@@ -123,7 +123,7 @@ class CLI {
 							$flags |= OPT_NO_CONVENTION;
 							break;
 						case 'F':
-							$flags |= OPT_FORMATTING;
+							$flags &= ~OPT_NO_FORMATTING;
 							break;
 						case 'W':
 							$flags |= OPT_NO_WARNING;
@@ -170,7 +170,9 @@ class CLI {
 							break;
 						case 'H':
 							$flags |= OPT_HTML_REPORT;
-							$options['html_out'] = $this->consume($argv, $i);
+							$options['html'] = array(
+								'out' => $this->consume($argv, $i)
+							);
 							continue 3;
 						case 'J':
 							$flags |= OPT_JSON_REPORT;
@@ -294,7 +296,7 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
-		$this->report($reports, $penaltys, $this->target);
+		$this->reporter->create($reports, $penaltys, $this->target);
 		$cnt = count($this->stats);
 		$this->msg("$cnt files, ", 0);	
 		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
@@ -317,7 +319,7 @@ class CLI {
 	*/
 	protected function lint_file($file) {
 		$linter = new Linter($file, $this->config);
-		$this->report($linter->lint());
+		$this->reporter->create($linter->lint());
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -330,27 +332,15 @@ class CLI {
 			$this->error('Need valid target...');
 		}
 
-		$this->reporter = new Report($this->output_dir, $this->options);
+		$this->setReport();
+		
 		if($this->config->check(OPT_DEBUG_TIME)) 
 			$time = microtime(true);
 
 		if(is_dir($this->target)) {
-			if($this->config->check(OPT_HTML_REPORT)) {
-				if(empty($this->output_dir)) {
-					$this->error('No output directory selected...');
-				}
-				if($this->output_dir == $this->target) {
-					$this->error('Output directory same as target, aborting...');
-				}
-				if(file_exists($this->output_dir) 
-					&& !($this->config->check(OPT_OVERWRITE_REPORT))) 
-				{
-					$this->error('Output directory not empty, will not overwrite...');
-				}
-			}
-			$this->lint_directory();
+			$report = $this->lint_directory();
 		} else {
-			$this->lint_file($this->target);
+			$report = $this->lint_file($this->target);
 		}
 		
 		if($this->config->check(OPT_DEBUG_TIME)) {
@@ -367,16 +357,17 @@ class CLI {
 	* @desc 	FIXME
 	----------------------------------------------------------------------+
 	*/
-	public function report($data) {
+	protected function setReport() {
 		if($this->config->check(OPT_REPORT)) {
 			if($this->config->check(OPT_HTML_REPORT)) {
-				$report = new Report\Html();
+				$this->reporter = new Report\Html($this->config);
 			} else {
-				$report = new Report\JSON();
+				$this->reporter = new Report\JSON($this->config);
 			}
 		} else {
-			$report = new Report\Bash();
+			$this->reporter = new Report\Bash($this->config);
 		}
-		return $report->set($data, $this->config)->create();
+		$err = $this->reporter->prepare();
+		if($err !== true) $this->error($err);
 	}
 }

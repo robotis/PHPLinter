@@ -127,7 +127,7 @@ class BaseLint {
 			case 'S':
 				return (!($this->config->check(OPT_NO_SECURITY)));
 			case 'F':
-				return (!($this->config->check(OPT_FORMATTING)));
+				return (!($this->config->check(OPT_NO_FORMATTING)));
 		}
 	}
 	/**

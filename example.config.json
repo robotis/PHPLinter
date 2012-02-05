@@ -3,6 +3,7 @@
 	"score_only": false,
 	"ignore": "",
 	"extensions": "",
+	"quiet": false,
 	"filter": [
 		"conventions",
 		"warnings",
@@ -13,16 +14,14 @@
 	],
 	"report": {
 		"html": {
-			"out": "",
-			"overwrite": false
-		},
-		"json": {
-			"out": "",
-			"overwrite": false
+			"out": "/home/jtm/code/PHPLinter/work",
+			"overwrite": false,
+			"dry_run": false
 		}
 	},
 	"harvest_docs": {
 		"out": "",
-		"overwrite": false
+		"overwrite": false,
+		"dry_run": true
 	}
 }

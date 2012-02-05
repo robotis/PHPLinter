@@ -48,6 +48,9 @@ define('OPT_FORMATTING',			   	0x100000);
 define('OPT_JSON_REPORT',			   	0x200000);
 define('OPT_HARVEST_DOCS',			   	0x400000);
 
+
+define('OPT_REPORT',			   		OPT_HTML_REPORT | OPT_JSON_REPORT);
+
 // SCORE
 define('SCORE_FULL',					10.0);
 define('I_PENALTY',						0);

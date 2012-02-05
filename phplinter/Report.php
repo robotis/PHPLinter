@@ -21,7 +21,7 @@
 *
 ----------------------------------------------------------------------+
 */
-namespace PHPLinter;
+namespace phplinter;
 class Report {
 	/* @var String */
 	protected $output_dir;
@@ -366,4 +366,5 @@ class Report {
 		$out .= '</html>';
 		return $out;
 	}
+
 }

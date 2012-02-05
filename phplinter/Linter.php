@@ -443,7 +443,7 @@ class Linter {
 		$element->name = 'comment';
 		$depth += count($this->scope);
 		
-		$this->debug("In comment at {$element->start_line}", $depth, OPT_DEBUG);
+		$this->debug("In comment at {$element->start_line}", $depth, OPT_SCOPE_MAP);
 		for($i = $pos;$i < $this->tcount;$i++) {
 			if(Tokenizer::meaningfull($this->tokens[$i][0])) {
 				$i--;
@@ -454,7 +454,7 @@ class Linter {
 		if($i === $this->tcount) $i--;
 		$element->end = $i;
 		$element->end_line = $this->tokens[$i][2];
-		$this->debug("Exiting comment at {$element->end_line}", $depth, OPT_DEBUG);
+		$this->debug("Exiting comment at {$element->end_line}", $depth, OPT_SCOPE_MAP);
 		$ret = $i;
 		return $element;
 	}

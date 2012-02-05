@@ -265,6 +265,8 @@ class CLI {
 		$verbose = ($this->options & OPT_VERBOSE);	
 		$this->penalty = 0;
 		$numfiles = count($files);
+		$reports = array();
+		$penaltys = array();
 		foreach($files as $_) {
 			$this->msg("Linting file: $_\n");
 			if($this->options & OPT_DEBUG_TIME_EXTRA) 
@@ -274,7 +276,7 @@ class CLI {
 			$report = $linter->lint();
 			$penalty = $linter->penalty();
 			$stats = array($_, $linter->score());
-			if($this->options & OPT_HTML_REPORT) {
+			if($this->options & OPT_REPORT) {
 				if($_[0] !== '/') {
 					$href = (preg_match('/^\.\//', $_)) 
 							? $_ : "./$_";
@@ -291,9 +293,7 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
-		if($this->options & OPT_HTML_REPORT) {
-			$this->reporter->toHtml($this->target, $reports, $penaltys);
-		}
+		$this->reporter->report($reports, $penaltys, $this->target);
 		$cnt = count($this->stats);
 		$this->msg("$cnt files, ", 0);	
 		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
@@ -315,13 +315,9 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function lint_file($file) {
-		$linter = new PHPLinter($file, $this->options, $this->use_rules, 
-								null, $this->settings_file);
-		$report = $linter->lint();
-		if(!($this->options & OPT_SCORE_ONLY) && !($this->options & OPT_QUIET)) {
-			$this->reporter->toCli($report);
-		}
-		$this->msg($this->reporter->score($linter->penalty()), 0);
+		$linter = new Linter($file, $this->options, $this->use_rules, 
+							 null, $this->settings_file);
+		$this->report($linter->lint());
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -364,5 +360,22 @@ class CLI {
 			$mem =  memory_get_peak_usage(true);
 			echo 'Peak memory use: ' . round($mem/1048576,2) . " MiB\n";
 		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	FIXME
+	----------------------------------------------------------------------+
+	*/
+	public function report($data) {
+		if($this->options & OPT_REPORT) {
+			if($this->options & OPT_HTML_REPORT) {
+				$report = new Report\Html();
+			} else {
+				$report = new Report\JSON();
+			}
+		} else {
+			$report = new Report\Bash();
+		}
+		return $report->set($data, $this->options)->create();
 	}
 }

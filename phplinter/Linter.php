@@ -47,8 +47,6 @@ class Element {
 */
 class Linter {
 	/* @var Array */
-	protected $options;
-	/* @var Array */
 	protected $rules;
 	/* @var float */
 	protected $score;
@@ -59,13 +57,11 @@ class Linter {
 	* @desc 	Create new linter instance
 	* @param	String	Filename
 	* @param	int		Flags
-	* @param	String	Use rules
-	* @param	String	Filename
 	* @param	Array	Override Ruleset
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($file, $opt=0, $rules=null, $override=null, $rules_file=null) {
-		$this->options 	= $opt;
+	public function __construct($file, $config) {
+		$this->config 	= $config;
 		$this->file 	= $file;
 		exec('php -l ' . escapeshellarg($file), $error, $code);
 		if($code === 0) { 
@@ -85,9 +81,9 @@ class Linter {
 			}
 			$this->globals = require dirname(__FILE__) . '/globals.php';
 			
-			if(is_array($override) && !empty($override)) {
-            foreach($override as $k=>$_)
-            	$this->rules[$k] = array_merge($this->rules[$k], $_);
+			if(isset($override) && is_array($override) && !empty($override)) {
+	            foreach($override as $k=>$_)
+	            	$this->rules[$k] = array_merge($this->rules[$k], $_);
 			}
 			
 			// View only certain rules
@@ -133,7 +129,7 @@ class Linter {
 			$this->debug("Empty file.. Skipping\n", 0, OPT_VERBOSE);
 		} else {
 			$element = $this->measure_file();
-			$lint = new Lint\LFile($element, $this->rules, $this->options);
+			$lint = new Lint\LFile($element, $this->rules, $this->config);
 			$this->report = $lint->lint();
 			$this->score = $lint->penalty();
 			if(!empty($this->report)) {
@@ -418,7 +414,7 @@ class Linter {
 	----------------------------------------------------------------------+
 	*/
 	protected function debug($out, $depth=0, $mode=OPT_DEBUG, $smap=false) {
-		if($this->options & $mode) {
+		if($this->config->check($mode)) {
 			if($smap) {
 				$tabs = str_pad('', $depth*2, "|\t");
 			} else {

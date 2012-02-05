@@ -42,12 +42,12 @@ class BaseLint {
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($element, $rules, $options=0) {
+	public function __construct($element, $rules, $config) {
 		$this->reports 	= array();
 		$this->locals 	= array();
 		$this->element 	= $element;
 		$this->rules 	= $rules;
-		$this->options 	= $options;
+		$this->config 	= $config;
 		$this->scope	= -1;
 		$this->branches	= -1;
 		$this->switch	= false;
@@ -106,28 +106,28 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	*/
 	protected function report_on($flag) {
-		if($this->options & OPT_ONLY_SECURITY) {
+		if($this->config->check(OPT_ONLY_SECURITY)) {
 			if($flag[0] == 'S' || in_array($flag, array('I2','I3')))
 				return true;
 			return false;
 		}
 		switch($flag[0]) {
 			case 'C':
-				return (!($this->options & OPT_NO_CONVENTION));
+				return (!($this->config->check(OPT_NO_CONVENTION)));
 			case 'W':
-				return (!($this->options & OPT_NO_WARNING));
+				return (!($this->config->check(OPT_NO_WARNING)));
 			case 'R':
-				return (!($this->options & OPT_NO_REFACTOR));
+				return (!($this->config->check(OPT_NO_REFACTOR)));
 			case 'E':
-				return (!($this->options & OPT_NO_ERROR));
+				return (!($this->config->check(OPT_NO_ERROR)));
 			case 'I':
-				return ($this->options & OPT_INFORMATION);
+				return (!($this->config->check(OPT_INFORMATION)));
 			case 'D':
-				return (!($this->options & OPT_NO_DEPRICATED));
+				return (!($this->config->check(OPT_NO_DEPRICATED)));
 			case 'S':
-				return (!($this->options & OPT_NO_SECURITY));
+				return (!($this->config->check(OPT_NO_SECURITY)));
 			case 'F':
-				return ($this->options & OPT_FORMATTING);
+				return (!($this->config->check(OPT_FORMATTING)));
 		}
 	}
 	/**
@@ -404,7 +404,7 @@ class BaseLint {
 			foreach($this->element->comments as $element) {
 				if($element->type === T_DOC_COMMENT) $this->element->dochead = true;
 				$element->owner = $this->element->name;
-				$lint = new LComment($element, $this->rules, $this->options);
+				$lint = new LComment($element, $this->rules, $this->config);
 				foreach($lint->bind($this)->lint() as $_) {
 					$this->reports[] = $_;
 				}
@@ -433,7 +433,7 @@ class BaseLint {
 			foreach($this->element->elements as $element) {
 				$this->profile();
 				$class = "\\phplinter\\Lint\\{$a[$element->type]}";
-				$lint = new $class($element, $this->rules, $this->options);
+				$lint = new $class($element, $this->rules, $this->config);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();
 				unset($lint);

@@ -44,6 +44,8 @@ class CLI {
 	protected $stats;
 	/* @var String */
 	protected $settings_file;
+	/* @var Config Object */
+	protected $config;
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	__construct. Defaults to use color.
@@ -64,8 +66,9 @@ class CLI {
 		echo "Usage phplinter [Options] [file|directory]\n\n";
 		echo "\t-q: Quiet mode (Surpress output)\n";
 		echo "\t-v: Verbose mode\n";
-		echo "\t-c: Turn off color output.\n";
+		echo "\t-N: Turn off color output.\n";
 		echo "\t-S: Score only.\n";
+		echo "\t-c FILE: Configuration file.\n";
 		
 		echo "\nFilters:\n";
 		echo "\t-I: Report extra information (default off).\n";
@@ -76,8 +79,6 @@ class CLI {
 		echo "\t-D: Dont report documentation warnings.\n";
 		echo "\t-X: Dont report security warnings.\n";
 		echo "\t-O: Security report only.\n";
-		echo "\t-r RULES: Use following rules (| delimited).\n";
-// 		echo "\t-U FILE: Use rules-file.\n";
 		
 		echo "\nDebugging:\n";
 		echo "\t-M: View scope map.\n";
@@ -105,101 +106,100 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	public function process_options($argv, $argc) {
+		$flags = OPT_USE_COLOR;
+		$options = array();
 		for($i = 1;$i < $argc; $i++) {
 			if($argv[$i][0] == '-') {
 				$l = mb_strlen($argv[$i]);
 				for($j=1; $j < $l; $j++) {
 					switch($argv[$i][$j]) {
 						case 'I':
-							$this->options |= OPT_INFORMATION;
+							$flags |= OPT_INFORMATION;
 							break;
 						case 'D':
-							$this->options |= OPT_NO_DEPRICATED;
+							$flags |= OPT_NO_DEPRICATED;
 							break;
 						case 'C':
-							$this->options |= OPT_NO_CONVENTION;
+							$flags |= OPT_NO_CONVENTION;
 							break;
 						case 'F':
-							$this->options |= OPT_FORMATTING;
+							$flags |= OPT_FORMATTING;
 							break;
 						case 'W':
-							$this->options |= OPT_NO_WARNING;
+							$flags |= OPT_NO_WARNING;
 							break;
 						case 'R':
-							$this->options |= OPT_NO_REFACTOR;
+							$flags |= OPT_NO_REFACTOR;
 							break;
 						case 'E':
-							$this->options |= OPT_NO_ERROR;
+							$flags |= OPT_NO_ERROR;
 							break;
 						case 'X':
-							$this->options |= OPT_NO_SECURITY;
+							$flags |= OPT_NO_SECURITY;
 							break;
 						case 'O':
-							$this->options |= OPT_ONLY_SECURITY;
+							$flags |= OPT_ONLY_SECURITY;
 							break;
 						case 'v':
-							$this->options |= OPT_VERBOSE;
+							$flags |= OPT_VERBOSE;
 							break;
 						case 'q':
-							$this->options |= OPT_QUIET;
+							$flags |= OPT_QUIET;
 							break;
 						case 'M':
-							$this->options |= OPT_SCOPE_MAP;
+							$flags |= OPT_SCOPE_MAP;
 							break;
 						case 'V':
-							if($this->options & OPT_DEBUG) {
-								$this->options |= OPT_DEBUG_EXTRA;
+							if($flags & OPT_DEBUG) {
+								$flags |= OPT_DEBUG_EXTRA;
 							} else {
-								$this->options |= OPT_DEBUG;
+								$flags |= OPT_DEBUG;
 							}
 							break;
 						case 'T':
-							if($this->options & OPT_DEBUG_TIME) {
-								$this->options |= OPT_DEBUG_TIME_EXTRA;
+							if($flags & OPT_DEBUG_TIME) {
+								$flags |= OPT_DEBUG_TIME_EXTRA;
 							}
-							else $this->options |= OPT_DEBUG_TIME;
+							else $flags |= OPT_DEBUG_TIME;
 							break;
 						case 'S':
-							$this->options |= OPT_SCORE_ONLY;
+							$flags |= OPT_SCORE_ONLY;
 							break;
-						case 'c':
-							$this->options &= ~OPT_USE_COLOR;
+						case 'N':
+							$flags &= ~OPT_USE_COLOR;
 							break;
 						case 'H':
-							$this->options |= OPT_HTML_REPORT;
-							$this->html_out = $this->consume($argv, $i);
+							$flags |= OPT_HTML_REPORT;
+							$options['html_out'] = $this->consume($argv, $i);
 							continue 3;
 						case 'J':
-							$this->options |= OPT_JSON_REPORT;
-							$this->json_out = $this->consume($argv, $i);
+							$flags |= OPT_JSON_REPORT;
+							$options['json_out'] = $this->consume($argv, $i);
 							continue 3;
 						case 'Z':
-							$this->options |= OPT_HARVEST_DOCS;
-							$this->docs_out = $this->consume($argv, $i);
+							$flags |= OPT_HARVEST_DOCS;
+							$options['docs_out'] = $this->consume($argv, $i);
 							continue 3;
 						case 'w':
-							$this->options |= OPT_OVERWRITE_REPORT;
+							$flags |= OPT_OVERWRITE_REPORT;
 							break;
-						case 'r':
-							$this->use_rules = $this->consume($argv, $i);
+						case 'c':
+							$conffile = $this->consume($argv, $i);
 							continue 3;
 						case 'i':
-							$ignore = $this->consume($argv, $i);
-							$this->ignore = $ignore;
+							$options['ignore'] = $this->consume($argv, $i);
 							continue 3;
 						case 't':
-							$this->threshold = intval($argv[++$i]);
+							$options['threshold'] = intval($argv[++$i]);
 							continue 3;
 						case 'o':
-							$this->output_dir = $this->consume($argv, $i);
-							continue 3;
-						case 'U':
-							$this->settings_file = $this->consume($argv, $i);
+							$options['output_dir'] = $this->consume($argv, $i);
 							continue 3;
 						case 'e':
+							$options['extensions'] = '';
 							$ext = $this->consume($argv, $i);
 							if(preg_match('/[a-z0-9\|]+/iu', $ext)) {
-								$this->extensions .= '|'.$ext;
+								$options['extensions'] .= '|'.$ext;
 							} elseif(!empty($ext)) {
 								$this->error('Extensions must include only letters and numbers');
 							}
@@ -211,9 +211,14 @@ class CLI {
 					}
 				}
 			} else {
-				$this->target = $argv[$i];
+				$options['target'] = $argv[$i];
 			}
 		}
+		$this->config = empty($conffile) 
+			? new Config()
+			: new Config($conffile);
+		$this->config->setFlags($flags);
+		$this->config->setOptions($options);
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -245,8 +250,8 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function msg($msg, $flag=OPT_VERBOSE) {
-		if(!($this->options & OPT_QUIET)) {
-			if($flag && !($this->options & $flag))
+		if(!$this->config->check(OPT_QUIET)) {
+			if($flag && !$this->config->check($flag))
 				return;
 			echo $msg;
 		}
@@ -262,21 +267,20 @@ class CLI {
 			? Path::find($this->target, "/^.*?\.$this->extensions$/", $this->ignore)
 			: Path::find($this->target, "/^.*?\.$this->extensions$/");
 			
-		$verbose = ($this->options & OPT_VERBOSE);	
+		$verbose = $this->config->check(OPT_VERBOSE);
 		$this->penalty = 0;
 		$numfiles = count($files);
 		$reports = array();
 		$penaltys = array();
 		foreach($files as $_) {
 			$this->msg("Linting file: $_\n");
-			if($this->options & OPT_DEBUG_TIME_EXTRA) 
+			if($this->config->check(OPT_DEBUG_TIME_EXTRA)) 
 				$time = microtime(true);
-			$linter = new Linter($_, $this->options, $this->use_rules, 
-									null, $this->settings_file);
+			$linter = new Linter($_, $this->config);
 			$report = $linter->lint();
 			$penalty = $linter->penalty();
 			$stats = array($_, $linter->score());
-			if($this->options & OPT_REPORT) {
+			if($this->config->check(OPT_REPORT)) {
 				if($_[0] !== '/') {
 					$href = (preg_match('/^\.\//', $_)) 
 							? $_ : "./$_";
@@ -286,14 +290,14 @@ class CLI {
 			}
 			$this->penalty += $penalty;
 			$this->msg($this->reporter->score($penalty));
-			if($this->options & OPT_DEBUG_TIME_EXTRA) {
+			if($this->config->check(OPT_DEBUG_TIME_EXTRA)) {
 				$x = microtime(true) - $time;
 				$stats[] = $x;
 				$this->msg("Time for file: $x seconds\n");	
 			}
 			$this->stats[] = $stats;
 		}
-		$this->reporter->report($reports, $penaltys, $this->target);
+		$this->report($reports, $penaltys, $this->target);
 		$cnt = count($this->stats);
 		$this->msg("$cnt files, ", 0);	
 		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
@@ -301,7 +305,7 @@ class CLI {
 		foreach($this->stats as $_) $arr[] = $_[1];
 		array_multisort($this->stats, SORT_NUMERIC, $arr);
 		$this->msg("Worst: {$this->stats[0][0]} with {$this->stats[0][1]}\n", 0);
-		if($this->options & OPT_DEBUG_TIME_EXTRA) {
+		if($this->config->check(OPT_DEBUG_TIME_EXTRA)) {
 			$arr = array();
 			foreach($this->stats as $_) $arr[] = $_[2];
 			$avg = array_sum($arr) / $cnt;
@@ -315,8 +319,7 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function lint_file($file) {
-		$linter = new Linter($file, $this->options, $this->use_rules, 
-							 null, $this->settings_file);
+		$linter = new Linter($file, $this->config);
 		$this->report($linter->lint());
 	}
 	/**
@@ -325,16 +328,17 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
-		if(!isset($this->target) || !file_exists($this->target)) {
+		$this->target = $this->config->check('target');
+		if(!file_exists($this->target)) {
 			$this->error('Need valid target...');
 		}
 
 		$this->reporter = new Report($this->output_dir, $this->options);
-		if($this->options & OPT_DEBUG_TIME) 
+		if($this->config->check(OPT_DEBUG_TIME)) 
 			$time = microtime(true);
 
 		if(is_dir($this->target)) {
-			if($this->options & OPT_HTML_REPORT) {
+			if($this->config->check(OPT_HTML_REPORT)) {
 				if(empty($this->output_dir)) {
 					$this->error('No output directory selected...');
 				}
@@ -342,7 +346,7 @@ class CLI {
 					$this->error('Output directory same as target, aborting...');
 				}
 				if(file_exists($this->output_dir) 
-					&& !($this->options & OPT_OVERWRITE_REPORT)) 
+					&& !($this->config->check(OPT_OVERWRITE_REPORT))) 
 				{
 					$this->error('Output directory not empty, will not overwrite...');
 				}
@@ -352,11 +356,11 @@ class CLI {
 			$this->lint_file($this->target);
 		}
 		
-		if($this->options & OPT_DEBUG_TIME) {
+		if($this->config->check(OPT_DEBUG_TIME)) {
 			$x = microtime(true) - $time;
 			$this->msg("Total time: $x seconds\n", OPT_DEBUG_TIME);	
 		}
-		if($this->options & OPT_DEBUG) {
+		if($this->config->check(OPT_DEBUG)) {
 			$mem =  memory_get_peak_usage(true);
 			echo 'Peak memory use: ' . round($mem/1048576,2) . " MiB\n";
 		}
@@ -367,8 +371,8 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	public function report($data) {
-		if($this->options & OPT_REPORT) {
-			if($this->options & OPT_HTML_REPORT) {
+		if($this->config->check(OPT_REPORT)) {
+			if($this->config->check(OPT_HTML_REPORT)) {
 				$report = new Report\Html();
 			} else {
 				$report = new Report\JSON();
@@ -376,6 +380,6 @@ class CLI {
 		} else {
 			$report = new Report\Bash();
 		}
-		return $report->set($data, $this->options)->create();
+		return $report->set($data, $this->config)->create();
 	}
 }

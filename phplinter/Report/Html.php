@@ -7,17 +7,19 @@ class Html extends Base {
 	----------------------------------------------------------------------+
 	*/
 	public function prepare() {
-		$this->html = $this->config->check('html');
+		$this->html = $this->config->check('report');
 		if(empty($this->html['out'])) {
 			return 'No output directory selected...';
 		}
 		if($this->html['out'] == $this->config->check('target')) {
 			return 'Output directory same as target, aborting...';
 		}
-		if(file_exists($this->html['out'])
-			&& !($this->config->check(OPT_OVERWRITE_REPORT)))
-		{
-			return 'Output directory not empty, will not overwrite...';
+		if(file_exists($this->html['out'])) {
+			if(!$this->config->check(OPT_OVERWRITE_REPORT)) {
+				$files = @scandir($this->html['out']);
+				if(count($files) > 2)
+					return 'Output directory not empty, will not overwrite...';
+			}
 		}
 		if(isset($this->html['dry_run']))
 			$this->dry_run = $this->html['dry_run'];
@@ -35,10 +37,7 @@ class Html extends Base {
 		if($this->config->check(OPT_VERBOSE))
 			echo "Generating HTML Report to '$output_dir'\n";
 		
-		if(file_exists($output_dir)) {
-			if(!($this->config->check(OPT_OVERWRITE_REPORT))) {
-				die("`$output_dir` not empty, aborting...\n");
-			}
+		if(file_exists($output_dir) && $this->config->check(OPT_OVERWRITE_REPORT)) {
 			if($this->config->check(OPT_VERBOSE)) 
 				echo "Emptying `$output_dir`\n";
 			if(!$this->dry_run)

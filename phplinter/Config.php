@@ -112,14 +112,20 @@ class Config {
 	*/
 	protected function _parse_report($conf) {
 		if(isset($conf->report)) {
-			if(isset($conf->report->html)) {
-				$this->_flags |= OPT_HTML_REPORT;
-				$this->_options['html'] = (array)$conf->report->html;
+			if(isset($conf->report->type)) {
+				$this->_options['report'] = (array)$conf->report;
+				switch($conf->report->type) {
+					case 'html':
+						$this->_flags |= OPT_HTML_REPORT;
+						break;
+					case 'json':
+						$this->_flags |= OPT_JSON_REPORT;
+						break;
+				}
 			}
-			if(isset($conf->report->json)) {
-				$this->_flags |= OPT_JSON_REPORT;
-				$this->_options['json'] = (array)$conf->report->json;
-			}
+		}
+		if(isset($conf->harvest)) {
+			$this->_options['harvest'] = (array)$conf->harvest;
 		}
 	}
 }

@@ -67,7 +67,7 @@ abstract class Base {
 	* @desc 	FIXME
 	----------------------------------------------------------------------+
 	*/
-	public function write($filename, $content) {
+	protected function write($filename, $content) {
 		if(!$this->dry_run) {
 			if(!\phplinter\Path::write_file($filename, $content)) {
 				die("Unable to create '$filename'...");
@@ -81,7 +81,7 @@ abstract class Base {
 	* @desc 	FIXME
 	----------------------------------------------------------------------+
 	*/
-	public function mkdir($path, $oct=0775, $rec=false) {
+	protected function mkdir($path, $oct=0775, $rec=false) {
 		if(!$this->dry_run) {
 			if(!mkdir($path, $oct, $rec)) {
 				die("Unable to create '$path'...");
@@ -89,6 +89,24 @@ abstract class Base {
 			if($this->config->check(OPT_VERBOSE))
 				echo "Created directory `$path`\n";
 		}
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	insert into array at correct depth
+	* @param	Array	Array to insert into
+	* @param	Array	Parts Array
+	* @param	String	key
+	* @param	Mixed	value
+	----------------------------------------------------------------------+
+	*/
+	protected function _insert(&$arr, $parts, $key, $value) {
+		while($pos = array_shift($parts)) {
+			if(!isset($arr[$pos])) {
+				$arr[$pos] = array();
+			}
+			$arr = &$arr[$pos];
+		}
+		$arr[$key] = $value;
 	}
 	/**
 	----------------------------------------------------------------------+

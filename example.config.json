@@ -8,13 +8,12 @@
 	"filter": [
 	],
 	"report": {
-		"json": {
-			"out": "/home/jtm/code/PHPLinter/work",
-			"overwrite": false,
-			"dry_run": false
-		}
+		"type": "html",
+		"out": "/home/jtm/code/PHPLinter/work",
+		"overwrite": false,
+		"dry_run": false
 	},
-	"harvest_docs": {
+	"harvest": {
 		"out": "",
 		"overwrite": false,
 		"dry_run": true

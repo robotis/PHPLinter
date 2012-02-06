@@ -110,8 +110,8 @@ class Linter {
 		} elseif($this->tcount === 0) {
 			$this->debug("Empty file.. Skipping\n", 0, OPT_VERBOSE);
 		} else {
-			$node = $this->measure_file();
-			$lint = new Lint\LFile($node, $this->rules, $this->config);
+			$this->node = $this->measure_file();
+			$lint = new Lint\LFile($this->node, $this->rules, $this->config);
 			$this->report = $lint->lint();
 			$this->score = $lint->penalty();
 			if(!empty($this->report)) {
@@ -120,6 +120,15 @@ class Linter {
 			}
 		}
 		return $this->report;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Return nodes
+	* @return   Array
+	----------------------------------------------------------------------+
+	*/
+	public function nodes() {
+		return $this->node;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -270,6 +279,7 @@ class Linter {
 					$next_node->name = $name;
 					$next_node->depth = $node->depth + 1;
 					$next_node->owner = $owner;
+					$next_node->file = $node->file;
 					$node->tokens[] = $tokens[$i];
 					// preserve scope
 					$scope = $this->scope;

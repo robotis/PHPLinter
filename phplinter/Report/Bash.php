@@ -44,7 +44,7 @@ class Bash extends Base {
 				echo $out;
 			}
 		}
-		if($penaltys) {
+		if(is_numeric($penaltys)) {
 			echo $this->score($penaltys);
 		}
 	}

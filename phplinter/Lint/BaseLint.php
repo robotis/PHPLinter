@@ -375,7 +375,7 @@ class BaseLint {
 	----------------------------------------------------------------------+
 	* @desc 	Find the next token.
 	* @param	int		current position
-	* @param	Array	current token
+	* @param	int		Seek token
 	* @param	int		Limit to forward track
 	* @return 	Int
 	----------------------------------------------------------------------+
@@ -495,7 +495,6 @@ class BaseLint {
 		while(true) {
 			switch($o[++$i][0]) {
 				case T_VARIABLE:
-					$out[] = $o[$i][1];
 					if($o[$i+1][0] === T_EQUALS) {
 						$out[$o[$i][1]] = $o[$i+2][1];
 						$i += 2;

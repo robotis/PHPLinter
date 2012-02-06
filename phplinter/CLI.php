@@ -156,17 +156,23 @@ class CLI {
 							break;
 						case 'H':
 							$flags |= OPT_HTML_REPORT;
-							$options['html'] = array(
+							$options['report'] = array(
+								'type' => 'html',
 								'out' => $this->consume($argv, $i)
 							);
 							continue 3;
 						case 'J':
 							$flags |= OPT_JSON_REPORT;
-							$options['json_out'] = $this->consume($argv, $i);
+							$options['report'] = array(
+								'type' => 'json',
+								'out' => $this->consume($argv, $i)
+							);
 							continue 3;
 						case 'Z':
 							$flags |= OPT_HARVEST_DOCS;
-							$options['docs_out'] = $this->consume($argv, $i);
+							$options['harvest'] = array(
+								'out' => $this->consume($argv, $i)
+							);
 							continue 3;
 						case 'w':
 							$flags |= OPT_OVERWRITE_REPORT;
@@ -213,9 +219,6 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function consume($argv, &$i) {
-		if(mb_strlen($argv[$i]) > 2) {
-			return mb_substr($argv[$i], 2);
-		}
 		if(isset($argv[++$i])) return trim($argv[$i]);
 		$i--;
 		return false;
@@ -255,11 +258,12 @@ class CLI {
 			? Path::find($this->target, "/^.*?\.($ext)$/u")
 			: Path::find($this->target, "/^.*?\.($ext)$/u", $ignore);
 			
-		$verbose = $this->config->check(OPT_VERBOSE);
-		$this->penalty = 0;
-		$numfiles = count($files);
-		$reports = array();
-		$penaltys = array();
+		$verbose 		= $this->config->check(OPT_VERBOSE);
+		$this->penalty 	= 0;
+		$numfiles 		= count($files);
+		$reports 		= array();
+		$penaltys 		= array();
+		$nodes 			= array();
 		foreach($files as $_) {
 			$this->msg("Linting file: $_\n");
 			if($this->config->check(OPT_DEBUG_TIME_EXTRA)) 
@@ -268,13 +272,18 @@ class CLI {
 			$report = $linter->lint();
 			$penalty = $linter->penalty();
 			$stats = array($_, $linter->score());
+			
 			if($this->config->check(OPT_REPORT)) {
 				if($_[0] !== '/') {
-					$href = (preg_match('/^\.\//u', $_)) 
-								? $_ : "./$_";
+					$href = (preg_match('/^\.\//u', $_))
+					? $_ : "./$_";
 				} else $href = $_;
-				$reports[$href] = $report;
 				$penaltys[$href] = $penalty;
+				$reports[$href] = $report;
+			}
+			if($this->config->check(OPT_HARVEST_DOCS)) {
+				$penaltys[$_] = $penalty;
+				$nodes[] = $linter->nodes();
 			}
 			$this->penalty += $penalty;
 			$this->msg($this->reporter->score($penalty));
@@ -285,6 +294,10 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
+		if($this->config->check(OPT_HARVEST_DOCS)) {
+			$reporter = new Report\Harvest($this->config);
+			$reporter->create($nodes, $penaltys, $this->target);
+		} 
 		$this->reporter->create($reports, $penaltys, $this->target);
 		$cnt = count($this->stats);
 		$this->msg("$cnt files, ", 0);	
@@ -308,11 +321,17 @@ class CLI {
 	*/
 	protected function lint_file($file) {
 		$linter = new Linter($file, $this->config);
-		$this->reporter->create(
-			array($linter->lint()), 
-			$linter->penalty(), 
-			$file
-		);
+		if($this->config->check(OPT_HARVEST_DOCS)) {
+			$linter->lint();
+			$reporter = new Report\Harvest($this->config);
+			$reporter->create($linter->nodes(), $linter->penalty());
+		} else {
+			$this->reporter->create(
+				array($linter->lint()),
+				$linter->penalty(),
+				$file
+			);
+		}
 	}
 	/**
 	----------------------------------------------------------------------+

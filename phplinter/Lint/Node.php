@@ -49,5 +49,6 @@ class Node {
 		$this->comments 	= array();
 		$this->tokens 		= array();
 		$this->nodes 		= array();
+		$this->constants 	= array();
 	}
 }

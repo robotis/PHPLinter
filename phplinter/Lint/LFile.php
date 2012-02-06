@@ -81,6 +81,13 @@ class LFile extends BaseLint implements ILint {
 				case T_FUNCTION:
 					$functions++;
 					break;
+				case T_STRING:
+					if($et[$i][1] === 'define') {
+						$p = $this->find($i+1, T_CONSTANT_ENCAPSED_STRING);
+						$this->node->constants[] = $et[$p][1];
+						$i = $p;
+					}
+					break;
 				case T_VARIABLE:
 					$globals[] = $et[$i][1];
 					break;

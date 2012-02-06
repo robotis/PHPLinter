@@ -53,18 +53,10 @@ class JSON extends Base {
 			foreach($report as $file => $_) {
 				$parts = explode('/', trim($file, './'));
 				$name = array_pop($parts);
-				$tmp = array(
+				$this->_insert($out, $parts, $name, array(
 					'report' => $this->_parse($_),
 					'score' => SCORE_FULL + $penaltys[$file]
-				);
-				$o = &$out;
-				while($pos = array_shift($parts)) {
-					if(!isset($o[$pos])) {
-						$o[$pos] = array();
-					}
-					$o = &$o[$pos];
-				}
-				$o[$name] = $tmp;
+				));
 			}
 		}
 		$this->_out(json_encode($out));

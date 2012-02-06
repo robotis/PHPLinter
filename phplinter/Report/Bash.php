@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Bash Reporter
 *  @file 			Bash.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Feb 6, 2012
 *  @package 		PHPLinter
 *  @copyright

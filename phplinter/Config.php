@@ -44,6 +44,9 @@ class Config {
 	*/
 	public function setFlags($flags) {
 		$this->_flags |= $flags;
+		if($this->_flags & (OPT_VERBOSE | OPT_DEBUG)) {
+			$this->_flags &= ~OPT_QUIET;
+		}
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -125,6 +128,7 @@ class Config {
 			}
 		}
 		if(isset($conf->harvest)) {
+			$this->_flags |= OPT_HARVEST_DOCS;
 			$this->_options['harvest'] = (array)$conf->harvest;
 		}
 	}

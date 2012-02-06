@@ -1,21 +1,41 @@
 {
-	"target": "/home/jtm/code/PHPLinter",
+	"target": "/path/to/code",
+	
 	"score_only": false,
+	
+	"_comment": "ignore paths (| delimited)",
 	"ignore": "",
+	
+	"_comment": "File extensions. example: 'php|inc', default 'php'",
 	"extensions": "",
+	
 	"quiet": false,
+	
+	"_comment": "Add extra information",
 	"information": true,
-	"filter": [
+	
+	"_comment" : "Available filters, will ignore flags of this type",
+	"filter": 
+		"information",
+		"conventions",
+		"warnings",
+		"refactor",
+		"errors",
+		"documentation",
+		"security"
 	],
+	
+	"_comment": "Types can be json or html",
 	"report": {
 		"type": "html",
-		"out": "/home/jtm/code/PHPLinter/work",
+		"out": "/path/to/write/files",
 		"overwrite": false,
 		"dry_run": false
 	},
+	
+	"_comment": "Will harvest documentation from code and dump in json format",
 	"harvest": {
-		"out": "",
-		"overwrite": false,
-		"dry_run": true
+		"out": "/path/to/write/file",
+		"dry_run": false
 	}
 }

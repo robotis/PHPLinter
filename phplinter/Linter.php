@@ -105,6 +105,7 @@ class Linter {
 	----------------------------------------------------------------------+
 	*/
 	public function lint() {
+		$this->node = null;
 		if(is_null($this->tokens)) {
 			$this->debug("Syntax error in file.. Skipping\n", 0, OPT_VERBOSE);
 		} elseif($this->tcount === 0) {

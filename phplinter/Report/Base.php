@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			Base Reporter
 *  @file 			Base.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Feb 6, 2012
 *  @package 		PHPLinter
 *  @copyright
@@ -99,14 +99,18 @@ abstract class Base {
 	* @param	Mixed	value
 	----------------------------------------------------------------------+
 	*/
-	protected function _insert(&$arr, $parts, $key, $value) {
+	protected function _insert(&$arr, $parts, $key, $value=null) {
 		while($pos = array_shift($parts)) {
 			if(!isset($arr[$pos])) {
 				$arr[$pos] = array();
 			}
 			$arr = &$arr[$pos];
 		}
-		$arr[$key] = $value;
+		if(is_null($value)) {
+			$arr[] = $key;
+		} else {
+			$arr[$key] = $value;
+		}
 	}
 	/**
 	----------------------------------------------------------------------+

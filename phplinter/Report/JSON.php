@@ -3,7 +3,7 @@
 ----------------------------------------------------------------------+
 *  @desc			JSON Reporter
 *  @file 			JSON.php
-*  @author 			Jóhann T. Maríusson <jtm@hi.is>
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Feb 6, 2012
 *  @package 		PHPLinter
 *  @copyright     

@@ -15,9 +15,18 @@ Disclaimer:
 	
 	It is not meant as a replacement for other, more customizable tools.
 
-Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
+Usage
+=====
 
-	-U: Use rules-file FILE.
+Usage phplinter [Options] [file|directory]
+
+	-q: Quiet mode (Surpress output)
+	-v: Verbose mode
+	-N: Turn off color output.
+	-S: Score only.
+	-c FILE: Configuration file.
+
+Filters:
 	-I: Report extra information (default off).
 	-C: Dont report conventions.
 	-W: Dont report warnings.
@@ -26,20 +35,30 @@ Run phplinter [FILENAME|DIRNAME] for results. See the -h option for more info.
 	-D: Dont report documentation warnings.
 	-X: Dont report security warnings.
 	-O: Security report only.
+
+Debugging:
 	-M: View scope map.
-	-S: Score only.
-	-r: Use following rules (| delimited).
-	-v: Verbose mode
-	-q: Quiet mode (Surpress output)
 	-V: Debug mode. Again for extra debug info.
 	-T: Time execution. Again for extra time info.
-	-c: Turn off color output.
-	-e: Add extensions to valid list delimited by '|' (default 'php')
-	-o: Output directory (with -H)
-	-H: HTML report.
-	-w: Overwrite output directory. (Warning: Will empty directory)
-	-i: ignore PATTERN. (Ignore files in directory mode)
 
+Reporting:
+	-H PATH: HTML report.
+	-J PATH: JSON report.
+	-i PATTERN: Ignore pattern (| delimited)
+	-e PATTERN: file extensions (| delimited) (default 'php')
+	-w: Overwrite output directory. (Warning: Will empty directory)
+
+Other (Experimental):
+	-Z PATH: Harvest documentation into json-file.
+	-F: Report formatting errors.
+	
+Configuration file
+==================
+
+Uses JSON format file. See 'example.config.json'  for details.
+
+Rules
+=====
 
 Ruleset (some rules may not be active)
 

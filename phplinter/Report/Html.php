@@ -1,9 +1,31 @@
 <?php
+/**
+----------------------------------------------------------------------+
+*  @desc			HTML Reporter
+*  @file 			Html.php
+*  @author 			Jóhann T. Maríusson <jtm@robot.is>
+*  @since 		    Feb 6, 2012
+*  @package 		PHPLinter
+*  @copyright
+*    phplinter is free software: you can redistribute it and/or modify
+*    it under the terms of the GNU General Public License as published by
+*    the Free Software Foundation, either version 3 of the License, or
+*    (at your option) any later version.
+*
+*    This program is distributed in the hope that it will be useful,
+*    but WITHOUT ANY WARRANTY; without even the implied warranty of
+*    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*    GNU General Public License for more details.
+*
+*    You should have received a copy of the GNU General Public License
+*    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+----------------------------------------------------------------------+
+*/
 namespace phplinter\Report;
 class Html extends Base {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Prepare report.
 	----------------------------------------------------------------------+
 	*/
 	public function prepare() {
@@ -15,7 +37,7 @@ class Html extends Base {
 			return 'Output directory same as target, aborting...';
 		}
 		if(file_exists($this->html['out'])) {
-			if(!$this->config->check(OPT_OVERWRITE_REPORT)) {
+			if(!$this->html['overwrite']) {
 				$files = @scandir($this->html['out']);
 				if(count($files) > 2)
 					return 'Output directory not empty, will not overwrite...';
@@ -27,7 +49,10 @@ class Html extends Base {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Create HTML report
+	* @param	Array	Lint report
+	* @param	Array	Lint scores
+	* @param	String	Target
 	----------------------------------------------------------------------+
 	*/
 	public function create($report, $penaltys=null, $root=null) {
@@ -91,7 +116,7 @@ class Html extends Base {
 			$url['phplinter___file'] = $file;
 			$url['phplinter___url'] = strtr($rfile, './', '__').'.html';
 			$url['phplinter___sort'] = strtolower($url['phplinter___url']);
-			$this->parts($pp, $url, $urls);
+			$this->_insert($urls, $pp, $url);
 		}
 		$urls = $this->sort($urls);
 		$this->output_indexes($urls, $penaltys);
@@ -214,26 +239,6 @@ class Html extends Base {
 		elseif($score < 10)
 			return 'vgood';
 		return 'perfect';
-	}
-	/**
-	 ----------------------------------------------------------------------+
-	 * @desc 	Fills in the correct directorys
-	 * @param	$parts	Array
-	 * @param	$url	Array
-	 * @param	$urls	Reference (Array)
-	 ----------------------------------------------------------------------+
-	 */
-	protected function parts($parts, $url, &$urls) {
-		if(empty($parts)) return;
-		$part = array_shift($parts);
-	
-		if(!isset($urls[$part])) {
-			$urls[$part] = array();
-		}
-	
-		if(empty($parts)) {
-			$urls[$part][] = $url;
-		} else $this->parts($parts, $url, $urls[$part]);
 	}
 	/**
 	 ----------------------------------------------------------------------+

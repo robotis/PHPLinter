@@ -126,6 +126,7 @@ class Tokenizer {
 			case '=': return T_EQUALS;
 			case '!': return T_NOT;
 			case '`': return T_BACKTICK;
+			case ',': return T_COMMA;
 			default:  return T_IGNORE;
 		}
 	} 

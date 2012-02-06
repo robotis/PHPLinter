@@ -85,5 +85,6 @@ define('T_ANON_FUNCTION', 			1019);
 define('T_BASIC_CURLY_OPEN',		1020);
 define('T_OPEN_SCOPE',				1021);
 define('T_CLOSE_SCOPE',				1022);
+define('T_COMMA',					1023);
 
 //define('PHPL_PROFILE_ON', 			true);

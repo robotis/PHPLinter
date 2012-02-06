@@ -82,10 +82,10 @@ class LFile extends BaseLint implements ILint {
 					$functions++;
 					break;
 				case T_STRING:
-					if($et[$i][1] === 'define') {
-						$p = $this->find($i+1, T_CONSTANT_ENCAPSED_STRING);
-						$this->node->constants[] = $et[$p][1];
-						$i = $p;
+					if($this->config->check(OPT_HARVEST_DOCS)) {
+						if($et[$i][1] === 'define') {
+							$i = $this->pdefine($i);
+						}
 					}
 					break;
 				case T_VARIABLE:
@@ -108,6 +108,26 @@ class LFile extends BaseLint implements ILint {
 				$this->report($k, $_);
 			
 		return $this->reports;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Gather define decl
+	* @param	int		start
+	* @return   int		stop
+	----------------------------------------------------------------------+
+	*/
+	protected function pdefine($i) {
+		$et = $this->node->tokens;
+		$p = $this->find($i, T_CONSTANT_ENCAPSED_STRING);
+		if($p) {
+			$const = $et[$p][1];
+			$p = $this->find($p, T_COMMA);
+			if($p) {
+				$i = $this->next($p);
+				$this->node->constants[$const] = $et[$p][1];
+			}
+		}
+		return $i;
 	}
 	/**
 	----------------------------------------------------------------------+

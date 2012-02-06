@@ -245,7 +245,7 @@ class Linter {
 					break;
 				case T_CURLY_CLOSE:
 					$this->close_scope($i, $node);
-					if(empty($this->scope)) {
+					if(empty($this->scope) && $node->type !== T_FILE) {
 						$i++;
 						break 2;
 					}

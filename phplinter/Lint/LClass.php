@@ -81,6 +81,14 @@ class LClass extends BaseLint implements ILint {
 		for($i = 0;$i < $tcnt;$i++) {
 			$token = $et[$i];
 			switch($token[0]) {
+				case T_EXTENDS:
+					$n = $this->next($i);
+					$this->node->extends = $et[$n][1];
+					break;
+				case T_IMPLEMENTS:
+					$n = $this->next($i);
+					$this->node->implements = $et[$n][1];
+					break;
 				case T_COMMENT:
 				case T_DOC_COMMENT:
 					$comment = true;

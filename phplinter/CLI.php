@@ -48,7 +48,7 @@ class CLI {
 	----------------------------------------------------------------------+
 	*/
 	protected function help() {
-		echo "PHPLinter. Lint and score PHP files.\n";
+		echo "PHPLinter. Lint and score PHP files.\n\n";
 		echo "Usage phplinter [Options] [file|directory]\n\n";
 		echo "\t-q: Quiet mode (Surpress output)\n";
 		echo "\t-v: Verbose mode\n";
@@ -285,7 +285,7 @@ class CLI {
 			}
 			$this->stats[] = $stats;
 		}
-		$this->reporter->create($reports, null, $this->target);
+		$this->reporter->create($reports, $penaltys, $this->target);
 		$cnt = count($this->stats);
 		$this->msg("$cnt files, ", 0);	
 		$this->msg($this->reporter->average($this->penalty, $numfiles), 0);
@@ -308,7 +308,11 @@ class CLI {
 	*/
 	protected function lint_file($file) {
 		$linter = new Linter($file, $this->config);
-		$this->reporter->create($linter->lint(), $linter->penalty());
+		$this->reporter->create(
+			array($linter->lint()), 
+			$linter->penalty(), 
+			$file
+		);
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -343,7 +347,7 @@ class CLI {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Set internal reporting
 	----------------------------------------------------------------------+
 	*/
 	protected function setReport() {

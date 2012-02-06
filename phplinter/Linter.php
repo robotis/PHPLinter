@@ -39,11 +39,10 @@ class Linter {
 	----------------------------------------------------------------------+
 	* @desc 	Create new linter instance
 	* @param	String	Filename
-	* @param	int		Flags
-	* @param	Array	Override Ruleset
+	* @param	object	Config object
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($file, $config) {
+	public function __construct($file, Config $config) {
 		$this->config 	= $config;
 		$this->file 	= $file;
 		exec('php -l ' . escapeshellarg($file), $error, $code);
@@ -148,14 +147,13 @@ class Linter {
 	----------------------------------------------------------------------+
 	* @desc 	Split token stream into nodes of type function, comment,
 	* 			class or method.
-	* @param	$pos		int
-	* @param	$in_name	String
-	* @param	$in_type	int
-	* @param	$depth		int
+	* @param	int			Start position
+	* @param	Object		Node
+	* @param	int			Depth
 	* @return	int
 	----------------------------------------------------------------------+
 	*/
-	protected function measure($pos, $node, &$ret) { 
+	protected function measure($pos, Lint\Node $node, &$ret) { 
 		$start = $this->last_newline($pos);
 		$node->start = $start;
 
@@ -248,7 +246,7 @@ class Linter {
 				case T_PUBLIC:
 				case T_PRIVATE:
 				case T_PROTECTED:
-					$next_node->visibility = true;
+					$next_node->visibility = Tokenizer::token_name($tokens[$i][0]);
 					break;
 				case T_ABSTRACT:
 					$next_node->abstract = true;
@@ -302,9 +300,13 @@ class Linter {
 	/**
 	----------------------------------------------------------------------+
 	* @desc 	Determine type of new node
+	* @param 	int			Position
+	* @param	Object		Current Node
+	* @param	Object		Next Node
+	* @return   Array
 	----------------------------------------------------------------------+
 	*/
-	protected function determine_type($pos, $node, &$next_node) {
+	protected function determine_type($pos, Lint\Node $node, Lint\Node &$next_node) {
 		$tokens = $this->tokens;
 		$next = $this->find($pos, array(T_STRING, T_PARENTHESIS_OPEN));
 		$type = $tokens[$pos][0];
@@ -333,7 +335,7 @@ class Linter {
 	* @desc 	Open scope, set scope token
 	----------------------------------------------------------------------+
 	*/
-	protected function open_scope($pos, $node) {
+	protected function open_scope($pos, Lint\Node $node) {
 		$token = $this->tokens[$pos];
 		$scope = true;
 		if($token[0] === T_BASIC_CURLY_OPEN && !empty($this->scope)) {
@@ -360,7 +362,7 @@ class Linter {
 	* @desc 	Close scope, set scope token
 	----------------------------------------------------------------------+
 	*/
-	protected function close_scope($pos, $node) {
+	protected function close_scope($pos, Lint\Node $node) {
 		$token = $this->tokens[$pos];
 		if($token[0] === T_SEMICOLON) {
 			if(!empty($this->scope)) {

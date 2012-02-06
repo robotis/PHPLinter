@@ -45,17 +45,17 @@ class Harvester {
 		$out = array();
 		if(isset($node->name) && $node->type != T_ANON_FUNCTION) {
 			$out = array(
-				'name' => $node->name,
-				'file' => realpath($node->file),
-				'type' => Tokenizer::token_name($node->type),
-				'comment' => $this->harvest_comment($node),
-				'static' => $node->static,
-				'abstract' => $node->abstract,
-				'visibility' => $node->visibility,
-				'namespace' => $namespace,
-				'inherits' => $node->inherits,
-				'implements' => $node->implements,
-				'arguments' => $node->arguments
+				'name' 			=> $node->name,
+				'file' 			=> realpath($node->file),
+				'type' 			=> Tokenizer::token_name($node->type),
+				'comment' 		=> $this->harvest_comment($node),
+				'static' 		=> $node->static,
+				'abstract' 		=> $node->abstract,
+				'visibility' 	=> $node->visibility,
+				'namespace' 	=> $namespace,
+				'inherits' 		=> $node->inherits,
+				'implements' 	=> $node->implements,
+				'arguments' 	=> $node->arguments
 			);
 			if($node->namespace) {
 				$namespace = $node->namespace;

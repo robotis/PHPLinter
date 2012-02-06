@@ -496,6 +496,12 @@ class BaseLint {
 			switch($o[++$i][0]) {
 				case T_VARIABLE:
 					$out[] = $o[$i][1];
+					if($o[$i+1][0] === T_EQUALS) {
+						$out[$o[$i][1]] = $o[$i+2][1];
+						$i += 2;
+					} else {
+						$out[$o[$i][1]] = null;
+					}
 					break;
 				case T_PARENTHESIS_CLOSE:
 					return $out;
@@ -511,10 +517,11 @@ class BaseLint {
 	*/
 	protected function process_args($locals, $args) {
 		if(!empty($args)) {
-			foreach($args as $_)
+			foreach(array_keys($args) as $_) 
 				if(!in_array($_, $locals))
 					$this->report('WAR_UNUSED_ARG', $_);	
 		}
+		$this->node->arguments = $args;
 	}
 	/**
 	----------------------------------------------------------------------+

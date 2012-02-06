@@ -58,6 +58,9 @@ class LFile extends BaseLint implements ILint {
 		$globals 	= array();
 		for($i = 0;$i < $tcnt;$i++) {
 			switch($et[$i][0]) {
+				case T_NAMESPACE:
+					$i = $this->pnamespace($i);
+					break;
 				case T_INLINE_HTML:
 					if($open === true) 
 						$this->common_tokens($i);
@@ -98,6 +101,22 @@ class LFile extends BaseLint implements ILint {
 				$this->report($k, $_);
 			
 		return $this->reports;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Gather namespace
+	* @param	int		start
+	* @return   int		stop
+	----------------------------------------------------------------------+
+	*/
+	protected function pnamespace($i) {
+   		$et = $this->node->tokens;
+      	$ns = array();
+     	while($et[++$i][0] != T_SEMICOLON) {
+       		$ns[] = $et[$i][1];
+       	}
+     	$this->node->namespace = implode('', $ns);
+    	return $i;       
 	}
 	/**
 	----------------------------------------------------------------------+

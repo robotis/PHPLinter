@@ -108,8 +108,13 @@ class LMethod extends BaseLint implements ILint {
 			$k = $o[$this->next($j+1)][0];
 			if($k === T_PARENTHESIS_OPEN)
 				$this->add_parent_data($o[$j][1], T_METHOD);
-			else
-				$this->add_parent_data($o[$j][1], T_VARIABLE);
+			else {
+				$name = $o[$j][1];
+				if($this->node->name == '__construct') {
+					$name = '__construct::' . $name;
+				}
+				$this->add_parent_data($name, T_VARIABLE);
+			}
 			$pos = $j;
 		}
 	}

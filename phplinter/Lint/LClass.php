@@ -130,13 +130,21 @@ class LClass extends BaseLint implements ILint {
 	*/
 	protected function process_locals($locals) {
 		$locals = array_unique($locals);
-		if(empty($this->locals[T_VARIABLE])) 
-			$this->locals[T_VARIABLE] = array();
-		$vars = array_diff($locals, $this->locals[T_VARIABLE]);
+		$_mlocals = array();
+		if(!empty($this->locals[T_VARIABLE])) {
+			foreach($this->locals[T_VARIABLE] as $_) {
+				if($p = mb_strpos($_, '::')) {
+					$locals[] = mb_substr($_, $p+2);
+				} else {
+					$_mlocals[] = $_;
+				}
+			}
+		}
+		$vars = array_diff($locals, $_mlocals);
 		foreach($vars as $_) {
 			$this->report('WAR_UNUSED_PROPERTY', $_);	
 		}
-		$udef = array_diff($this->locals[T_VARIABLE], $locals);
+		$udef = array_diff($_mlocals, $locals);
 		foreach($udef as $_) {
 			$this->report('CON_PROPERTY_DEFINED_IN_METHOD', $_);	
 		}

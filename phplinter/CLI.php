@@ -211,6 +211,9 @@ class CLI {
 		// CLI switches override config-file
 		$this->config->setFlags($flags);
 		$this->config->setOptions($options);
+		if($ml = $this->config->check('memory_limit')) {
+			ini_set('memory_limit', $ml);
+		}
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -254,11 +257,11 @@ class CLI {
 		$ext = $this->config->check('extensions');
 		if(empty($ext)) $ext = 'php';
 		$ignore = $this->config->check('ignore');
+		$this->msg("Gathering file info...");	
 		$files = empty($ignore)
 			? Path::find($this->target, "/^.*?\.($ext)$/u")
 			: Path::find($this->target, "/^.*?\.($ext)$/u", $ignore);
 			
-		$verbose 		= $this->config->check(OPT_VERBOSE);
 		$this->penalty 	= 0;
 		$numfiles 		= count($files);
 		$reports 		= array();

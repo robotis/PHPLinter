@@ -43,6 +43,7 @@ class Node {
 		$this->owner 		= null;
 		$this->depth 		= null;
 		$this->end_line 	= null;
+		$this->start_line 	= null;
 		$this->length 		= null;
 		$this->token_count 	= null;
 		
@@ -50,5 +51,64 @@ class Node {
 		$this->tokens 		= array();
 		$this->nodes 		= array();
 		$this->constants 	= array();
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Remove unused information
+	----------------------------------------------------------------------+
+	*/
+	public function clean() {
+		unset($this->tokens);
+		unset($this->token_count);
+		foreach($this->nodes as $node) {
+			$node->clean();
+		}
+		$this->_cleanc();
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Clean cruft from comments
+	----------------------------------------------------------------------+
+	*/
+	protected function _cleanc() {
+		$comment = array();
+		if(!empty($this->comments)) {
+			foreach($this->comments as $_) {
+				if($_->type !== T_DOC_COMMENT) continue;
+				$val = '';
+				$tag = '';
+				$text = '';
+				foreach($_->tokens as $t) {
+					if($tag && preg_match('/\*\//', $t[1])) {
+						$comment[$tag] = $val;
+						$val = '';
+						$tag = '';
+					}
+					$s = preg_replace(
+						'/^[ \t]*\/\*\*+|\**\*\/|^[ \t]*\*/u', '$1', $t[1]
+					);
+					// remove lines
+					$s = preg_replace('/[\+\*]?(\-\-\-+|~~~+|\*\*\*+)[\+\*]?/', '', $s);
+					if($s && preg_match('/@([a-z]+)(.*)/ui', $s, $m)) {
+						if($tag) {
+							$comment[$tag] = $val;
+							$val = '';
+							$tag = '';
+						}
+						$tag = trim($m[1]);
+						$val = $m[2];
+					} else {
+						if($tag) {
+							$val .= $s;
+						} else {
+							$text .= $s;
+						}
+					}
+				}
+				if($tag) $comment[$tag] = $val;
+				$comment['text'] = $text;
+			}
+		}
+		$this->comments = $comment;
 	}
 }

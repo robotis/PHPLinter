@@ -26,7 +26,7 @@ require dirname(__FILE__) . '/../phplinter/autoloader.php';
 require dirname(__FILE__) . '/../phplinter/constants.php';
 
 // inisettings
-ini_set('memory_limit', '1024M');
+ini_set('memory_limit', '512M');
 set_time_limit (0);
 
 $cli = new CLI();

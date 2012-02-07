@@ -68,13 +68,15 @@ class Harvest extends Base {
 		$this->namespace = null;
 		$this->out = array();
 		foreach($nodes as $node) {
-			$parts = explode('/', trim($node->file, './'));
-			$name = array_pop($parts);
-			
-			$this->_insert($this->out, $parts, $name, array(
-				'nodes' => $this->_extract($node),
-				'constants' => $node->constants
-			));
+			if($node) {
+				$parts = explode('/', trim($node->file, './'));
+				$name = array_pop($parts);
+				
+				$this->_insert($this->out, $parts, $name, array(
+					'nodes' => $this->_extract($node),
+					'constants' => $node->constants
+				));
+			}
 		}
 	}
 	/**
@@ -85,6 +87,7 @@ class Harvest extends Base {
 	----------------------------------------------------------------------+
 	*/
 	protected function _extract($node) {
+		if(!$node) return null;
 		if(is_array($node)) {
 			$out = array();
 			foreach($node as $_) {
@@ -95,7 +98,7 @@ class Harvest extends Base {
 		$out = array(
 			'name' 			=> $node->name,
 			'type' 			=> \phplinter\Tokenizer::token_name($node->type),
-			'comment' 		=> $this->_pcomments($node),
+			'comment' 		=> $node->comments,
 			'static' 		=> $node->static,
 			'abstract' 		=> $node->abstract,
 			'visibility' 	=> $node->visibility,
@@ -112,53 +115,5 @@ class Harvest extends Base {
 			$out['namespace'] = $this->namespace;
 		}
 		return $out;
-	}
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return   FIXME
-	----------------------------------------------------------------------+
-	*/
-	protected function _pcomments($node) {
-		$comment = array();
-		if(!empty($node->comments)) {
-			foreach($node->comments as $_) {
-			if($_->type !== T_DOC_COMMENT) continue;
-				$val = '';
-				$tag = '';
-				$text = '';
-				foreach($_->tokens as $t) {
-					if($tag && preg_match('/\*\//', $t[1])) {
-						$comment[$tag] = $val;
-						$val = '';
-						$tag = '';
-					}
-					$s = preg_replace(
-						'/^[ \t]*\/\*\*+|\**\*\/|^[ \t]*\*/u', '$1', $t[1]
-					);
-					// remove lines
-					$s = preg_replace('/[\+\*]?(\-\-\-+|~~~+|\*\*\*+)[\+\*]?/', '', $s);
-					if($s && preg_match('/@([a-z]+)(.*)/ui', $s, $m)) {
-						if($tag) {
-							$comment[$tag] = $val;
-							$val = '';
-							$tag = '';
-						}
-						$tag = trim($m[1]);
-						$val = $m[2];
-					} else {
-						if($tag) {
-							$val .= $s;
-						} else {
-							$text .= $s;
-						}
-					}
-				}
-				if($tag) $comment[$tag] = $val;
-				$comment['text'] = $text;
-			}
-		}
-		return $comment;
 	}
 }

@@ -65,7 +65,8 @@ class Config {
 		foreach(array(
 			'target',
 			'ignore',
-			'extensions'
+			'extensions',
+			'memory_limit',
 		) as $_) 
 		{
 			if($conf->$_)

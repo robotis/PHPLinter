@@ -1,5 +1,5 @@
 {
-	"target": "/path/to/code",
+	"target": "/path/to/target",
 	
 	"score_only": false,
 	
@@ -13,6 +13,9 @@
 	
 	"_comment": "Add extra information",
 	"information": true,
+	
+	"_comment": "Set PHP memory limit",
+	"memory_limit": "512M",
 	
 	"_comment" : "Available filters, will ignore flags of this type",
 	"filter": 

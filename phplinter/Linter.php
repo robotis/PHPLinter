@@ -129,7 +129,11 @@ class Linter {
 	----------------------------------------------------------------------+
 	*/
 	public function nodes() {
-		return $this->node;
+		if($this->node) {
+			$this->node->clean();
+			return $this->node;
+		}
+		return null;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -142,7 +146,8 @@ class Linter {
 		$node->type 		= T_FILE;
 		$node->file	 		= $this->file;
 		$node->parent		= $this->file;
-		$node->name 		= $this->file;
+		$parts = explode('/', $this->file);
+		$node->name 		= array_pop($parts);
 		$node->owner 		= $this->file;
 		$node->tokens 		= array();
 		$node->depth 		= 0;
@@ -185,6 +190,7 @@ class Linter {
 		$this->scope = array();
 		
 		$next_node = new Lint\Node();
+		$last_comment = null;
 		$tokens = $this->tokens;
 		for($i = $pos; $i < $this->tcount; $i++) {
 			if(count($this->scope) > 0 
@@ -270,7 +276,10 @@ class Linter {
 					break;
 				case T_DOC_COMMENT:
 					$node->tokens[] = $tokens[$i];
-					$next_node->comments[] = $this->measure_comment($i, $node->depth, $i);
+					if($last_comment) {
+						$node->comments[] = $last_comment;
+					}
+					$last_comment = $this->measure_comment($i, $node->depth, $i);
 					break;
 				case T_CLASS:
 				case T_INTERFACE:
@@ -281,12 +290,16 @@ class Linter {
 					$next_node->depth = $node->depth + 1;
 					$next_node->owner = $owner;
 					$next_node->file = $node->file;
+					if($last_comment) {
+						$next_node->comments[] = $last_comment;
+					}
 					$node->tokens[] = $tokens[$i];
 					// preserve scope
 					$scope = $this->scope;
 					$node->nodes[] = $this->measure($i+1, $next_node, $i);
 					$this->scope = $scope;
 					$next_node = new Lint\Node();
+					$last_comment = null;
 					break;
 				default:
 					$node->tokens[] = $tokens[$i];
@@ -436,16 +449,21 @@ class Linter {
 		$depth += count($this->scope);
 		
 		$this->debug("In comment at {$node->start_line}", $depth, OPT_SCOPE_MAP, true);
+		$t = $this->tokens;
 		for($i = $pos;$i < $this->tcount;$i++) {
-			if(Tokenizer::meaningfull($this->tokens[$i][0])) {
+			if(Tokenizer::meaningfull($t[$i][0])) {
 				$i--;
 				break;
 			}
-			$node->tokens[] = $this->tokens[$i];
+			$node->tokens[] = $t[$i];
+			if(preg_match('/\*\//u', $t[$i][1])) {
+				// End of comment.
+				break;
+			}
 		}
 		if($i === $this->tcount) $i--;
 		$node->end = $i;
-		$node->end_line = $this->tokens[$i][2];
+		$node->end_line = $t[$i][2];
 		$this->debug("Exiting comment at {$node->end_line}", $depth, OPT_SCOPE_MAP, true);
 		$ret = $i;
 		return $node;

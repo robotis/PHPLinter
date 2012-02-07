@@ -62,7 +62,7 @@ class Html extends Base {
 		if($this->config->check(OPT_VERBOSE))
 			echo "Generating HTML Report to '$output_dir'\n";
 		
-		if(file_exists($output_dir) && $this->config->check(OPT_OVERWRITE_REPORT)) {
+		if(file_exists($output_dir) && $this->html['overwrite']) {
 			if($this->config->check(OPT_VERBOSE)) 
 				echo "Emptying `$output_dir`\n";
 			if(!$this->dry_run)
@@ -79,12 +79,7 @@ class Html extends Base {
 			$content = '';
 			
 			foreach($rep as $_) {
-				$content .= '<tr>';
-				$content .= '<td align="center" class="fl_';
-				$content .= $_['flag'][0].'">'.$_['flag'].'</td>';
-				$content .= '<td class="message">'.$_['message'].'</td>';
-				$content .= "<td class=\"where\">'`{$_['where']}` Line: {$_['line']}</td>\n";
-				$content .= '</tr>';
+				$content .= $this->_fmessage($_);
 			}
 			$out .= '<tr>';
 			$score = (SCORE_FULL + $penaltys[$file]);
@@ -110,16 +105,52 @@ class Html extends Base {
 				$this->mkdir($dir, 0775, true);
 			}
 			
-			$pp = explode('/', substr(realpath(implode('/', $parts)), strlen($this->root)));
+			$pp = explode('/', substr(realpath(implode('/', $parts)), mb_strlen($this->root)));
 			$ofile = $dir . '/' . strtr($rfile, './', '__').'.html';
 			$this->write($ofile, $this->_html($out, count($pp)));
 			$url['phplinter___file'] = $file;
 			$url['phplinter___url'] = strtr($rfile, './', '__').'.html';
 			$url['phplinter___sort'] = strtolower($url['phplinter___url']);
-			$this->_insert($urls, $pp, $url);
+			$this->parts($pp, $url, $urls);
 		}
 		$urls = $this->sort($urls);
 		$this->output_indexes($urls, $penaltys);
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	FIXME
+	* @param	FIXME
+	* @return   FIXME
+	----------------------------------------------------------------------+
+	*/
+	protected function _fmessage($arr) {
+		$content = '<tr>';
+		$content .= '<td align="center" class="fl_';
+		$content .= $arr['flag'][0].'">'.$arr['flag'].'</td>';
+		$content .= '<td class="message">'.$arr['message'].'</td>';
+		$content .= "<td class=\"where\">'`{$arr['where']}` Line: {$arr['line']}</td>\n";
+		$content .= '</tr>';
+		return $content;
+	}
+	/**
+	----------------------------------------------------------------------+
+	* @desc 	Fills in the correct directorys
+	* @param	$parts	Array
+	* @param	$url	Array
+	* @param	$urls	Reference (Array)
+	----------------------------------------------------------------------+
+	*/
+	protected function parts($parts, $url, &$urls) {
+		if(empty($parts)) return;
+		$part = array_shift($parts);
+	
+		if(!isset($urls[$part])) {
+			$urls[$part] = array();
+		}
+	
+		if(empty($parts)) {
+			$urls[$part][] = $url;
+		} else $this->parts($parts, $url, $urls[$part]);
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -157,8 +188,9 @@ class Html extends Base {
 				$content .= '<td class="'.$class.'">'.sprintf('%.2f', $score).'</td>';
 				$limit = $score == 10 ? 'perfect' : 'limit';
 				$content .= '<td class="'.$limit.'">'.sprintf('%.2f', SCORE_FULL).'</td>';
-				$content .= '<td><a href="'.$_['phplinter___url'].'">'.substr(realpath($_['phplinter___file']),
-				strlen($this->root . $path))
+				$content .= '<td><a href="'
+					. $_['phplinter___url'] . '">'
+					. mb_substr(realpath($_['phplinter___file']), mb_strlen($this->root . $path))
 				. '</a></td>';
 			} else {
 				list($ototal, $onum) = $this->output_indexes($urls[$k], $penaltys,
@@ -189,9 +221,8 @@ class Html extends Base {
 			: $path;
 		$dir = ($path == $this->html['out'])
 			? $path
-			: $this->html['out'] . $path;
-		$dir = (!empty($dir) && $dir[strlen($dir)-1] == '/')
-				? $dir : $dir . '/';
+			: rtrim($this->html['out'], '/') . $path;
+		$dir = rtrim($dir, '/') . '/';
 		if(!empty($path)) {
 			$file = $dir . 'index.html';
 			$this->write($file, $this->_html($out, $depth));

@@ -78,7 +78,10 @@ abstract class Base {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Create directory
+	* @param	String	path
+	* @param	int		permissions
+	* @param
 	----------------------------------------------------------------------+
 	*/
 	protected function mkdir($path, $oct=0775, $rec=false) {
@@ -114,13 +117,13 @@ abstract class Base {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Create report
 	----------------------------------------------------------------------+
 	*/
 	public abstract function create($report, $penaltys=null, $root=null);
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Prepare report
 	----------------------------------------------------------------------+
 	*/
 	public function prepare() { return true; }

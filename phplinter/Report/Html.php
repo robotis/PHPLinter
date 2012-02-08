@@ -96,6 +96,8 @@ class Html extends Base {
 			$path = substr(realpath($path), strlen($this->root));
 			$out .= '<td class="filename">';
 			$out .= "$path/$rfile";
+			$out .= '<td class="line">';
+			$out .= 'Line</td></tr>';
 			$out .= '</td></tr>';
 			$out .= $content;
 			$out .= '</table></div>';
@@ -118,19 +120,22 @@ class Html extends Base {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return   FIXME
+	* @desc 	Format message
+	* @param	Array
+	* @return   HTML
 	----------------------------------------------------------------------+
 	*/
 	protected function _fmessage($arr) {
-		$content = '<tr>';
-		$content .= '<td align="center" class="fl_';
-		$content .= $arr['flag'][0].'">'.$arr['flag'].'</td>';
-		$content .= '<td class="message">'.$arr['message'].'</td>';
-		$content .= "<td class=\"where\">'`{$arr['where']}` Line: {$arr['line']}</td>\n";
-		$content .= '</tr>';
-		return $content;
+		return sprintf('<tr><td align="center" class="fl_%s">%s</td>'
+				. '<td class="message">%s</td>'
+				. '<td class="where">%s</td>'
+				. '<td class="line">%d</td></tr>'
+				,$arr['flag'][0]
+				,$arr['flag']
+				,$arr['message']
+				,$arr['where']
+				,$arr['line']
+		);
 	}
 	/**
 	----------------------------------------------------------------------+

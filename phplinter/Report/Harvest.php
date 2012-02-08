@@ -25,12 +25,13 @@ namespace phplinter\Report;
 class Harvest extends Base {
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
+	* @desc 	Create document dump
 	----------------------------------------------------------------------+
 	*/
 	public function create($report, $penaltys=null, $root=null) {
 		$this->penaltys = $penaltys;
 		$this->root = $root; 
+		$this->rootlen = mb_strlen($this->root);
 		if(!is_array($report)) {
 			$report = array($report);
 		} 
@@ -39,9 +40,7 @@ class Harvest extends Base {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return   FIXME
+	* @desc 	Format output
 	----------------------------------------------------------------------+
 	*/
 	protected function _out() {
@@ -59,9 +58,8 @@ class Harvest extends Base {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return   FIXME
+	* @desc 	Harvest documentation
+	* @param	Array
 	----------------------------------------------------------------------+
 	*/
 	protected function _harvest($nodes) {
@@ -69,21 +67,17 @@ class Harvest extends Base {
 		$this->out = array();
 		foreach($nodes as $node) {
 			if($node) {
-				$parts = explode('/', trim($node->file, './'));
+				$parts = explode('/', trim(mb_substr($node->file, $this->rootlen), './'));
 				$name = array_pop($parts);
-				
-				$this->_insert($this->out, $parts, $name, array(
-					'nodes' => $this->_extract($node),
-					'constants' => $node->constants
-				));
+				$this->_insert($this->out, $parts, $name, $this->_extract($node));
 			}
 		}
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	FIXME
-	* @param	FIXME
-	* @return   FIXME
+	* @desc 	Harvest from node
+	* @param	Mixed
+	* @return   Array
 	----------------------------------------------------------------------+
 	*/
 	protected function _extract($node) {
@@ -94,6 +88,9 @@ class Harvest extends Base {
 				$out[] = $this->_extract($_);
 			}
 			return $out;
+		}
+		if($node->type === T_FILE) {
+			$this->namespace = null;
 		}
 		$out = array(
 			'name' 			=> $node->name,
@@ -106,9 +103,11 @@ class Harvest extends Base {
 			'extends' 		=> $node->extends,
 			'implements' 	=> $node->implements,
 			'arguments' 	=> $node->arguments,
+			'constants' 	=> $node->constants,
 			'starts'		=> $node->start_line,
 			'score'			=> SCORE_FULL + $this->penaltys[$node->file],
 			'nodes'			=> $this->_extract($node->nodes),
+			'file'			=> $node->file,
 		);
 		if($node->namespace) {
 			$this->namespace = $node->namespace;

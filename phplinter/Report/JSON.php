@@ -55,7 +55,8 @@ class JSON extends Base {
 				$name = array_pop($parts);
 				$this->_insert($out, $parts, $name, array(
 					'report' => $this->_parse($_),
-					'score' => SCORE_FULL + $penaltys[$file]
+					'score' => SCORE_FULL + $penaltys[$file],
+					'file' => $file
 				));
 			}
 		}
@@ -90,7 +91,7 @@ class JSON extends Base {
 	----------------------------------------------------------------------+
 	*/
 	protected function _out($out) {
-		if(isset($this->json['out'])) {
+		if(!empty($this->json['out'])) {
 			if(is_dir($this->json['out'])) {
 				$filename = rtrim('/', $this->json['out']) . '/phplinter.report.json';
 			} else {

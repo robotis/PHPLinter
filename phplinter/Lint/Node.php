@@ -88,7 +88,7 @@ class Node {
 						'/^[ \t]*\/\*\*+|\**\*\/|^[ \t]*\*/u', '$1', $t[1]
 					);
 					// remove lines
-					$s = trim(preg_replace('/[\+\*]?(\-\-\-+|~~~+|\*\*\*+)[\+\*]?/', '', $s), " \t");
+					$s = trim(preg_replace('/[\+\*]?(\-\-\-+|~~~+|\*\*\*+)[\+\*]?/', '', $s), " \t/");
 					if($s && preg_match('/@([a-z]+)(.*)/ui', $s, $m)) {
 						if($tag) {
 							$comment[$tag] = $val;

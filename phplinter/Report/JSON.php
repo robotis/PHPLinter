@@ -29,7 +29,7 @@ class JSON extends Base {
 	----------------------------------------------------------------------+
 	*/
 	public function prepare() {
-		$this->json = $this->config->check('json');
+		$this->json = $this->config->check('report');
 		if(isset($this->json['dry_run']))
 			$this->dry_run = $this->json['dry_run'];
 		return true;

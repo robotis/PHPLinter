@@ -94,8 +94,9 @@ class BaseLint {
 			$this->reports[] = $report;
 			
 			$flag = $report['flag'][0];
-			if(isset($report['penalty']))
+			if(isset($report['penalty'])) {
 				$this->penalty -= $report['penalty'];
+			}
 			else eval('$this->penalty -= '.$flag.'_PENALTY;');
 		}
 	}
@@ -310,10 +311,16 @@ class BaseLint {
 				if($this->config->match_rule('REF_DEPRECATED_NAME', $name)) {
 					$this->report('REF_DEPRECATED_NAME', $name);
 				}
+				if($this->config->match_rule('REF_DEPRECATED_NAME_REPLACE', $name)) {
+					$this->report('REF_DEPRECATED_NAME_REPLACE', $name);
+				}
 			}
 		}
 		if($this->config->match_rule('REF_DEPRECATED_NAME', $token[1])) {
 			$this->report('REF_DEPRECATED_NAME', $token[1]);
+		}
+		if($this->config->match_rule('REF_DEPRECATED_NAME_REPLACE', $token[1])) {
+			$this->report('REF_DEPRECATED_NAME_REPLACE', $token[1]);
 		}
 	}
 	/**

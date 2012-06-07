@@ -87,6 +87,31 @@ namespace phplinter {
 		* @return   FIXME
 		----------------------------------------------------------------------+
 		*/
+		public function ruleByFlag($flag) {
+			foreach($this->_rules as $rule => $_) {
+				if($_['flag'] === $flag) return $rule;
+			}
+			return null;
+		}
+		/**
+		----------------------------------------------------------------------+
+		* FIXME
+		* @param	FIXME
+		* @return   FIXME
+		----------------------------------------------------------------------+
+		*/
+		public function setRule($rule, $data) {
+			if(array_key_exists($rule, $this->_rules)) {
+				$this->_rules[$rule] = array_merge($this->_rules[$rule], $data);
+			}
+		}
+		/**
+		----------------------------------------------------------------------+
+		* FIXME
+		* @param	FIXME
+		* @return   FIXME
+		----------------------------------------------------------------------+
+		*/
 		public function getRule($rule) {
 			return $this->_rules[$rule];
 		}

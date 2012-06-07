@@ -2,27 +2,20 @@
 /**
 ----------------------------------------------------------------------+
 * 	@desc 	Test
-*	@flag	W4	L28
-*	@flag	I2	L31
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag 	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	W3	L32
-*	@flag	R6	L32
-*	@flag	R13	L32
-*	@score	3.60
-
+*	@flag	W4	L21
+*	@flag	W4	L21
+*	@flag	I2  L24
+*	@flag	W3	L25
+*	@flag	W3	L25
+*	@flag	W3	L25
+*	@flag 	W3	L25
+*	@flag	W3	L25
+*	@flag	W3	L25
+*	@flag	W3	L25
+*	@flag	W3	L25
+*	@flag	R6	L25
+*	@flag	R13	L25
+*	@score	5.40
 ----------------------------------------------------------------------+
 */
 function test() {

@@ -434,7 +434,7 @@ class BaseLint {
 			$cnt = count(array_filter($_locals, function($s) use($ll) {
 					return $s == $ll;
 			}));
-			if($cnt == 1 && !in_array($ll, $args)) {
+			if($cnt === 1 && !in_array($ll, array_keys($args))) {
 				if(isset($this->locals[T_VARIABLE]) 
 					&& !in_array($ll, $this->locals[T_VARIABLE]))
 				{

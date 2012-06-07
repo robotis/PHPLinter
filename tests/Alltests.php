@@ -49,7 +49,7 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 				$score = round(floatval(trim($m[1])), 2);
 			}
 			elseif(preg_match('/@rule([\sA-Z_]+)C(.*)/', $line, $m)) {
-				$rules[trim($m[1])] = array('compare'=>trim($m[2]));
+				$rules[trim($m[1])] = $m[2];
 			}
 			elseif(preg_match('/\*\//', $line, $m)) {
 				break;
@@ -63,10 +63,16 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	----------------------------------------------------------------------+
 	*/
 	public function test_run() {
-		$config = new phplinter\Config();
 		foreach(scandir(PLROOT . '/tests/files') as $_) {
         	if($_[0] === '.') continue;
+        	$config = new phplinter\Config();
+        	$config->setFlags(OPT_NO_FORMATTING);
         	list($flags, $lines, $score, $rules) = $this->extract_test($_);
+        	if($rules) {
+        		foreach($rules as $rule => $compare) {
+        			$config->setRule($rule, array('compare' => $compare));
+        		}
+        	}
         	$fc = count($flags);
         	if($score !== false) {
         		$ll = new phplinter\Linter(PLROOT . '/tests/files/' . $_, 
@@ -93,7 +99,7 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 			$ll = new phplinter\Linter($_, $config);
 			$ll->lint();
 			$score = $ll->score();
-			$this->assertTrue($score > 9.50, "$_: $score !> 9.50");
+			$this->assertTrue($score > 8.00, "$_: $score !> 8.00");
 		}
 	}
 }

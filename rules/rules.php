@@ -50,6 +50,10 @@ return array(
 		'message' => 'WTF found in comment',
 		'flag' => 'I6',
 	),
+	'INF_UNUSED_PROPERTY' => array(
+		'message_extra' => 'Possible unused property `%s`',
+		'flag' => 'I7',
+	),
 	/*
 	 *	Conventions 
 	 */
@@ -143,23 +147,19 @@ return array(
 		'flag' => 'W2',
 	),
 	'WAR_UNUSED_ARG' => array(
-		'message_extra' => 'Unused argument `%s`',
+		'message_extra' => 'Possible unused argument `%s`',
 		'flag' => 'W3',
 	),
 	'WAR_UNUSED_VAR' => array(
-		'message_extra' => 'Unused variable `%s`',
+		'message_extra' => 'Possible unused variable `%s`',
 		'flag' => 'W4',
 	),
-	'WAR_UNUSED_PROPERTY' => array(
-		'message_extra' => 'Unused property `%s`',
-		'flag' => 'W5',
-	),
 	'WAR_UNUSED_METHOD' => array(
-		'message_extra' => 'Unused method `%s`',
+		'message_extra' => 'Possible unused method `%s`',
 		'flag' => 'W6',
 	),
 	'WAR_UNUSED_FUNCTION' => array(
-		'message_extra' => 'Unused function `%s`',
+		'message_extra' => 'Possible unused function `%s`',
 		'flag' => 'W7',
 	),
 	'WAR_UNUSED_CLASS' => array(

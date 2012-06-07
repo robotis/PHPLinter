@@ -144,7 +144,7 @@ class LClass extends BaseLint implements ILint {
 		}
 		$vars = array_diff($locals, $_mlocals);
 		foreach($vars as $_) {
-			$this->report('WAR_UNUSED_PROPERTY', $_);	
+			$this->report('INF_UNUSED_PROPERTY', $_);	
 		}
 		$udef = array_diff($_mlocals, $locals);
 		foreach($udef as $_) {

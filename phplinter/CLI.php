@@ -353,9 +353,9 @@ class CLI {
 			$time = microtime(true);
 
 		if(is_dir($this->target)) {
-			$report = $this->lint_directory();
+			$this->lint_directory();
 		} else {
-			$report = $this->lint_file($this->target);
+			$this->lint_file($this->target);
 		}
 		
 		if($this->config->check(OPT_DEBUG_TIME)) {

@@ -69,7 +69,7 @@ class Config {
 			'memory_limit',
 		) as $_) 
 		{
-			if($conf->$_)
+			if(isset($conf->$_) && $conf->$_)
 				$this->_options[$_] = $conf->$_;
 		}
 		foreach(array(

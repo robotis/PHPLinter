@@ -335,6 +335,11 @@ return array(
 		'flag' => 'R20',
 		'compare' => 4000
 	),
+	'REF_DEPRECATED_NAME' => array(
+		'message_extras' => '`%s` has been deprecated, Use `%s`',
+		'flag' => 'R21',
+		'compare' => array()
+	),
 	/*
 	 * Security 
 	 */

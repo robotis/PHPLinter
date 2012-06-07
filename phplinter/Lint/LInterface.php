@@ -30,24 +30,19 @@ class LInterface extends BaseLint implements ILint {
 	----------------------------------------------------------------------+
 	*/
 	public function _lint() {
-		$regex = $this->rules['CON_INTERFACE_NAME']['compare'];
-		if(!(substr($this->node->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->node->name))
-			$this->report('CON_INTERFACE_NAME', $regex);
-			
+		if($this->config->match_rule('CON_INTERFACE_NAME', $this->node->name)) {
+			$this->report('CON_INTERFACE_NAME', $this->node->name);
+		}
+		$len = $this->node->length;
+		if($this->config->match_rule('REF_CLASS_LENGTH', $len)) {
+			$this->report('REF_CLASS_LENGTH', $len);
+		}
+		
 		if($this->node->empty) 
 			$this->report('WAR_EMPTY_INTERFACE');
 		
 		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_INTERFACE');
-			
-		$len = $this->node->length;
-		if($len > $this->rules['REF_CLASS_LENGTH']['compare'])
-			$this->report('REF_CLASS_LENGTH', $len);	
-			
-		$regex = $this->rules['CON_CLASS_NAME']['compare'];
-		if(!preg_match($regex, $this->node->name))
-			$this->report('CON_INTERFACE_NAME', $regex);
 			
 		$et = $this->node->tokens;
 		$locals 	= array();

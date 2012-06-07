@@ -40,4 +40,21 @@
 		"out": "/path/to/write/file",
 		"dry_run": false
 	}
+	
+	"_comment": "Ignore following rules",
+	"skip_rules": [
+		"W18"
+	],
+	
+	"_comment": "Use only following rules",
+	"use_rules": [
+		"R5"
+	],
+	
+	"_comment": "Override rule options",
+	"custom_rules" [
+		"R21": {
+			"compare": {"Old_name": "New_name"}
+		}
+	]
 }

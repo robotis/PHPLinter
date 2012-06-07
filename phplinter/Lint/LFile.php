@@ -32,8 +32,8 @@ class LFile extends BaseLint implements ILint {
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($node, $rules, $options=0) {
-		parent::__construct($node, $rules, $options);
+	public function __construct($node, $options=0) {
+		parent::__construct($node, $options);
 		// File scope at 0
 		$this->scope	= 0;
 		$this->branches	= 0;
@@ -105,7 +105,7 @@ class LFile extends BaseLint implements ILint {
 			'REF_FILE_GLOBALS' => count($globals)
 		);
 		foreach($compares as $k => $_)
-			if($_ > $this->rules[$k]['compare'])
+			if($this->config->match_rule($k, $_))
 				$this->report($k, $_);
 			
 		return $this->reports;
@@ -139,8 +139,9 @@ class LFile extends BaseLint implements ILint {
 	*/
 	protected function pnamespace($i) {
    		$et = $this->node->tokens;
+   		$tc = $this->node->token_count;
       	$ns = array();
-     	while($et[++$i][0] != T_SEMICOLON) {
+     	while(++$i < $tc && !in_array($et[$i][0], array(T_SEMICOLON, T_OPEN_SCOPE))) {
        		$ns[] = $et[$i][1];
        	}
      	$this->node->namespace = implode('', $ns);
@@ -153,13 +154,13 @@ class LFile extends BaseLint implements ILint {
 	*/
 	protected function plines() {
 		$lnum = 1;
-		if($this->report_on('C') || $this->report_on('F')) {
+		if($this->config->report_on('C') || $this->config->report_on('F')) {
 			foreach(file($this->node->file) as $_) {
 				$len = mb_strlen($_);
-				if($len > $this->rules['CON_LINE_LENGTH']['compare']) {
+				if($this->config->match_rule('CON_LINE_LENGTH', $len)) {
 					$this->report('CON_LINE_LENGTH', $len, $lnum);
 				}
-				if($this->report_on('F') && preg_match('/^(\s+)[^\s]+$/u', $_, $m)) {
+				if($this->config->report_on('F') && preg_match('/^(\s+)[^\s]+$/u', $_, $m)) {
 					$t = trim($m[1], "\t");
 					$s = trim($m[1], " ");
 					if($t && $s) {
@@ -168,7 +169,7 @@ class LFile extends BaseLint implements ILint {
 				}
 				$lnum++;
 			}
-			if($lnum > $this->rules['REF_FILE_LENGTH']['compare']) {
+			if($this->config->match_rule('REF_FILE_LENGTH', $lnum)) {
 				$this->report('REF_FILE_LENGTH', $lnum);
 			}
 		}

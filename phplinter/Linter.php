@@ -29,8 +29,6 @@ require_once dirname(__FILE__) . '/constants.php';
 ----------------------------------------------------------------------+
 */
 class Linter {
-	/* @var Array */
-	protected $rules;
 	/* @var float */
 	protected $score;
 	/* @var Array */
@@ -52,30 +50,7 @@ class Linter {
 			$this->score 	= 0;
 			$this->ignore_next = array();
 			$this->scope	= array();
-			
-			if(!empty($rules_file)) { 
-				if(file_exists($rules_file)) {
-					$this->rules = require $rules_file;
-					$this->debug("Using user supplied rulesfile `$rules_file`\n", 0, OPT_VERBOSE);
-				}
-			} else {
-				$this->rules = require dirname(__FILE__) . '/../rules/rules.php';
-			}
 			$this->globals = require dirname(__FILE__) . '/globals.php';
-			
-			if(isset($override) && is_array($override) && !empty($override)) {
-	            foreach($override as $k=>$_)
-	            	$this->rules[$k] = array_merge($this->rules[$k], $_);
-			}
-			
-			// View only certain rules
-			if(!empty($rules))  {
-				$rules = preg_split('/\|/u', $rules);
-				foreach($this->rules as &$_) {
-					$_['used'] = in_array($_['flag'], $rules);
-				}
-				unset($_);
-			}
 		} else {
 			$this->score = false;
 		}
@@ -112,7 +87,7 @@ class Linter {
 			$this->debug("Empty file.. Skipping\n", 0, OPT_VERBOSE);
 		} else {
 			$this->node = $this->measure_file();
-			$lint = new Lint\LFile($this->node, $this->rules, $this->config);
+			$lint = new Lint\LFile($this->node, $this->config);
 			$this->report = $lint->lint();
 			$this->score = $lint->penalty();
 			if(!empty($this->report)) {

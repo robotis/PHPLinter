@@ -38,10 +38,11 @@ class LFunction extends BaseLint implements ILint {
 
 		$this->process_tokens();
 		
-		$regex = $this->rules['CON_FUNCTION_NAME']['compare'];
-		if(!(substr($this->node->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->node->name))
-			$this->report('CON_FUNCTION_NAME', $regex);
+		if(!(substr($this->node->name, 0, 2) == '__')) {
+			if($this->config->match_rule('CON_FUNCTION_NAME', $this->node->name)) {
+				$this->report('CON_FUNCTION_NAME', $this->node->name);
+			}
+		}
 			
 		return $this->reports;
 	}
@@ -78,9 +79,11 @@ class LFunction extends BaseLint implements ILint {
 			'REF_BRANCHES' => $this->branches,
 			'REF_FUNCTION_LENGTH' => $this->node->length
 		);
-		foreach($compares as $k => $_)
-			if($_ > $this->rules[$k]['compare'])
+		foreach($compares as $k => $_) {
+			if($this->config->match_rule($k, $_)) {
 				$this->report($k, $_);
+			}
+		}
 				
 		$this->process_args($locals, $args);	
 		$this->process_locals($locals, $_locals, $args);

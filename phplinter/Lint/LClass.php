@@ -39,13 +39,13 @@ class LClass extends BaseLint implements ILint {
 		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_CLASS');
 			
-		$regex = $this->rules['CON_CLASS_NAME']['compare'];
-		if(!preg_match($regex, $this->node->name))
-			$this->report('CON_CLASS_NAME', $regex);
-		
+		if($this->config->match_rule('CON_CLASS_NAME', $this->node->name)) {
+			$this->report('CON_CLASS_NAME', $this->node->name);
+		}
 		$len = $this->node->length;
-		if($len > $this->rules['REF_CLASS_LENGTH']['compare'])
-			$this->report('REF_CLASS_LENGTH', $len);	
+		if($this->config->match_rule('REF_CLASS_LENGTH', $len)) {
+			$this->report('REF_CLASS_LENGTH', $len);
+		}
 		
 		if(!empty($this->locals[T_METHOD]) && 
 			in_array($this->node->name, $this->locals[T_METHOD]))
@@ -119,9 +119,11 @@ class LClass extends BaseLint implements ILint {
 			'REF_CLASS_METHODS' => $methods,
 			'REF_CLASS_PROPERTYS' => $lcnt,
 		);
-		foreach($compares as $k => $_)
-			if($_ > $this->rules[$k]['compare'])
+		foreach($compares as $k => $_) {
+			if($this->config->match_rule($k, $_)) {
 				$this->report($k, $_);
+			}
+		}
 	}
 	/**
 	----------------------------------------------------------------------+

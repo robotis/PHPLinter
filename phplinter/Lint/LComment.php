@@ -54,9 +54,7 @@ class LComment extends BaseLint implements ILint {
 							break;
 					}
 				}
-				if(!$code && preg_match($this->rules['CON_WS_COMMENTED_CODE']['compare'], 
-				              $comment, $m)) 
-				{
+				if(!$code && !$this->config->match_rule('CON_WS_COMMENTED_CODE', $comment)) {
 					$this->report('CON_WS_COMMENTED_CODE');
 					$code = true;
 				}

@@ -44,10 +44,11 @@ class LMethod extends BaseLint implements ILint {
 		if(!$this->node->visibility)
 			$this->report('CON_NO_VISIBILITY');
 			
-		$regex = $this->rules['CON_METHOD_NAME']['compare'];
-		if(!(substr($this->node->name, 0, 2) == '__') 
-			&& !preg_match($regex, $this->node->name))
-			$this->report('CON_METHOD_NAME', $regex);
+		if(!(substr($this->node->name, 0, 2) == '__')) {
+			if($this->config->match_rule('CON_METHOD_NAME', $this->node->name)) {
+				$this->report('CON_METHOD_NAME', $this->node->name);
+			}
+		}
 			
 		return $this->reports;
 	}
@@ -88,10 +89,11 @@ class LMethod extends BaseLint implements ILint {
 			'REF_BRANCHES' => $this->branches,
 			'REF_METHOD_LENGTH' => $this->node->length
 		);
-		
-		foreach($compares as $k => $_)
-			if($_ > $this->rules[$k]['compare'])
+		foreach($compares as $k => $_) {
+			if($this->config->match_rule($k, $_)) {
 				$this->report($k, $_);
+			}
+		}
 		if(!$this->node->abstract)
 			$this->process_args($locals, $args);
 		$this->process_locals($locals, $_locals, $args);

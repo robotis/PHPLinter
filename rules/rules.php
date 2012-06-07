@@ -1,8 +1,8 @@
 <?php
 /**
 ----------------------------------------------------------------------+
-*  @desc			Default config array.
-*  @file 			default_config.php
+*  Available rules array.
+*  @file 			rules.php
 *  @author 			Jóhann T. Marí­usson <jtm@robot.is>
 *  @since 		    Jun 14, 2010
 *  @package 		phplinter
@@ -61,22 +61,22 @@ return array(
 	'CON_CLASS_NAME' => array(
 		'message_extra' => 'Class name does not match (%s)',
 		'flag' => 'C2',
-		'compare' => '/^[A-Z][\w_]{2,}$/',
+		'compare_regex' => '/^[A-Z][\w_]{2,}$/',
 	),
 	'CON_FUNCTION_NAME' => array(
 		'message_extra' => 'Function name does not match (%s)',
 		'flag' => 'C3',
-		'compare' => '/^[a-z][\w_]{2,}$/',
+		'compare_regex' => '/^[a-z][\w_]{2,}$/',
 	),
 	'CON_METHOD_NAME' => array(
 		'message_extra' => 'Method name does not match (%s)',
 		'flag' => 'C4',
-		'compare' => '/^[a-z][\w_]{2,}$/',
+		'compare_regex' => '/^[a-z][\w_]{2,}$/',
 	),
 	'CON_INTERFACE_NAME' => array(
 		'message_extra' => 'Interface name does not match (%s)',
 		'flag' => 'C5',
-		'compare' => '/^[A-Z][\w_]{2,}$/',
+		'compare_regex' => '/^[A-Z][\w_]{2,}$/',
 	),
 	'CON_NO_VISIBILITY' => array(
 		'message' => 'No declared visibility',
@@ -85,7 +85,7 @@ return array(
 	'CON_WS_COMMENTED_CODE' => array(
 		'message' => 'Possible code commented out',
 		'flag' => 'C7',
-		'compare' => '/\$.*;/u',
+		'compare_regex' => '/\$.*;/u',
 	),	
 	'CON_MISPLACED_PROPERTY' => array(
 		'message_extra' => 'Property after method declaration in class',
@@ -205,7 +205,7 @@ return array(
 	'WAR_DEPRICATED_TOKEN' => array(
 		'message_extra' => '`%s` Depricated',
 		'flag' => 'W18',
-		'compare' => array(T_GLOBAL=>'global')
+		'compare_array' => array(T_GLOBAL)
 	),
 	'WAR_WS_BEFORE_OPEN' => array(
 		'message' => 'Whitespace before first open tag',

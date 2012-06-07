@@ -30,23 +30,20 @@ class BaseLint {
 	protected $locals;
 	/* @var Object */
 	protected $node;
-	/* @var Array */
-	protected $rules;
 	/* @var Float */
 	protected $penalty;
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	__construct
+	* __construct
 	* @param	Object 	Element Object
 	* @param	Array	Rule set
 	* @param	Int		Option flags
 	----------------------------------------------------------------------+
 	*/
-	public function __construct($node, $rules, $config) {
+	public function __construct($node, $config) {
 		$this->reports 	= array();
 		$this->locals 	= array();
 		$this->node 	= $node;
-		$this->rules 	= $rules;
 		$this->config 	= $config;
 		$this->scope	= -1;
 		$this->branches	= -1;
@@ -55,7 +52,7 @@ class BaseLint {
 		$dir = dirname(__FILE__);
 		$this->globals 	= require $dir . '/../globals.php';
 		$this->uvars	= require $dir . '/../uservars.php';
-		if($this->report_on('S')) {
+		if($this->config->report_on('S')) {
 			$this->sec_1 = require($dir . '/../Security/command_exection.php');
 			$this->sec_2 = require($dir . '/../Security/filesystem.php');
 			$this->sec_3 = require($dir . '/../Security/low_risk.php');
@@ -65,20 +62,16 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Write to report.
-	* @param	String	Flag	
-	* @param	Mixed	Extra option
-	* @param	int		Line number
+	* FIXME
+	* @param	FIXME
+	* @return   FIXME
 	----------------------------------------------------------------------+
 	*/
-	protected function report($what, $extra=null, $line=null) {
-		$report = $this->rules[$what];
-		if(!empty($this->use_rules) && !in_array($report['flag'], $this->use_rules)) {
-			return;
-		}
+	protected function report($flag, $extra=null, $line=null) {
+		$report = $this->config->getRule($flag);
 		if(isset($report['used']) && $report['used'] === false)
 			return;		
-		if(!empty($report) && $this->report_on($report['flag'])) {
+		if(!empty($report) && $this->config->report_on($report['flag'])) {
 			$where = isset($this->node->parent) 
 				? $this->node->parent : 'COMMENT';
 			if(isset($this->node->name)) $where = $this->node->name;
@@ -100,39 +93,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Report on node ?
-	* @param	String	Flag
-	* @return	Bool
-	----------------------------------------------------------------------+
-	*/
-	protected function report_on($flag) {
-		if($this->config->check(OPT_ONLY_SECURITY)) {
-			if($flag[0] == 'S' || in_array($flag, array('I2','I3')))
-				return true;
-			return false;
-		}
-		switch($flag[0]) {
-			case 'C':
-				return (!($this->config->check(OPT_NO_CONVENTION)));
-			case 'W':
-				return (!($this->config->check(OPT_NO_WARNING)));
-			case 'R':
-				return (!($this->config->check(OPT_NO_REFACTOR)));
-			case 'E':
-				return (!($this->config->check(OPT_NO_ERROR)));
-			case 'I':
-				return (!($this->config->check(OPT_NO_INFORMATION)));
-			case 'D':
-				return (!($this->config->check(OPT_NO_DEPRICATED)));
-			case 'S':
-				return (!($this->config->check(OPT_NO_SECURITY)));
-			case 'F':
-				return (!($this->config->check(OPT_NO_FORMATTING)));
-		}
-	}
-	/**
-	----------------------------------------------------------------------+
-	* @desc 	Tokens common to all scopes.
+	* Tokens common to all scopes.
 	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
@@ -146,10 +107,9 @@ class BaseLint {
 			$this->report('WAR_UNREACHABLE_CODE', null, $token[2]);
 		}
 		$t = $token[0];
-		if(in_array($t, array_keys($this->rules['WAR_DEPRICATED_TOKEN']['compare']))) 
+		if($this->config->match_rule('WAR_DEPRICATED_TOKEN', $t))
 		{
-			$this->report('WAR_DEPRICATED_TOKEN',
-			$this->rules['WAR_DEPRICATED_TOKEN']['compare'][$t]);		
+			$this->report('WAR_DEPRICATED_TOKEN', \phplinter\Tokenizer::token_name($t));		
 		}
 		switch($t) {
 			case T_INLINE_HTML:
@@ -190,8 +150,9 @@ class BaseLint {
 					$this->switch = $this->scope;
 				}
 				$this->scope++;
-				if(($this->scope) > $this->rules['REF_DEEP_NESTING']['compare'])
+				if($this->config->match_rule('REF_DEEP_NESTING', $this->scope)) {
 					$this->report('REF_DEEP_NESTING', $this->scope, $token[2]);
+				}
 				break;
 			case T_CLOSE_SCOPE:
 				$this->scope--;
@@ -207,7 +168,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Penalty
+	* Penalty
 	* @return 	Float
 	----------------------------------------------------------------------+
 	*/
@@ -216,12 +177,12 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Search for security infractions
+	* Search for security infractions
 	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
 	protected function security($pos) {
-		if($this->report_on('S')) {
+		if($this->config->report_on('S')) {
 			$token = $this->node->tokens[$pos];
 			$this->sec_strings($pos);
 			if(in_array($token[1], array_keys($this->sec_5))) {
@@ -236,7 +197,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Search for security infractions in callback positions
+	* Search for security infractions in callback positions
 	* @param	int
 	----------------------------------------------------------------------+
 	*/
@@ -265,7 +226,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Search for security infractions in strings
+	* Search for security infractions in strings
 	* @param	int
 	----------------------------------------------------------------------+
 	*/
@@ -293,7 +254,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Search for security infractions in includes
+	* Search for security infractions in includes
 	* @param	int
 	----------------------------------------------------------------------+
 	*/
@@ -308,7 +269,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Search for security infractions in backticks
+	* Search for security infractions in backticks
 	* @param	int
 	----------------------------------------------------------------------+
 	*/
@@ -326,7 +287,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Parse a string token
+	* Parse a string token
 	* @param	int	current position
 	----------------------------------------------------------------------+
 	*/
@@ -339,7 +300,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Return the next meaningfull token
+	* Return the next meaningfull token
 	* @param	int	current position
 	* @return	Int
 	----------------------------------------------------------------------+
@@ -356,7 +317,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Return the previous meaningfull token
+	* Return the previous meaningfull token
 	* @param	int	current position
 	* @return	Int
 	----------------------------------------------------------------------+
@@ -373,7 +334,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Find the next token.
+	* Find the next token.
 	* @param	int		current position
 	* @param	int		Seek token
 	* @param	int		Limit to forward track
@@ -394,7 +355,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Analyse node
+	* Analyse node
 	* @return 	Array	Reports
 	----------------------------------------------------------------------+
 	*/
@@ -404,7 +365,7 @@ class BaseLint {
 			foreach($this->node->comments as $node) {
 				if($node->type === T_DOC_COMMENT) $this->node->dochead = true;
 				$node->owner = $this->node->name;
-				$lint = new LComment($node, $this->rules, $this->config);
+				$lint = new LComment($node, $this->config);
 				foreach($lint->bind($this)->lint() as $_) {
 					$this->reports[] = $_;
 				}
@@ -416,7 +377,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Analyse nodes owned by current node
+	* Analyse nodes owned by current node
 	----------------------------------------------------------------------+
 	*/
 	protected function recurse() {
@@ -433,7 +394,7 @@ class BaseLint {
 			foreach($this->node->nodes as $node) {
 				$this->profile();
 				$class = "\\phplinter\\Lint\\{$a[$node->type]}";
-				$lint = new $class($node, $this->rules, $this->config);
+				$lint = new $class($node, $this->config);
 				foreach($lint->bind($this)->lint() as $_) $this->reports[] = $_;
 				$this->penalty += $lint->penalty();
 				unset($lint);
@@ -443,7 +404,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Internal profiling
+	* Internal profiling
 	* @param	Bool
 	----------------------------------------------------------------------+
 	*/
@@ -460,7 +421,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Count and process locals at function scope
+	* Count and process locals at function scope
 	* @param	Array
 	* @param	Array	
 	* @param	Array
@@ -484,7 +445,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Parse argument-list
+	* Parse argument-list
 	* @param	int	current position
 	* @return	Array
 	----------------------------------------------------------------------+
@@ -509,7 +470,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Process argument list to function
+	* Process argument list to function
 	* @param	Array
 	* @param	Array
 	----------------------------------------------------------------------+
@@ -524,7 +485,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Add data to node parent
+	* Add data to node parent
 	* @param	String	Name
 	* @param	int		Type
 	----------------------------------------------------------------------+
@@ -540,7 +501,7 @@ class BaseLint {
 	}
 	/**
 	----------------------------------------------------------------------+
-	* @desc 	Bind parent node to current node
+	* Bind parent node to current node
 	* @param	Object		BaseLint
 	* @return 	this
 	----------------------------------------------------------------------+

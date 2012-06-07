@@ -40,8 +40,9 @@ class LAnon_function extends BaseLint implements ILint {
 				case T_PARENTHESIS_OPEN:
 					if($args === false) {
 						$args = $this->parse_args($i);
-						if(count($args) > $this->rules['REF_ARGUMENTS']['compare'])
+						if($this->config->match_rule('REF_ARGUMENTS', count($args))) {
 							$this->report('REF_ARGUMENTS', count($args));
+						}
 					}
 					break;
 				case T_VARIABLE:
@@ -51,8 +52,9 @@ class LAnon_function extends BaseLint implements ILint {
 					$i = $this->find($i, T_PARENTHESIS_OPEN);
 					$_args = $this->parse_args($i);
 					$this->add_parent_data($_args, T_VARIABLE);
-					if(count($_args) > $this->rules['REF_USE_ARGUMENTS']['compare'])
+					if($this->config->match_rule('REF_USE_ARGUMENTS', count($_args))) {
 						$this->report('REF_USE_ARGUMENTS', count($_args));
+					}
 					$args = array_merge($args, $_args);
 					break;
 				default:
@@ -66,9 +68,11 @@ class LAnon_function extends BaseLint implements ILint {
 			'REF_BRANCHES' => $this->branches,
 			'REF_FUNCTION_LENGTH' => $this->node->length
 		);
-		foreach($compares as $k => $_)
-			if($_ > $this->rules[$k]['compare'])
+		foreach($compares as $k => $_) {
+			if($this->config->match_rule($k, $_)) {
 				$this->report($k, $_);
+			}
+		}
 				
 		$this->process_args($locals, $args);	
 		$this->process_locals($locals, $_locals, $args);

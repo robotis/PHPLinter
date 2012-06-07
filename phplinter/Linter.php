@@ -520,7 +520,7 @@ class Linter {
 	----------------------------------------------------------------------+
 	*/
 	public function penalty() {
-		return $this->score;
+		return empty($this->score) ? 0 : $this->score;
 	}
 	/**
 	----------------------------------------------------------------------+
@@ -529,7 +529,7 @@ class Linter {
 	----------------------------------------------------------------------+
 	*/
 	public function score() {
-		if($this->score === false) return false;
+		if($this->score === false) return 0;
 		return round(floatval(SCORE_FULL + $this->score), 2);
 	}
 	/**

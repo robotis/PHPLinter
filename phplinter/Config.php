@@ -19,7 +19,31 @@ namespace phplinter {
 				if(file_exists($filename)) {
 					$conf = json_decode(file_get_contents($filename), true);
 					if(empty($conf)) {
-						die("Failed to parse '$filename', bad json...\n");
+						echo 'Unable to parse input file';
+						switch (json_last_error()) {
+							case JSON_ERROR_NONE:
+								echo ' - No errors';
+								break;
+							case JSON_ERROR_DEPTH:
+								echo ' - Maximum stack depth exceeded';
+								break;
+							case JSON_ERROR_STATE_MISMATCH:
+								echo ' - Underflow or the modes mismatch';
+								break;
+							case JSON_ERROR_CTRL_CHAR:
+								echo ' - Unexpected control character found';
+								break;
+							case JSON_ERROR_SYNTAX:
+								echo ' - Syntax error, malformed JSON';
+								break;
+							case JSON_ERROR_UTF8:
+								echo ' - Malformed UTF-8 characters, possibly incorrectly encoded';
+								break;
+							default:
+								echo ' - Unknown error';
+							break;
+						}
+						die("\n");
 					}
 				} else {
 					die("Config-file '$filename' not found or not readable...\n");
@@ -70,13 +94,14 @@ namespace phplinter {
 		public function match_rule($rule, $test) {
 			$rule = $this->_rules[$rule];
 			if(isset($rule['compare'])) {
+				if(isset($rule['type'])) {
+					switch($rule['type']) {
+						case 'assoc': return in_array($test, array_keys($rule['compare']));
+						case 'array': return in_array($test, $rule['compare']);
+						case 'regex': return !preg_match($rule['compare'], $test);
+					}
+				}
 				return ($test > $rule['compare']);
-			} elseif(isset($rule['compare_assoc'])) {
-				return in_array($test, array_keys($rule['compare_assoc']));
-			} elseif(isset($rule['compare_array'])) {
-				return in_array($test, $rule['compare_array']);
-			} elseif(isset($rule['compare_regex'])) {
-				return !preg_match($rule['compare_regex'], $test);
 			}
 			return false;
 		}
@@ -205,7 +230,13 @@ namespace phplinter {
 				unset($_);
 			}
 			if($r = $this->check('custom_rules')) {
-				//
+				foreach($r as $or => $cmp) {
+					foreach($this->_rules as &$_) {
+						if($_['flag'] === $or) {
+							$_['compare'] = $cmp;
+						}
+					}
+				}
 			}
 		}
 		/**

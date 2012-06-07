@@ -65,22 +65,26 @@ return array(
 	'CON_CLASS_NAME' => array(
 		'message_extra' => 'Class name does not match (%s)',
 		'flag' => 'C2',
-		'compare_regex' => '/^[A-Z][\w_]{2,}$/',
+		'compare' => '/^[A-Z][\w_]{2,}$/',
+		'type' => 'regex'
 	),
 	'CON_FUNCTION_NAME' => array(
 		'message_extra' => 'Function name does not match (%s)',
 		'flag' => 'C3',
-		'compare_regex' => '/^[a-z][\w_]{2,}$/',
+		'compare' => '/^[a-z][\w_]{2,}$/',
+		'type' => 'regex'
 	),
 	'CON_METHOD_NAME' => array(
 		'message_extra' => 'Method name does not match (%s)',
 		'flag' => 'C4',
-		'compare_regex' => '/^[a-z][\w_]{2,}$/',
+		'compare' => '/^[a-z][\w_]{2,}$/',
+		'type' => 'regex'
 	),
 	'CON_INTERFACE_NAME' => array(
 		'message_extra' => 'Interface name does not match (%s)',
 		'flag' => 'C5',
-		'compare_regex' => '/^[A-Z][\w_]{2,}$/',
+		'compare' => '/^[A-Z][\w_]{2,}$/',
+		'type' => 'regex'
 	),
 	'CON_NO_VISIBILITY' => array(
 		'message' => 'No declared visibility',
@@ -89,7 +93,8 @@ return array(
 	'CON_WS_COMMENTED_CODE' => array(
 		'message' => 'Possible code commented out',
 		'flag' => 'C7',
-		'compare_regex' => '/\$.*;/u',
+		'compare' => '/\$.*;/u',
+		'type' => 'regex'
 	),	
 	'CON_MISPLACED_PROPERTY' => array(
 		'message_extra' => 'Property after method declaration in class',
@@ -205,7 +210,8 @@ return array(
 	'WAR_DEPRICATED_TOKEN' => array(
 		'message_extra' => '`%s` Depricated',
 		'flag' => 'W18',
-		'compare_array' => array(T_GLOBAL)
+		'compare' => array(T_GLOBAL),
+		'type' => 'array'
 	),
 	'WAR_WS_BEFORE_OPEN' => array(
 		'message' => 'Whitespace before first open tag',
@@ -338,7 +344,8 @@ return array(
 	'REF_DEPRECATED_NAME' => array(
 		'message_extras' => '`%s` has been deprecated, Use `%s`',
 		'flag' => 'R21',
-		'compare' => array()
+		'compare' => array(),
+		'type' => 'assoc'
 	),
 	/*
 	 * Security 

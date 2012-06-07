@@ -23,6 +23,8 @@
 ----------------------------------------------------------------------+
 */
 namespace phplinter\Lint;
+use PHPLinter\Tokenizer;
+
 class BaseLint {
 	/* @var Array */
 	protected $reports;
@@ -75,12 +77,18 @@ class BaseLint {
 			$where = isset($this->node->parent) 
 				? $this->node->parent : 'COMMENT';
 			if(isset($this->node->name)) $where = $this->node->name;
+			
 			if(isset($report['message_extras'])) {
+				$cmp = $report['compare'];
+				if(isset($report['type']) && $report['type'] === 'assoc' && array_key_exists($extra, $cmp)) {
+					$cmp = $cmp[$extra];
+				} 
 				$report['message'] = sprintf($report['message_extras'], 
-					$extra, $report['compare']);
+											 $extra, $cmp);
 			} elseif(isset($report['message_extra'])) {
 				$report['message'] = sprintf($report['message_extra'], $extra);
 			}
+			
 			$report['where'] = $where;
 			$report['line'] = empty($line) ? $this->node->start_line : $line;
 			$this->reports[] = $report;
@@ -293,9 +301,19 @@ class BaseLint {
 	*/
 	protected function parse_string($pos) {
 		$token = $this->node->tokens[$pos];
-		$nt = $this->node->tokens[$this->next($pos)][0];
+		$ntp = $this->next($pos);
+		$nt = $this->node->tokens[$ntp][0];
 		if($nt === T_PARENTHESIS_OPEN || $nt === T_DOUBLE_COLON) {
 			$this->security($pos);
+			if($nt === T_DOUBLE_COLON) {
+				$name = $token[1] . '::' . $this->node->tokens[$this->next($ntp)][1];
+				if($this->config->match_rule('REF_DEPRECATED_NAME', $name)) {
+					$this->report('REF_DEPRECATED_NAME', $name);
+				}
+			}
+		}
+		if($this->config->match_rule('REF_DEPRECATED_NAME', $token[1])) {
+			$this->report('REF_DEPRECATED_NAME', $token[1]);
 		}
 	}
 	/**

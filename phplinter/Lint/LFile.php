@@ -87,6 +87,7 @@ class LFile extends BaseLint implements ILint {
 							$i = $this->pdefine($i);
 						}
 					}
+					$this->common_tokens($i);
 					break;
 				case T_VARIABLE:
 					$globals[] = $et[$i][1];

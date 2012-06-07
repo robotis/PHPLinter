@@ -63,13 +63,14 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	----------------------------------------------------------------------+
 	*/
 	public function test_run() {
+		$config = new phplinter\Config();
 		foreach(scandir(PLROOT . '/tests/files') as $_) {
         	if($_[0] === '.') continue;
         	list($flags, $lines, $score, $rules) = $this->extract_test($_);
         	$fc = count($flags);
         	if($score !== false) {
         		$ll = new phplinter\Linter(PLROOT . '/tests/files/' . $_, 
-        									  OPT_INFORMATION, null, $rules);
+        									$config);
         		$report = $ll->lint();
         		$this->assertEquals($score, $ll->score(), $_);
         		$this->assertEquals(count($report), $fc, $_);
@@ -87,8 +88,9 @@ class PHPLinterTest extends PHPUnit_Framework_TestCase {
 	*/
 	public function test_self() {
 		$dir = PLROOT . '/phplinter/';
+		$config = new phplinter\Config();
 		foreach(phplinter\Path::find($dir, '/\.php$/') as $_) {
-			$ll = new phplinter\Linter($_);
+			$ll = new phplinter\Linter($_, $config);
 			$ll->lint();
 			$score = $ll->score();
 			$this->assertTrue($score > 9.50, "$_: $score !> 9.50");

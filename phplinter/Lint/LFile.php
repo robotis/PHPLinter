@@ -183,9 +183,11 @@ class LFile extends BaseLint implements ILint {
 		$o = $this->node->tokens;
 		if($pos > 0) {
 			$k = $this->find(-1, T_INLINE_HTML, $pos);
-			if($k !== false)
-				$this->report('REF_HTML_BEFORE_OPEN', null, $o[$k][2]);
-			else
+			if($k !== false) {
+				if(!preg_match('/^#!.*/u', $o[0][1])) {
+					$this->report('REF_HTML_BEFORE_OPEN', null, $o[$k][2]);
+				}
+			} else
 				$this->report('WAR_WS_BEFORE_OPEN', null, $o[$pos-1][2]);
 		}
 	}	

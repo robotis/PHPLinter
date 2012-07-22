@@ -268,16 +268,25 @@ namespace phplinter {
 		----------------------------------------------------------------------+
 		*/
 		protected function _parse_report($conf) {
-			if(isset($conf->report)) {
-				if(isset($conf->report->type)) {
-					$this->_options['report'] = (array)$conf->report;
-					switch($conf->report->type) {
+			if(isset($conf['report'])) {
+				if(isset($conf['report']['type'])) {
+					$this->_options['report'] = (array)$conf['report'];
+					switch($conf['report']['type']) {
 						case 'html':
 							$this->_flags |= OPT_HTML_REPORT;
 							break;
 						case 'json':
 							$this->_flags |= OPT_JSON_REPORT;
 							break;
+						default:
+							exit("Unknown report type `{$conf['report']['type']}`\n");
+					}
+					if(!isset($conf['report']['out'])) {
+						exit("Report needs `out` field\n");
+					}
+					$outdir = dirname($conf['report']['out']);
+					if(!file_exists($outdir)) {
+						exit("Report out: `$outdir` not found\n");
 					}
 				}
 			}

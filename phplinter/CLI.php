@@ -257,10 +257,14 @@ class CLI {
 		$ext = $this->config->check('extensions');
 		if(empty($ext)) $ext = 'php';
 		$ignore = $this->config->check('ignore');
-		$this->msg("Gathering file info...");	
+		$this->msg("Gathering file info...\n");	
 		$files = empty($ignore)
 			? Path::find($this->target, "/^.*?\.($ext)$/u")
 			: Path::find($this->target, "/^.*?\.($ext)$/u", $ignore);
+		
+		if($this->config->check(OPT_HARVEST_DOCS)) {
+			$this->msg("Harvesting mode on ...\n");
+		}
 			
 		$this->penalty 	= 0;
 		$numfiles 		= count($files);

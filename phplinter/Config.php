@@ -245,7 +245,7 @@ namespace phplinter {
 		----------------------------------------------------------------------+
 		*/
 		protected function _parse_filter($conf) {
-			if(isset($conf->filter)) {
+			if(isset($conf['filter'])) {
 				foreach(array(
 					"information" 	=> OPT_NO_INFORMATION,
 					"conventions" 	=> OPT_NO_CONVENTION,
@@ -256,7 +256,7 @@ namespace phplinter {
 					"security" 		=> OPT_NO_SECURITY
 				) as $k => $_)
 				{
-					if(in_array($k, $conf->filter)) {
+					if(in_array($k, $conf['filter'])) {
 						$this->_flags |= $_;
 					}
 				}
@@ -290,9 +290,9 @@ namespace phplinter {
 					}
 				}
 			}
-			if(isset($conf->harvest)) {
+			if(isset($conf['harvest'])) {
 				$this->_flags |= OPT_HARVEST_DOCS;
-				$this->_options['harvest'] = (array)$conf->harvest;
+				$this->_options['harvest'] = $conf['harvest'];
 			}
 		}
 	}

@@ -116,9 +116,9 @@ class BaseLint {
 			$this->report('WAR_UNREACHABLE_CODE', null, $token[2]);
 		}
 		$t = $token[0];
-		if($this->config->match_rule('WAR_DEPRICATED_TOKEN', $t))
+		if($this->config->match_rule('DEP_DEPRECATED_TOKEN', $t))
 		{
-			$this->report('WAR_DEPRICATED_TOKEN', \phplinter\Tokenizer::token_name($t));		
+			$this->report('DEP_DEPRECATED_TOKEN', \phplinter\Tokenizer::token_name($t));		
 		}
 		switch($t) {
 			case T_INLINE_HTML:
@@ -308,19 +308,19 @@ class BaseLint {
 			$this->security($pos);
 			if($nt === T_DOUBLE_COLON) {
 				$name = $token[1] . '::' . $this->node->tokens[$this->next($ntp)][1];
-				if($this->config->match_rule('REF_DEPRECATED_NAME', $name)) {
-					$this->report('REF_DEPRECATED_NAME', $name);
+				if($this->config->match_rule('DEP_DEPRECATED_NAME', $name)) {
+					$this->report('DEP_DEPRECATED_NAME', $name);
 				}
-				if($this->config->match_rule('REF_DEPRECATED_NAME_REPLACE', $name)) {
-					$this->report('REF_DEPRECATED_NAME_REPLACE', $name);
+				if($this->config->match_rule('DEP_DEPRECATED_NAME_REPLACE', $name)) {
+					$this->report('DEP_DEPRECATED_NAME_REPLACE', $name);
 				}
 			}
 		}
-		if($this->config->match_rule('REF_DEPRECATED_NAME', $token[1])) {
-			$this->report('REF_DEPRECATED_NAME', $token[1]);
+		if($this->config->match_rule('DEP_DEPRECATED_NAME', $token[1])) {
+			$this->report('DEP_DEPRECATED_NAME', $token[1]);
 		}
-		if($this->config->match_rule('REF_DEPRECATED_NAME_REPLACE', $token[1])) {
-			$this->report('REF_DEPRECATED_NAME_REPLACE', $token[1]);
+		if($this->config->match_rule('DEP_DEPRECATED_NAME_REPLACE', $token[1])) {
+			$this->report('DEP_DEPRECATED_NAME_REPLACE', $token[1]);
 		}
 	}
 	/**

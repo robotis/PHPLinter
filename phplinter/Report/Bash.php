@@ -32,7 +32,7 @@ class Bash extends Base {
 		$format="| {F} | {M} | `{W}` Line: {L}\n";
 		$fcolors = array(
 			'E' => 'red', 'W' => 'blue', 'C' =>'brown', 'D' => array(2, 'brown'),
-			'I' => 'green', 'R' => 'purple', 'S' => 'cyan', 'F' => array(1, 'black')
+			'I' => 'green', 'R' => 'purple', 'S' => 'cyan', 'P' => array(1, 'black')
 		);
 		foreach($report as $node) {
 			foreach($node as $_) {

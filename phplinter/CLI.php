@@ -103,7 +103,10 @@ class CLI {
 							$flags &= ~OPT_NO_INFORMATION;
 							break;
 						case 'D':
-							$flags |= OPT_NO_DEPRICATED;
+							$flags |= OPT_NO_DOCUMENTATION;
+							break;
+						case 'P':
+							$flags |= OPT_NO_DEPRECATED;
 							break;
 						case 'C':
 							$flags |= OPT_NO_CONVENTION;

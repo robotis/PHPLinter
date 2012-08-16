@@ -207,15 +207,30 @@ return array(
 		'message' => 'Whitespace after final close tag',
 		'flag' => 'W17',
 	),
-	'WAR_DEPRICATED_TOKEN' => array(
-		'message_extra' => '`%s` Depricated',
-		'flag' => 'W18',
-		'compare' => array(T_GLOBAL),
-		'type' => 'array'
-	),
 	'WAR_WS_BEFORE_OPEN' => array(
 		'message' => 'Whitespace before first open tag',
 		'flag' => 'W19',
+	),
+	/*
+	 * Deprecated
+	 */
+	'DEP_DEPRECATED_TOKEN' => array(
+		'message_extra' => '`%s` Deprecated',
+		'flag' => 'P1',
+		'compare' => array(T_GLOBAL),
+		'type' => 'array'
+	),
+	'DEP_DEPRECATED_NAME_REPLACE' => array(
+		'message_extras' => '`%s` has been deprecated, Use `%s`',
+		'flag' => 'P2',
+		'compare' => array(),
+		'type' => 'assoc'
+	),
+	'DEP_DEPRECATED_NAME' => array(
+		'message_extra' => '`%s` has been deprecated',
+		'flag' => 'P3',
+		'compare' => array(),
+		'type' => 'array'
 	),
 	/*
 	 *	Documentaion 
@@ -340,18 +355,6 @@ return array(
 		'message_extras' => 'File to long %d(%d)',
 		'flag' => 'R20',
 		'compare' => 4000
-	),
-	'REF_DEPRECATED_NAME_REPLACE' => array(
-		'message_extras' => '`%s` has been deprecated, Use `%s`',
-		'flag' => 'R21',
-		'compare' => array(),
-		'type' => 'assoc'
-	),
-	'REF_DEPRECATED_NAME' => array(
-		'message_extra' => '`%s` has been deprecated',
-		'flag' => 'R22',
-		'compare' => array(),
-		'type' => 'array'
 	),
 	/*
 	 * Security 

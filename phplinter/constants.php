@@ -34,7 +34,7 @@ define('OPT_SCORE_ONLY',				0x000040);
 define('OPT_NO_INFORMATION',			0x000080);
 define('OPT_HTML_REPORT',				0x000100);
 define('OPT_FIND_FUNC',					0x000200);
-define('OPT_NO_DEPRICATED',				0x000400);
+define('OPT_NO_DOCUMENTATION',			0x000400);
 define('OPT_DEBUG_EXTRA',				0x000800);
 define('OPT_NO_SECURITY',				0x001000);
 define('OPT_ONLY_SECURITY',				0x002000);
@@ -47,6 +47,7 @@ define('OPT_SCOPE_MAP',					0x080000);
 define('OPT_NO_FORMATTING',			   	0x100000);	
 define('OPT_JSON_REPORT',			   	0x200000);
 define('OPT_HARVEST_DOCS',			   	0x400000);
+define('OPT_NO_DEPRECATED',			   	0x800000);
 
 define('OPT_REPORT',			   		OPT_HTML_REPORT | OPT_JSON_REPORT);
 
@@ -57,6 +58,7 @@ define('C_PENALTY',						0.01);
 define('F_PENALTY',						0.01);
 define('W_PENALTY',						0.3);
 define('D_PENALTY',						0.3);
+define('P_PENALTY',						0.5);
 define('R_PENALTY',						0.8);
 define('E_PENALTY',						1.0);
 define('S_PENALTY',						1.0);

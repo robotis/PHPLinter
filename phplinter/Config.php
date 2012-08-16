@@ -158,6 +158,8 @@ namespace phplinter {
 					return (!($this->check(OPT_NO_CONVENTION)));
 				case 'W':
 					return (!($this->check(OPT_NO_WARNING)));
+				case 'P':
+					return (!($this->check(OPT_NO_DEPRECATED)));
 				case 'R':
 					return (!($this->check(OPT_NO_REFACTOR)));
 				case 'E':
@@ -165,7 +167,7 @@ namespace phplinter {
 				case 'I':
 					return (!($this->check(OPT_NO_INFORMATION)));
 				case 'D':
-					return (!($this->check(OPT_NO_DEPRICATED)));
+					return (!($this->check(OPT_NO_DOCUMENTATION)));
 				case 'S':
 					return (!($this->check(OPT_NO_SECURITY)));
 				case 'F':
@@ -252,7 +254,8 @@ namespace phplinter {
 					"warnings" 		=> OPT_NO_WARNING,
 					"refactor" 		=> OPT_NO_REFACTOR,
 					"errors" 		=> OPT_NO_ERROR,
-					"documentation" => OPT_NO_DEPRICATED,
+					"deprecated" 	=> OPT_NO_DEPRECATED,
+					"documentation" => OPT_NO_DOCUMENTATION,
 					"security" 		=> OPT_NO_SECURITY
 				) as $k => $_)
 				{

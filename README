@@ -1,5 +1,5 @@
 PHPLinter. Static code analyser.
-V3.0
+V3.3
 
 A simple fast lint and score for PHP files. Attempts to analyze the code to
 locate problem areas, flagging infractions to the rule set and giving a score
@@ -33,6 +33,7 @@ Filters:
 	-R: Dont report refactor warnings.
 	-E: Dont report errors.
 	-D: Dont report documentation warnings.
+	-P: Dont report deprecated warnings.
 	-X: Dont report security warnings.
 	-O: Security report only.
 

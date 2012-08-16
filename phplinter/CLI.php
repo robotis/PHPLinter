@@ -63,6 +63,7 @@ class CLI {
 		echo "\t-R: Dont report refactor warnings.\n";
 		echo "\t-E: Dont report errors.\n";
 		echo "\t-D: Dont report documentation warnings.\n";
+		echo "\t-P: Dont report deprecated warnings.\n";
 		echo "\t-X: Dont report security warnings.\n";
 		echo "\t-O: Security report only.\n";
 		
@@ -81,7 +82,7 @@ class CLI {
 		echo "\nOther (Experimental):\n";
 		echo "\t-Z PATH: Harvest documentation into json-file.\n";
 		echo "\t-F: Report formatting errors.\n";
-		echo "<jtm@robot.is>\n";
+		echo "v3.3 <jtm@robot.is>\n";
 		exit;
 	}
 	/**

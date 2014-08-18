@@ -61,23 +61,23 @@ class Html extends Base {
 		if(!$output_dir) $output_dir = $this->html['out'];
 		if($this->config->check(OPT_VERBOSE))
 			echo "Generating HTML Report to '$output_dir'\n";
-		
+
 		if(file_exists($output_dir) && $this->html['overwrite']) {
-			if($this->config->check(OPT_VERBOSE)) 
+			if($this->config->check(OPT_VERBOSE))
 				echo "Emptying `$output_dir`\n";
 			if(!$this->dry_run)
 				\phplinter\Path::del_recursive($output_dir);
 		}
-		
-		if(!file_exists($output_dir)) { 
+
+		if(!file_exists($output_dir)) {
 			$this->mkdir($output_dir, 0775);
 		}
-		
+
 		$this->write($output_dir . '/html_report.css', $this->css());
 		foreach($report as $file => $rep) {
 			$out = '<div class="wrapper"><table border="1" cellpadding="0" cellspacing="0">';
 			$content = '';
-			
+
 			foreach($rep as $_) {
 				$content .= $this->_fmessage($_);
 			}
@@ -101,12 +101,12 @@ class Html extends Base {
 			$out .= '</td></tr>';
 			$out .= $content;
 			$out .= '</table></div>';
-			
+
 			$dir = $output_dir . $path;
 			if(!file_exists($dir)) {
 				$this->mkdir($dir, 0775, true);
 			}
-			
+
 			$pp = explode('/', substr(realpath(implode('/', $parts)), mb_strlen($this->root)));
 			$ofile = $dir . '/' . strtr($rfile, './', '__').'.html';
 			$this->write($ofile, $this->_html($out, count($pp)));
@@ -148,11 +148,11 @@ class Html extends Base {
 	protected function parts($parts, $url, &$urls) {
 		if(empty($parts)) return;
 		$part = array_shift($parts);
-	
+
 		if(!isset($urls[$part])) {
 			$urls[$part] = array();
 		}
-	
+
 		if(empty($parts)) {
 			$urls[$part][] = $url;
 		} else $this->parts($parts, $url, $urls[$part]);
@@ -182,7 +182,7 @@ class Html extends Base {
 		$out .= '<td colspan="2" align="center">'.$this->root.'</td></tr>';
 		$content = '';
 		$total = 0; $num = 0;
-	
+
 		foreach($urls as $k => $_) {
 			$content .= '<tr>';
 			if(isset($_['phplinter___file'])) {
@@ -204,7 +204,7 @@ class Html extends Base {
 				$class = $this->get_score_class($avarage);
 				$content .= sprintf('<td colspan="2" class="%s">Average: %.2f</td>',
 				$class, $avarage);
-				$content .= '<td class="folder"><a href="'.$k.'">'.$k.'</a></td>';
+				$content .= '<td class="folder"><a href="'.$k.'/index.html">'.$k.'</a></td>';
 				$total += $ototal;
 				$num += $onum;
 			}
@@ -220,7 +220,7 @@ class Html extends Base {
 		$out .= '</tr>';
 		$out .= $content;
 		$out .= '</table></div>';
-	
+
 		$path = ($path == '/')
 			? $this->html['out']
 			: $path;

@@ -5,7 +5,7 @@
 *  @file 			Path.php
 *  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    May 17, 2010
-*  @copyright     
+*  @copyright
 *    phplinter is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
 *    the Free Software Foundation, either version 3 of the License, or
@@ -34,7 +34,7 @@ class Path {
 	* @since  	Mar 18, 2009
 	----------------------------------------------------------------------+
 	*/
-	public static function scan($directory, $func, 
+	public static function scan($directory, $func,
 		$match, $ignore='/^(\..*|CVS)$/') {
 		$files = self::find($directory, $match, $ignore);
 		foreach($files as $_)
@@ -51,21 +51,25 @@ class Path {
 	----------------------------------------------------------------------+
 	*/
 	public static function find($directory, $match, $ignore=null) {
-		ob_start();
-		system('find ' . $directory . ' -type f');
-		if(!empty($ignore)) {
+		$iterator = new \RecursiveDirectoryIterator($directory,
+			\FilesystemIterator::SKIP_DOTS
+		);
+		$iterator = new Filter($iterator);
+		$iterator->setMatchPattern($match);
+
+		if (null !== $ignore) {
 			$ignore = str_replace('/', '\\/', $ignore);
 			$ignore = str_replace('.', '\\.', $ignore);
 			$ignore = str_replace('*', '', $ignore);
 			$ignore = '/' . $ignore . '/';
+			$iterator->setIgnorePattern($ignore);
 		}
-		$files = explode("\n", ob_get_clean());
-		foreach($files as $file) {
-			if(isset($ignore) && preg_match($ignore, $file))
-				continue;
-			if(preg_match($match, $file))
-				$out[] = $file;
+
+		$iterator = new \RecursiveIteratorIterator($iterator);
+		foreach ($iterator as $filename => $file_info) {
+			$out[] = $filename;
 		}
+
 		return isset($out) ? $out : null;
 	}
 	/**
@@ -77,9 +81,9 @@ class Path {
 	*/
 	public static function del_recursive($root) {
 		$root = realpath($root);
-		if(empty($root) || !file_exists($root)) 
+		if(empty($root) || !file_exists($root))
 			return false;
-		$files = glob( $root . '/*', GLOB_MARK ); 
+		$files = glob( $root . '/*', GLOB_MARK );
 		foreach( $files as $file ){
 	        if(is_dir( $file )) {
 	            self::del_recursive( $file );
@@ -102,10 +106,69 @@ class Path {
 	public static function write_file($file, $content, $mode='w', $perm=0664) {
 		if($fp = fopen($file, $mode)) {
 			fwrite($fp, $content);
-			fclose($fp);	
+			fclose($fp);
 			chmod($file, $perm);
 			return true;
 		}
 		return false;
+	}
+}
+
+class Filter extends \RecursiveFilterIterator
+{
+	protected $ignore;
+	protected $match;
+
+	/**
+	 * Sets ignore pattern
+	 *
+	 * @param mixed $ignore_pattern
+	 * @return $this
+	 */
+	public function setIgnorePattern($ignore_pattern)
+	{
+		$this->ignore = $ignore_pattern;
+		return $this;
+	}
+
+	/**
+	 * Sets match pattern
+	 *
+	 * @param mixed $match_pattern
+	 * @return $this
+	 */
+	public function setMatchPattern($match_pattern)
+	{
+		$this->match = $match_pattern;
+		return $this;
+	}
+
+	public function __construct(\RecursiveIterator $iterator)
+	{
+		parent::__construct($iterator);
+	}
+
+	/**
+	 * Check whether the current element of the iterator is acceptable
+	 *
+	 * @link http://php.net/manual/en/filteriterator.accept.php
+	 * @return bool true if the current element is acceptable, otherwise false.
+	 */
+	public function accept()
+	{
+		static $pattern;
+
+		if (null !== $this->ignore
+			&& preg_match($this->ignore, $this->current()->getFilename())
+		) {
+			return false;
+		}
+
+		if (null === $pattern) {
+			$pattern = $this->match;
+		}
+
+		return $this->current()->isDir() || ($this->current()->isFile()
+			&& preg_match($pattern, $this->current()->getFilename()));
 	}
 }

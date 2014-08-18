@@ -1,24 +1,24 @@
 {
 	"target": "/path/to/target",
-	
+
 	"score_only": false,
-	
+
 	"_comment": "ignore paths (| delimited)",
 	"ignore": "",
-	
+
 	"_comment": "File extensions. example: 'php|inc', default 'php'",
 	"extensions": "",
-	
+
 	"quiet": false,
-	
+
 	"_comment": "Add extra information",
 	"information": true,
-	
+
 	"_comment": "Set PHP memory limit",
 	"memory_limit": "512M",
-	
+
 	"_comment" : "Available filters, will ignore flags of this type",
-	"filter": 
+	"filter": [
 		"information",
 		"conventions",
 		"warnings",
@@ -26,7 +26,7 @@
 		"documentation",
 		"security"
 	],
-	
+
 	"_comment": "Types can be json or html",
 	"report": {
 		"type": "html",
@@ -34,27 +34,27 @@
 		"overwrite": false,
 		"dry_run": false
 	},
-	
+
 	"_comment": "Will harvest documentation from code and dump in json format",
 	"harvest": {
 		"out": "/path/to/write/file",
 		"dry_run": false
-	}
-	
+	},
+
 	"_comment": "Ignore following rules",
 	"skip_rules": [
 		"W18"
 	],
-	
+
 	"_comment": "Use only following rules",
 	"use_rules": [
 		"R5"
 	],
-	
+
 	"_comment": "Override rule options",
-	"custom_rules" [
-		"R21": {
-			"compare": {"Old_name": "New_name"}
+	"custom_rules": [
+		{
+			"R21": {"compare": {"Old_name": "New_name"}}
 		}
 	]
 }

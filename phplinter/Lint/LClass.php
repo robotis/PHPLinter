@@ -7,7 +7,7 @@
 *  @author 			Jóhann T. Maríusson <jtm@robot.is>
 *  @since 		    Oct 29, 2011
 *  @package 		PHPLinter
-*  @copyright     
+*  @copyright
 *    phplinter is free software: you can redistribute it and/or modify
 *    it under the terms of the GNU General Public License as published by
 *    the Free Software Foundation, either version 3 of the License, or
@@ -33,12 +33,12 @@ class LClass extends BaseLint implements ILint {
 		if($this->node->empty) {
 			$this->report('WAR_EMPTY_CLASS');
 		}
-		
+
 		$this->process_tokens();
-		
+
 		if(!$this->node->dochead)
 			$this->report('DOC_NO_DOCHEAD_CLASS');
-			
+
 		if($this->config->match_rule('CON_CLASS_NAME', $this->node->name)) {
 			$this->report('CON_CLASS_NAME', $this->node->name);
 		}
@@ -46,11 +46,11 @@ class LClass extends BaseLint implements ILint {
 		if($this->config->match_rule('REF_CLASS_LENGTH', $len)) {
 			$this->report('REF_CLASS_LENGTH', $len);
 		}
-		
-		if(!empty($this->locals[T_METHOD]) && 
+
+		if(!empty($this->locals[T_METHOD]) &&
 			in_array($this->node->name, $this->locals[T_METHOD]))
 			$this->report('WAR_OLD_STYLE_CONSTRUCT');
-			
+
 		if(!empty($this->node->nodes)) {
 			$static = array(0,0);
 			foreach($this->node->nodes as $_) {
@@ -64,7 +64,7 @@ class LClass extends BaseLint implements ILint {
 				$this->report('REF_STATIC_MIX');
 			}
 		}
-		
+
 		return $this->reports;
 	}
 	/**
@@ -114,7 +114,7 @@ class LClass extends BaseLint implements ILint {
 					break;
 			}
 		}
-		$lcnt = $this->process_locals($locals);
+		$lcnt = $this->process_locals($locals, array(), array());
 		$compares = array(
 			'REF_CLASS_METHODS' => $methods,
 			'REF_CLASS_PROPERTYS' => $lcnt,
@@ -130,7 +130,7 @@ class LClass extends BaseLint implements ILint {
 	* @desc 	Process locals at class scope
 	----------------------------------------------------------------------+
 	*/
-	protected function process_locals($locals) {
+	protected function process_locals($locals, $_locals, $args) {
 		$locals = array_unique($locals);
 		$_mlocals = array();
 		if(!empty($this->locals[T_VARIABLE])) {
@@ -144,12 +144,12 @@ class LClass extends BaseLint implements ILint {
 		}
 		$vars = array_diff($locals, $_mlocals);
 		foreach($vars as $_) {
-			$this->report('INF_UNUSED_PROPERTY', $_);	
+			$this->report('INF_UNUSED_PROPERTY', $_);
 		}
 		$udef = array_diff($_mlocals, $locals);
 		foreach($udef as $_) {
-			$this->report('CON_PROPERTY_DEFINED_IN_METHOD', $_);	
+			$this->report('CON_PROPERTY_DEFINED_IN_METHOD', $_);
 		}
 		return count($udef) + count($locals);
-	} 
+	}
 }
